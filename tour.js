@@ -14,36 +14,44 @@ const panorama2 = new PANOLENS.ImagePanorama('./images/catedral.jpg');
 const panorama3 = new PANOLENS.ImagePanorama('./images/bancolombia.jpg');
 const panorama4 = new PANOLENS.ImagePanorama('./images/bancobogota.jpg');
 const panorama5 = new PANOLENS.ImagePanorama('./images/juanvaldez.jpg');
+const panorama6 = new PANOLENS.ImagePanorama('./images/catt.jpg');
 
 
 //------------------------------
 
 //-------------------------------
-
-panorama1.link(panorama3, new THREE.Vector3(-6000, -1500, -190)); 
-panorama3.link(panorama1, new THREE.Vector3(6000, -1800, 2300));
-
 panorama1.link(panorama2, new THREE.Vector3(-800, -1500, 6000)); 
+panorama1.link(panorama3, new THREE.Vector3(-6000, -1500, -190));
+panorama1.link(panorama4, new THREE.Vector3(0, -1800, -6000)); 
+panorama1.link(panorama5, new THREE.Vector3(5000, -700, 1350));
+
 panorama2.link(panorama1, new THREE.Vector3(-6200, -1800, -2000));
-
-panorama1.link(panorama4, new THREE.Vector3(0, -1500, -5000)); 
-panorama4.link(panorama1, new THREE.Vector3(6000, -1000, 1400));
-
-panorama1.link(panorama5, new THREE.Vector3(5000, -700, 1350)); 
-panorama5.link(panorama1, new THREE.Vector3(5000, -1000, -400));
-
-panorama2.link(panorama3, new THREE.Vector3(-5500, -1000, 4000));
-panorama3.link(panorama2, new THREE.Vector3(-1500, -550, 6000));
-
+panorama2.link(panorama3, new THREE.Vector3(-2400, -1000, 6000));
 panorama2.link(panorama5, new THREE.Vector3(1500, -1000, -5000));
-panorama5.link(panorama2, new THREE.Vector3(-1500, -550, 6000));
+panorama2.link(panorama6, new THREE.Vector3(7200, -1000, 2550));
+
+
+panorama3.link(panorama1, new THREE.Vector3(6000, -1800, 2300));
+panorama3.link(panorama2, new THREE.Vector3(-1500, -550, 6000));
+panorama3.link(panorama4, new THREE.Vector3(1500, -1000, -7000));
+
+panorama4.link(panorama1, new THREE.Vector3(6000, -1000, 1400));
+panorama4.link(panorama3, new THREE.Vector3(-1000, -1000, 6000));
+panorama4.link(panorama5, new THREE.Vector3(2000, -1000, -7000));
+
+
+panorama5.link(panorama1, new THREE.Vector3(5000, -1000, -400));
+panorama5.link(panorama2, new THREE.Vector3(0, -1000, -6500));
+panorama5.link(panorama4, new THREE.Vector3(1200, -1000, 6000));
+
+panorama6.link(panorama2, new THREE.Vector3(-7200, -2000, 850));
 
 
 // Agregar panoramas al visor
-viewer.add(panorama1, panorama2, panorama3, panorama4, panorama5);
+viewer.add(panorama1, panorama2, panorama3, panorama4, panorama5,panorama6);
 
 // Iniciar con el primer panorama
-viewer.setPanorama(panorama2);
+viewer.setPanorama(panorama1);
 
 // Crear puntos de interés en los panoramas
 const infospot1 = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info);
