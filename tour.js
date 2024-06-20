@@ -1,3 +1,6 @@
+import * as THREE from 'https://unpkg.com/three@0.159.0/build/three.module.js';
+import { VRButton } from 'https://unpkg.com/three@0.159.0/examples/jsm/webxr/VRButton.js';
+
 // Crear una nueva escena de Panolens
 const viewer = new PANOLENS.Viewer({
     container: document.querySelector('#container'),
@@ -5,8 +8,6 @@ const viewer = new PANOLENS.Viewer({
     controlBar: true,
     controlButtons: ['fullscreen', 'setting']
 });
-
-
 
 // Crear imágenes panorámicas
 const panorama1 = new PANOLENS.ImagePanorama('./images/centrocaldas.jpg');
@@ -25,9 +26,9 @@ const panorama11 = new PANOLENS.ImagePanorama('./images/humilladero1.jpg');
 //------------------------------
 
 //-------------------------------
-panorama1.link(panorama2, new THREE.Vector3(-800, -1500, 6000)); 
+panorama1.link(panorama2, new THREE.Vector3(-800, -1500, 6000));
 panorama1.link(panorama3, new THREE.Vector3(-6000, -1500, -190));
-panorama1.link(panorama4, new THREE.Vector3(0, -1800, -6000)); 
+panorama1.link(panorama4, new THREE.Vector3(0, -1800, -6000));
 panorama1.link(panorama5, new THREE.Vector3(6000, -800, 1600));
 
 panorama2.link(panorama1, new THREE.Vector3(-6200, -1800, -2000));
@@ -36,7 +37,7 @@ panorama2.link(panorama7, new THREE.Vector3(1500, -1000, -5000));
 panorama2.link(panorama6, new THREE.Vector3(7200, -1000, 2550));
 
 panorama3.link(panorama1, new THREE.Vector3(6000, -1800, 2300));
-panorama3.link(panorama10, new THREE.Vector3(-1500, -550, 6000));
+panorama3.link(panorama10, new THREE.Vector3(-1500, -750, 6000));
 panorama3.link(panorama9, new THREE.Vector3(1500, -1000, -7000));
 
 panorama4.link(panorama1, new THREE.Vector3(6000, -1000, 1400));
@@ -64,16 +65,15 @@ panorama10.link(panorama3, new THREE.Vector3(5800, -1000, -3500));
 
 panorama11.link(panorama3, new THREE.Vector3(-1300, -1500, 6000));
 
-
 // Agregar panoramas al visor
-viewer.add(panorama1, panorama2, panorama3, panorama4, panorama5,panorama6);
-viewer.add(panorama7,panorama8,panorama9,panorama10,panorama11);
+viewer.add(panorama1, panorama2, panorama3, panorama4, panorama5, panorama6);
+viewer.add(panorama7, panorama8, panorama9, panorama10, panorama11);
 // Iniciar con el primer panorama
 viewer.setPanorama(panorama1);
 
 // Crear puntos de interés en los panoramas
 const infospot1 = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info);
-infospot1.position.set(5000, 2000, 0); 
+infospot1.position.set(5000, 2000, 0);
 infospot1.addHoverText('Descripción del punto de interés');
 panorama1.add(infospot1);
 
@@ -86,6 +86,10 @@ const infospot3 = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info);
 infospot3.position.set(5000, 2000, 0);
 infospot3.addHoverText('Descripción del punto de interés');
 panorama3.add(infospot3);
+
+// Agregar funcionalidad VR
+const vrButton = VRButton.createButton(viewer.renderer);
+document.body.appendChild(vrButton);
 
 // Actualizar el tween en el loop de renderizado
 function animate() {

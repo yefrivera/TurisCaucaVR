@@ -8,22 +8,21 @@
 </head>
 <body>
     <div id="container"></div>
-
     <div id="content"></div>
 
     <div class="off-screen-menu">
         <ul>
-        <li><a href="#" id="vr-btn"><img src="./textures/VR.png"/></a></li>
-          <li>
-            <a href="#" id="mute-btn">
-              <img id="mute-icon" class="normal" src="./textures/muted.png" data-original-src="./textures/muted.png" data-alt-src="./textures/unmuted.png" />
-            </a>
-          </li>
-          <li><a href="#" id="expand-btn"><img class="normal" src="./textures/fullscreen.png" data-original-src="./textures/fullscreen.png" data-alt-src="./textures/reducescreen.png" /></a></li>
-          <li><a href="#" class="share-x"><img src="./textures/x.png"/></a></li>
-          <li><a href="#" class="share-facebook"><img src="./textures/f.png"/></a></li>
+            <li><a href="#" id="vr-btn"><img src="./textures/VR.png"/></a></li>
+            <li>
+                <a href="#" id="mute-btn">
+                    <img id="mute-icon" class="normal" src="./textures/muted.png" data-original-src="./textures/muted.png" data-alt-src="./textures/unmuted.png" />
+                </a>
+            </li>
+            <li><a href="#" id="expand-btn"><img class="normal" src="./textures/fullscreen.png" data-original-src="./textures/fullscreen.png" data-alt-src="./textures/reducescreen.png" /></a></li>
+            <li><a href="#" class="share-x"><img src="./textures/x.png"/></a></li>
+            <li><a href="#" class="share-facebook"><img src="./textures/f.png"/></a></li>
         </ul>
-      </div>
+    </div>
 
     <nav>
         <div class="ham-menu">
@@ -38,13 +37,22 @@
             <img src="./textures/home.png" alt="Button Image">
         </a>
     </div>
+
+    <script type="importmap">
+        {
+           "imports": {
+              "three": "https://unpkg.com/three@0.159.0/build/three.module.js",
+              "three/addons/": "./jsm/"                  
+           }
+        }
+    </script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/panolens@0.12.0/build/panolens.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="tour.js"></script>
+    <script type="module" src="tour.js"></script>
     <script src="./menu.js"></script> 
 </body>
 </html>
