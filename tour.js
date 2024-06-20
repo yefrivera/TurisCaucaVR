@@ -1,5 +1,6 @@
 import * as THREE from 'https://unpkg.com/three@0.159.0/build/three.module.js';
 import { VRButton } from 'https://unpkg.com/three@0.159.0/examples/jsm/webxr/VRButton.js';
+import { XRControllerModelFactory } from 'https://unpkg.com/three@0.159.0/examples/jsm/webxr/XRControllerModelFactory.js';
 
 // Crear una nueva escena de Panolens
 const viewer = new PANOLENS.Viewer({
@@ -23,9 +24,8 @@ const panorama9 = new PANOLENS.ImagePanorama('./images/esq-bb.jpg');
 const panorama10 = new PANOLENS.ImagePanorama('./images/esq-c.jpg');
 
 const panorama11 = new PANOLENS.ImagePanorama('./images/humilladero1.jpg');
-//------------------------------
 
-//-------------------------------
+// Enlazar panoramas
 panorama1.link(panorama2, new THREE.Vector3(-800, -1500, 6000));
 panorama1.link(panorama3, new THREE.Vector3(-6000, -1500, -190));
 panorama1.link(panorama4, new THREE.Vector3(0, -1800, -6000));
@@ -87,14 +87,83 @@ infospot3.position.set(5000, 2000, 0);
 infospot3.addHoverText('Descripción del punto de interés');
 panorama3.add(infospot3);
 
-// Agregar funcionalidad VR
-const vrButton = VRButton.createButton(viewer.renderer);
-document.body.appendChild(vrButton);
+// Añadir botón de VR
+document.body.appendChild(VRButton.createButton(viewer.renderer));
+
+// Configurar el visor para VR
+viewer.renderer.xr.enabled = true;
+
+// Configurar los controladores de VR
+const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
+const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+
+const controller1 = viewer.renderer.xr.getController(0);
+controller1.add(new THREE.Line(geometry, lineMaterial));
+viewer.scene.add(controller1);
+
+const controller2 = viewer.renderer.xr.getController(1);
+controller2.add(new THREE.Line(geometry, lineMaterial));
+viewer.scene.add(controller2);
+
+const controllerModelFactory = new XRControllerModelFactory();
+
+const controllerGrip1 = viewer.renderer.xr.getControllerGrip(0);
+controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+viewer.scene.add(controllerGrip1);
+
+const controllerGrip2 = viewer.renderer.xr.getControllerGrip(1);
+controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
+viewer.scene.add(controllerGrip2);
+
+const raycaster = new THREE.Raycaster();
+const tempMatrix = new THREE.Matrix4();
+const intersected = [];
+const intersections = [];
+
+// Establecer la cámara del Raycaster
+raycaster.camera = viewer.camera;
+
+// Función para manejar las intersecciones y acciones de clic
+function handleController(controller) {
+    if (controller.matrixWorld) {
+        tempMatrix.identity().extractRotation(controller.matrixWorld);
+        raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+        raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+        
+        intersections.length = 0;
+        raycaster.intersectObjects(viewer.scene.children, true, intersections);
+
+        if (intersections.length > 0) {
+            const intersection = intersections[0];
+            const object = intersection.object;
+
+            if (controller.userData.isSelecting) {
+                // Aquí puedes manejar la lógica de clic en el objeto
+                console.log('Objeto seleccionado:', object);
+                if (object.userData && object.userData.onClick) {
+                    object.userData.onClick();
+                }
+            }
+        }
+    }
+}
+
+// Configurar eventos para los controladores
+controller1.addEventListener('selectstart', () => controller1.userData.isSelecting = true);
+controller1.addEventListener('selectend', () => controller1.userData.isSelecting = false);
+
+controller2.addEventListener('selectstart', () => controller2.userData.isSelecting = true);
+controller2.addEventListener('selectend', () => controller2.userData.isSelecting = false);
 
 // Actualizar el tween en el loop de renderizado
 function animate() {
-    requestAnimationFrame(animate);
-    TWEEN.update();
+    viewer.renderer.setAnimationLoop(() => {
+        TWEEN.update();
+        handleController(controller1);
+        handleController(controller2);
+        viewer.render();
+    });
 }
 
+// Iniciar la animación
 animate();
