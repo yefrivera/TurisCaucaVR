@@ -94,15 +94,10 @@ document.body.appendChild(VRButton.createButton(viewer.renderer));
 viewer.renderer.xr.enabled = true;
 
 // Configurar los controladores de VR
-const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
-const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-
 const controller1 = viewer.renderer.xr.getController(0);
-controller1.add(new THREE.Line(geometry, lineMaterial));
-viewer.scene.add(controller1);
-
 const controller2 = viewer.renderer.xr.getController(1);
-controller2.add(new THREE.Line(geometry, lineMaterial));
+
+viewer.scene.add(controller1);
 viewer.scene.add(controller2);
 
 const controllerModelFactory = new XRControllerModelFactory();
