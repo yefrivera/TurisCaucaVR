@@ -1,164 +1,308 @@
-import * as THREE from 'https://unpkg.com/three@0.159.0/build/three.module.js';
-import { VRButton } from 'https://unpkg.com/three@0.159.0/examples/jsm/webxr/VRButton.js';
-import { XRControllerModelFactory } from 'https://unpkg.com/three@0.159.0/examples/jsm/webxr/XRControllerModelFactory.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
+import TWEEN from '@tweenjs/tween.js';
 
-// Crear una nueva escena de Panolens
-const viewer = new PANOLENS.Viewer({
-    container: document.querySelector('#container'),
-    autoHideControlBar: false,
-    controlBar: true,
-    controlButtons: ['fullscreen', 'setting']
+// Escena, cámara y renderizador
+const container = document.getElementById('container');
+const scenes = [];
+for (let i = 0; i < 11; i++) {
+    scenes.push(new THREE.Scene());
+}
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace; // Configurar el espacio de color correctamente
+renderer.xr.enabled = true;
+container.appendChild(renderer.domElement);
+document.body.appendChild(VRButton.createButton(renderer));
+
+// Añadir luz ambiental
+const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1); // Puedes ajustar la intensidad
+scenes.forEach(scene => scene.add(ambientLight));
+
+// Añadir luz direccional (opcional)
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1); // Puedes ajustar la intensidad
+directionalLight.position.set(0, 10, 0); // Ajusta la posición según sea necesario
+scenes.forEach(scene => scene.add(directionalLight));
+
+// Controles
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.12;
+
+controls.enableZoom = true;  // Habilitar el zoom
+controls.zoomSpeed = 0.3;    // Ajustar la velocidad del zoom
+controls.enablePan = false;
+camera.position.set(0, 0, 0.1);
+
+// Cargar texturas equirectangulares
+const textureLoader = new THREE.TextureLoader();
+const texturePaths = [
+    'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
+    'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg',
+    'images/reloj.jpg', 'images/esq-b.jpg', 'images/esq-bb.jpg',
+    'images/esq-c.jpg', 'images/humilladero1.jpg'
+];
+const textures = new Array(texturePaths.length);
+
+let texturesLoaded = 0;
+
+texturePaths.forEach((path, index) => {
+    textureLoader.load(path, (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace; // Asegúrate de usar el espacio de color correcto
+        textures[index] = texture;
+        texturesLoaded++;
+        if (texturesLoaded === texturePaths.length) {
+            init();
+        }
+    });
 });
 
-// Crear imágenes panorámicas
-const panorama1 = new PANOLENS.ImagePanorama('./images/centrocaldas.jpg');
-const panorama2 = new PANOLENS.ImagePanorama('./images/catedral.jpg');
-const panorama3 = new PANOLENS.ImagePanorama('./images/bancolombia.jpg');
-const panorama4 = new PANOLENS.ImagePanorama('./images/bancobogota.jpg');
-const panorama5 = new PANOLENS.ImagePanorama('./images/juanvaldez.jpg');
-const panorama6 = new PANOLENS.ImagePanorama('./images/catt.jpg');
+function init() {
+    // Crear esferas para cada escena
+    const geometry = new THREE.SphereGeometry(500, 60, 40);
+    geometry.scale(-1, 1, 1); // Invertir la esfera para mirar hacia dentro
 
-const panorama7 = new PANOLENS.ImagePanorama('./images/reloj.jpg');
-const panorama8 = new PANOLENS.ImagePanorama('./images/esq-b.jpg');
-const panorama9 = new PANOLENS.ImagePanorama('./images/esq-bb.jpg');
-const panorama10 = new PANOLENS.ImagePanorama('./images/esq-c.jpg');
+    textures.forEach((texture, index) => {
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        const sphere = new THREE.Mesh(geometry, material);
+        scenes[index].add(sphere);
+    });
 
-const panorama11 = new PANOLENS.ImagePanorama('./images/humilladero1.jpg');
+    // Establecer la escena inicial
+    let currentSceneIndex = 0;
+    let currentScene = scenes[currentSceneIndex];
+    renderer.render(currentScene, camera);
 
-// Enlazar panoramas
-panorama1.link(panorama2, new THREE.Vector3(-800, -1500, 6000));
-panorama1.link(panorama3, new THREE.Vector3(-6000, -1500, -190));
-panorama1.link(panorama4, new THREE.Vector3(0, -1800, -6000));
-panorama1.link(panorama5, new THREE.Vector3(6000, -800, 1600));
+    // Función para cambiar de escena con transición de smooth camera zoom in
+    function changeScene(targetSceneIndex) {
+        console.log(`Cambiando a la escena: ${targetSceneIndex}`);
+        new TWEEN.Tween(camera.position)
+            .to({ z: 0.01 }, 2000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onComplete(() => {
+                currentSceneIndex = targetSceneIndex;
+                currentScene = scenes[currentSceneIndex];
+                updateVRControllers();
+                new TWEEN.Tween(camera.position)
+                    .to({ z: 0.1 }, 2000)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .start();
+            })
+            .start();
+    }
 
-panorama2.link(panorama1, new THREE.Vector3(-6200, -1800, -2000));
-panorama2.link(panorama10, new THREE.Vector3(-2400, -1000, 6000));
-panorama2.link(panorama7, new THREE.Vector3(1500, -1000, -5000));
-panorama2.link(panorama6, new THREE.Vector3(7200, -1000, 2550));
+    // Crear las flechas de navegación
+    const arrowTexture = textureLoader.load('images/next.png');
 
-panorama3.link(panorama1, new THREE.Vector3(6000, -1800, 2300));
-panorama3.link(panorama10, new THREE.Vector3(-1500, -750, 6000));
-panorama3.link(panorama9, new THREE.Vector3(1500, -1000, -7000));
+    function createArrow(position, targetSceneIndex) {
+        const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
+        const sprite = new THREE.Sprite(spriteMaterial);
+        sprite.position.copy(position);
+        sprite.scale.set(30, 30, 5);
+        sprite.userData = { targetSceneIndex };
+        sprite.material.depthTest = false; // Para evitar la deformación
+        sprite.material.depthWrite = false;
+        return sprite;
+    }
 
-panorama4.link(panorama1, new THREE.Vector3(6000, -1000, 1400));
-panorama4.link(panorama9, new THREE.Vector3(-1000, -1000, 6000));
-panorama4.link(panorama8, new THREE.Vector3(2000, -1000, -7000));
+    // Enlazar escenas con flechas
+    scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
+    scenes[0].add(createArrow(new THREE.Vector3(484, -120, -16), 2));
+    scenes[0].add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
+    scenes[0].add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
 
-panorama5.link(panorama1, new THREE.Vector3(5000, -1000, -400));
-panorama5.link(panorama7, new THREE.Vector3(0, -1000, -6500));
-panorama5.link(panorama8, new THREE.Vector3(1200, -1000, 6000));
+    scenes[1].add(createArrow(new THREE.Vector3(453, -135, -157), 0));
+    scenes[1].add(createArrow(new THREE.Vector3(185, -94, 453), 9));
+    scenes[1].add(createArrow(new THREE.Vector3(-142, -91, -470), 6));
+    scenes[1].add(createArrow(new THREE.Vector3(-462, -76, 171), 5));
 
-panorama7.link(panorama2, new THREE.Vector3(4000, -1000, -6000));
-panorama7.link(panorama5, new THREE.Vector3(3900, -1000, 6000));
+    scenes[2].add(createArrow(new THREE.Vector3(-443, -150, 173), 0));
+    scenes[2].add(createArrow(new THREE.Vector3(144, -122, 462), 9));
+    scenes[2].add(createArrow(new THREE.Vector3(-111, -85, -479), 8));
 
-panorama6.link(panorama2, new THREE.Vector3(-7200, -2000, 850));
+    scenes[3].add(createArrow(new THREE.Vector3(-465, -141, 113), 0));
+    scenes[3].add(createArrow(new THREE.Vector3(75, -124, 477), 8));
+    scenes[3].add(createArrow(new THREE.Vector3(-137, -109, -467), 7));
 
-panorama8.link(panorama4, new THREE.Vector3(3450, -1000, 5000));
-panorama8.link(panorama5, new THREE.Vector3(5500, -1000, -4400));
+    scenes[4].add(createArrow(new THREE.Vector3(-480, -130, -24), 0));
+    scenes[4].add(createArrow(new THREE.Vector3(-20, -105, -487), 6));
+    scenes[4].add(createArrow(new THREE.Vector3(-68, -100, 484), 7));
 
-panorama9.link(panorama3, new THREE.Vector3(3500, -1000, 5000));
-panorama9.link(panorama4, new THREE.Vector3(5300, -1000, -4000));
-panorama9.link(panorama11, new THREE.Vector3(-5500, -1400, -3000));
+    scenes[5].add(createArrow(new THREE.Vector3(469, -161, 56), 1));
 
-panorama10.link(panorama2, new THREE.Vector3(1100, -1000, 6000));
-panorama10.link(panorama3, new THREE.Vector3(5800, -1000, -3500));
+    scenes[6].add(createArrow(new THREE.Vector3(-305, -114, -377), 1));
+    scenes[6].add(createArrow(new THREE.Vector3(-244, -126, 416), 4));
 
-panorama11.link(panorama3, new THREE.Vector3(-1300, -1500, 6000));
+    scenes[7].add(createArrow(new THREE.Vector3(-255, -82, 421), 3));
+    scenes[7].add(createArrow(new THREE.Vector3(-388, -87, -301), 4));
 
-// Agregar panoramas al visor
-viewer.add(panorama1, panorama2, panorama3, panorama4, panorama5, panorama6);
-viewer.add(panorama7, panorama8, panorama9, panorama10, panorama11);
-// Iniciar con el primer panorama
-viewer.setPanorama(panorama1);
+    scenes[8].add(createArrow(new THREE.Vector3(-273, -97, 405), 2));
+    scenes[8].add(createArrow(new THREE.Vector3(-385, -78, -307), 3));
+    scenes[8].add(createArrow(new THREE.Vector3(431, -112, -223), 10));
 
-// Crear puntos de interés en los panoramas
-const infospot1 = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info);
-infospot1.position.set(5000, 2000, 0);
-infospot1.addHoverText('Descripción del punto de interés');
-panorama1.add(infospot1);
+    scenes[9].add(createArrow(new THREE.Vector3(-91, -125, 474), 1));
+    scenes[9].add(createArrow(new THREE.Vector3(-421, -96, -250), 2));
 
-const infospot2 = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info);
-infospot2.position.set(5000, 2000, 0);
-infospot2.addHoverText('Descripción del punto de interés');
-panorama2.add(infospot2);
+    scenes[10].add(createArrow(new THREE.Vector3(88, -145, 469), 2));
 
-const infospot3 = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info);
-infospot3.position.set(5000, 2000, 0);
-infospot3.addHoverText('Descripción del punto de interés');
-panorama3.add(infospot3);
+    // Raycaster para detectar clics en las flechas
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
-// Añadir botón de VR
-document.body.appendChild(VRButton.createButton(viewer.renderer));
+    function onMouseClick(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
 
-// Configurar el visor para VR
-viewer.renderer.xr.enabled = true;
+        // Filtrar solo los sprites de flecha
+        const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
 
-// Configurar los controladores de VR
-const controller1 = viewer.renderer.xr.getController(0);
-const controller2 = viewer.renderer.xr.getController(1);
-
-viewer.scene.add(controller1);
-viewer.scene.add(controller2);
-
-const controllerModelFactory = new XRControllerModelFactory();
-
-const controllerGrip1 = viewer.renderer.xr.getControllerGrip(0);
-controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-viewer.scene.add(controllerGrip1);
-
-const controllerGrip2 = viewer.renderer.xr.getControllerGrip(1);
-controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
-viewer.scene.add(controllerGrip2);
-
-const raycaster = new THREE.Raycaster();
-const tempMatrix = new THREE.Matrix4();
-const intersected = [];
-const intersections = [];
-
-// Establecer la cámara del Raycaster
-raycaster.camera = viewer.camera;
-
-// Función para manejar las intersecciones y acciones de clic
-function handleController(controller) {
-    if (controller.matrixWorld) {
-        tempMatrix.identity().extractRotation(controller.matrixWorld);
-        raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-        raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
-        
-        intersections.length = 0;
-        raycaster.intersectObjects(viewer.scene.children, true, intersections);
-
-        if (intersections.length > 0) {
-            const intersection = intersections[0];
-            const object = intersection.object;
-
-            if (controller.userData.isSelecting) {
-                // Aquí puedes manejar la lógica de clic en el objeto
-                console.log('Objeto seleccionado:', object);
-                if (object.userData && object.userData.onClick) {
-                    object.userData.onClick();
-                }
+        const intersects = raycaster.intersectObjects(clickableObjects, true);
+        if (intersects.length > 0) {
+            const intersectedObject = intersects[0].object;
+            console.log('Intersección detectada:', intersectedObject);
+            if (intersectedObject.userData.targetSceneIndex !== undefined) {
+                changeScene(intersectedObject.userData.targetSceneIndex);
             }
         }
     }
-}
 
-// Configurar eventos para los controladores
-controller1.addEventListener('selectstart', () => controller1.userData.isSelecting = true);
-controller1.addEventListener('selectend', () => controller1.userData.isSelecting = false);
+    window.addEventListener('click', onMouseClick, false);
 
-controller2.addEventListener('selectstart', () => controller2.userData.isSelecting = true);
-controller2.addEventListener('selectend', () => controller2.userData.isSelecting = false);
+    // Controladores de VR
+    const controllerModelFactory = new XRControllerModelFactory();
 
-// Actualizar el tween en el loop de renderizado
-function animate() {
-    viewer.renderer.setAnimationLoop(() => {
+    const controller1 = renderer.xr.getController(0);
+    controller1.addEventListener('selectstart', onSelectStart);
+    controller1.addEventListener('selectend', onSelectEnd);
+
+    const controller2 = renderer.xr.getController(1);
+    controller2.addEventListener('selectstart', onSelectStart);
+    controller2.addEventListener('selectend', onSelectEnd);
+
+    const controllerGrip1 = renderer.xr.getControllerGrip(0);
+    controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+
+    const controllerGrip2 = renderer.xr.getControllerGrip(1);
+    controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
+
+    // Crear rayos para los controladores
+    const geometry1 = new THREE.BufferGeometry();
+    geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
+    
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+
+    const line1 = new THREE.Line(geometry1, lineMaterial);
+    controller1.add(line1);
+
+    const line2 = new THREE.Line(geometry1, lineMaterial);
+    controller2.add(line2);
+
+    function updateVRControllers() {
+        // Eliminar controladores de la escena anterior
+        currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
+
+        // Agregar controladores a la escena actual
+        currentScene.add(controller1);
+        currentScene.add(controller2);
+        currentScene.add(controllerGrip1);
+        currentScene.add(controllerGrip2);
+    }
+
+    function onSelectStart(event) {
+        const controller = event.target;
+        const intersections = getIntersections(controller);
+        if (intersections.length > 0) {
+            const intersection = intersections[0];
+            const object = intersection.object;
+            if (object.userData.targetSceneIndex !== undefined) {
+                changeScene(object.userData.targetSceneIndex);
+            }
+        }
+    }
+
+    function onSelectEnd(event) {
+        // Aquí puedes agregar lógica adicional para cuando termine la selección
+    }
+
+    function getIntersections(controller) {
+        const tempMatrix = new THREE.Matrix4();
+        tempMatrix.identity().extractRotation(controller.matrixWorld);
+        raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+        raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+        return raycaster.intersectObjects(currentScene.children, true);
+    }
+
+    // Manejo del zoom con rueda del ratón
+    const MIN_ZOOM = 1;
+    const MAX_ZOOM = 3;
+
+    function onDocumentMouseWheel(event) {
+        event.preventDefault();
+        if (event.deltaY < 0) {
+            camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
+        } else {
+            camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
+        }
+        camera.updateProjectionMatrix();
+    }
+
+    renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
+
+    // Manejo del zoom con gestos de pinza en dispositivos táctiles
+    let isPinching = false;
+    let initialPinchDistance = 0;
+    let initialZoom = 1;
+
+    function onTouchStart(event) {
+        if (event.touches.length === 2) {
+            isPinching = true;
+            initialPinchDistance = getPinchDistance(event);
+            initialZoom = camera.zoom;
+        }
+    }
+
+    function onTouchMove(event) {
+        if (isPinching && event.touches.length === 2) {
+            const newPinchDistance = getPinchDistance(event);
+            const zoomFactor = newPinchDistance / initialPinchDistance;
+            camera.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, initialZoom * zoomFactor));
+            camera.updateProjectionMatrix();
+        }
+    }
+
+    function onTouchEnd(event) {
+        if (event.touches.length < 2) {
+            isPinching = false;
+        }
+    }
+
+    function getPinchDistance(event) {
+        const dx = event.touches[0].clientX - event.touches[1].clientX;
+        const dy = event.touches[0].clientY - event.touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+    renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+    renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+
+    // Animación
+    function animate() {
+        controls.update();
         TWEEN.update();
-        handleController(controller1);
-        handleController(controller2);
-        viewer.render();
+        renderer.render(currentScene, camera);
+    }
+    renderer.setAnimationLoop(animate);
+
+    // Ajustar la ventana
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
     });
 }
-
-// Iniciar la animación
-animate();
