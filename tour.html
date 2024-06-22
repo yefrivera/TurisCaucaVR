@@ -303,10 +303,65 @@
 
             scenes[5].add(createArrow(new THREE.Vector3(469, -161, 56), 1));
 
+
+            //------------Video en 2d en la escena 1--------------------
+
+            const video = document.createElement('video');
+            video.src = 'videos/caldas1.mp4';
+            video.crossOrigin = 'anonymous';
+            video.loop = false;
+            video.muted = false;
+            video.playsInline = true;
+            video.style.display = 'none';
+
+            const videoTexture = new THREE.VideoTexture(video);
+            const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+            const videoGeometry = new THREE.PlaneGeometry(160, 120);
+
+            const videoMesh = new THREE.Mesh(videoGeometry, videoMaterial);
+            videoMesh.visible = false; 
+            scenes[0].add(videoMesh);
+
+            //-----------------Creación del sprite para controlar el video-----------
+
+            const videoControlTexture = textureLoader.load('images/infobb.png'); 
+            const videoControlSpriteMaterial = new THREE.SpriteMaterial({ map: videoControlTexture });
+            const videoControlSprite = new THREE.Sprite(videoControlSpriteMaterial);
+            videoControlSprite.position.set(-250, -10, 10); 
+            videoControlSprite.scale.set(15, 15, 1);
+            scenes[0].add(videoControlSprite);
+
+
+            function onVideoControlClick() {
+                if (video.paused) {
+                    video.play();
+                    videoMesh.visible = true;
+                    videoMesh.position.copy(videoControlSprite.position);
+                    videoMesh.position.y += 90; 
+                    videoMesh.lookAt(camera.position);
+                } else {
+                    video.pause();
+                    video.currentTime = 0; 
+                    videoMesh.visible = false;
+                }
+            }
+
+            videoControlSprite.onClick = onVideoControlClick;
+
+            video.addEventListener('ended', () => {
+                videoMesh.visible = false;
+            });
+            videoControlSprite.onPointerOver = function() {
+                videoControlSprite.scale.set(20, 20, 1); 
+            };
+            videoControlSprite.onPointerOut = function() {
+                videoControlSprite.scale.set(15, 15, 1); 
+            };
+
+            //------------raycaster para detectar objetos y poder dar click sobre ellos----------
+
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
-
-            //------------Raycaster para clicks en objetos dentro de la escena--------------------
 
             function onMouseClick(event) {
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -321,6 +376,8 @@
                     console.log('Intersección detectada:', intersectedObject);
                     if (intersectedObject.userData.targetSceneIndex !== undefined) {
                         changeScene(intersectedObject.userData.targetSceneIndex);
+                    } else if (intersectedObject === videoControlSprite) {
+                        onVideoControlClick();
                     }
                 }
             }
@@ -351,8 +408,15 @@
             window.addEventListener('mousemove', onMouseMove, false);
 
             function animate() {
+                requestAnimationFrame(animate);
                 controls.update();
                 renderer.render(currentScene, camera);
+
+                if (videoMesh.visible) {
+                    const cameraDirection = new THREE.Vector3();
+                    camera.getWorldDirection(cameraDirection);
+                    videoMesh.lookAt(camera.position);
+                }
             }
             renderer.setAnimationLoop(animate);
 
@@ -361,7 +425,7 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
-
+            animate();
             updateVRControllers(); 
         }
     </script>

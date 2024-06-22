@@ -1,125 +1,129 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.0/build/three.module.js';
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/jsm/controls/OrbitControls.js';
-import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/jsm/webxr/VRButton.js';
-import { XRControllerModelFactory } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/jsm/webxr/XRControllerModelFactory.js';
 import TWEEN from 'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.esm.js';
 
-
+// Escena, cámara y renderizador
 const container = document.getElementById('container');
-const scenes = [];
-for (let i = 0; i < 11; i++) {
-    scenes.push(new THREE.Scene());
-}
-
+const scene1 = new THREE.Scene();
+const scene2 = new THREE.Scene();
+const scene3 = new THREE.Scene();
+const scene4 = new THREE.Scene();
+const scene5 = new THREE.Scene();
+const scene6 = new THREE.Scene();
+const scene7 = new THREE.Scene();
+const scene8 = new THREE.Scene();
+const scene9 = new THREE.Scene();
+const scene10 = new THREE.Scene();
+const scene11 = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.xr.enabled = true;
 container.appendChild(renderer.domElement);
-document.body.appendChild(VRButton.createButton(renderer));
 
-
+// Controles
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.12;
-
-controls.enableZoom = true;  
-controls.zoomSpeed = 0.3;    
+controls.enableZoom = false;
 controls.enablePan = false;
 camera.position.set(0, 0, 0.1);
 
-
+// Cargar texturas equirectangulares
 const textureLoader = new THREE.TextureLoader();
-const texturePaths = [
-    'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
-    'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg'
-];
-const textures = new Array(texturePaths.length);
+const texture1 = textureLoader.load('images/centrocaldas.jpg', onLoad);
+const texture2 = textureLoader.load('images/catedral.jpg', onLoad);
+const texture3 = textureLoader.load('images/bancolombia.jpg', onLoad);
+const texture4 = textureLoader.load('images/bancobogota.jpg', onLoad);
+const texture5 = textureLoader.load('images/juanvaldez.jpg', onLoad);
+const texture6 = textureLoader.load('images/catt.jpg', onLoad);
 
 let texturesLoaded = 0;
 
-texturePaths.forEach((path, index) => {
-    textureLoader.load(path, (texture) => {
-        textures[index] = texture;
-        texturesLoaded++;
-        if (texturesLoaded === texturePaths.length) {
-            init();
-        }
-    });
-});
+function onLoad() {
+    texturesLoaded++;
+    if (texturesLoaded === 11) {
+        init();
+    }
+}
 
 function init() {
-   
+    // Crear esferas para cada escena
     const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1); 
+    geometry.scale(-1, 1, 1); // Invertir la esfera para mirar hacia dentro
 
-    textures.forEach((texture, index) => {
-        const material = new THREE.MeshBasicMaterial({ map: texture });
-        const sphere = new THREE.Mesh(geometry, material);
-        scenes[index].add(sphere);
-    });
+    const createSphere = (texture) => {
+        return new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ map: texture }));
+    }
 
-    let currentSceneIndex = 0;
-    let currentScene = scenes[currentSceneIndex];
-    renderer.render(currentScene, camera);
+    const sphere1 = createSphere(texture1);
+    const sphere2 = createSphere(texture2);
+    const sphere3 = createSphere(texture3);
+    const sphere4 = createSphere(texture4);
+    const sphere5 = createSphere(texture5);
+    const sphere6 = createSphere(texture6);
 
-    
-    function changeScene(targetSceneIndex) {
-        console.log(`Cambiando a la escena: ${targetSceneIndex}`);
+
+    scene1.add(sphere1);
+    scene2.add(sphere2);
+    scene3.add(sphere3);
+    scene4.add(sphere4);
+    scene5.add(sphere5);
+    scene6.add(sphere6);
+
+
+    // Función para cambiar de escena con transición de zoom-in
+    let currentScene = scene1;
+    function changeScene(scene) {
         new TWEEN.Tween(camera.position)
-            .to({ z: 0.01 }, 1000)
+            .to({ x: 0, y: 0, z: 0.01 }, 500)
             .easing(TWEEN.Easing.Quadratic.Out)
             .onComplete(() => {
-                currentSceneIndex = targetSceneIndex;
-                currentScene = scenes[currentSceneIndex];
-                updateVRControllers();
+                currentScene = scene;
                 new TWEEN.Tween(camera.position)
-                    .to({ z: 0.1 }, 1000)
+                    .to({ x: 0, y: 0, z: 0.1 }, 500)
                     .easing(TWEEN.Easing.Quadratic.In)
                     .start();
             })
             .start();
     }
 
-    
+    // Crear las flechas de navegación
     const arrowTexture = textureLoader.load('images/next.png');
 
-    function createArrow(position, targetSceneIndex) {
+    function createArrow(position, targetScene) {
         const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
         const sprite = new THREE.Sprite(spriteMaterial);
         sprite.position.copy(position);
-        sprite.scale.set(20, 20, 1);
-        sprite.userData = { targetSceneIndex };
-        sprite.material.depthTest = false; 
-        sprite.material.depthWrite = false;
+        sprite.scale.set(50, 50, 1);
+        sprite.userData = { targetScene };
         return sprite;
     }
 
-    scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
-    scenes[0].add(createArrow(new THREE.Vector3(484, -120, -16), 2));
-    scenes[0].add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
-    scenes[0].add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
+    // Enlazar escenas con flechas
+    scene1.add(createArrow(new THREE.Vector3(-800, -1500, 6000), scene2));
+    scene1.add(createArrow(new THREE.Vector3(-6000, -1500, -190), scene3));
+    scene1.add(createArrow(new THREE.Vector3(0, -1800, -6000), scene4));
+    scene1.add(createArrow(new THREE.Vector3(6000, -800, 1600), scene5));
 
-    scenes[1].add(createArrow(new THREE.Vector3(453, -135, -157), 0));
-    scenes[1].add(createArrow(new THREE.Vector3(185, -94, 453), 2));
-    scenes[1].add(createArrow(new THREE.Vector3(-142, -91, -470), 4));
-    scenes[1].add(createArrow(new THREE.Vector3(-462, -76, 171), 5));
+    scene2.add(createArrow(new THREE.Vector3(-6200, -1800, -2000), scene1));
+    scene2.add(createArrow(new THREE.Vector3(-2400, -1000, 6000), scene3));
+    scene2.add(createArrow(new THREE.Vector3(1500, -1000, -5000), scene5));
+    scene2.add(createArrow(new THREE.Vector3(7200, -1000, 2550), scene6));
 
-    scenes[2].add(createArrow(new THREE.Vector3(-443, -150, 173), 0));
-    scenes[2].add(createArrow(new THREE.Vector3(144, -122, 462), 1));
-    scenes[2].add(createArrow(new THREE.Vector3(-111, -85, -479), 3));
+    scene3.add(createArrow(new THREE.Vector3(6000, -1800, 2300), scene1));
+    scene3.add(createArrow(new THREE.Vector3(-1500, -750, 6000), scene2));
+    scene3.add(createArrow(new THREE.Vector3(1500, -1000, -7000), scene4));
 
-    scenes[3].add(createArrow(new THREE.Vector3(-465, -141, 113), 0));
-    scenes[3].add(createArrow(new THREE.Vector3(75, -124, 477), 2));
-    scenes[3].add(createArrow(new THREE.Vector3(-137, -109, -467), 4));
+    scene4.add(createArrow(new THREE.Vector3(6000, -1000, 1400), scene1));
+    scene4.add(createArrow(new THREE.Vector3(-1000, -1000, 6000), scene3));
+    scene4.add(createArrow(new THREE.Vector3(2000, -1000, -7000), scene5));
 
-    scenes[4].add(createArrow(new THREE.Vector3(-480, -130, -24), 0));
-    scenes[4].add(createArrow(new THREE.Vector3(-20, -105, -487), 1));
-    scenes[4].add(createArrow(new THREE.Vector3(-68, -100, 484), 3));
+    scene5.add(createArrow(new THREE.Vector3(5000, -1000, -400), scene1));
+    scene5.add(createArrow(new THREE.Vector3(0, -1000, -6500), scene2));
+    scene5.add(createArrow(new THREE.Vector3(1200, -1000, 6000), scene4));
 
-    scenes[5].add(createArrow(new THREE.Vector3(469, -161, 56), 1));
+    scene6.add(createArrow(new THREE.Vector3(-7200, -2000, 850), scene2));
 
 
+    // Raycaster para detectar clics en las flechas
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -128,148 +132,68 @@ function init() {
         mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
 
-       
-        const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
-
-        const intersects = raycaster.intersectObjects(clickableObjects, true);
+        const intersects = raycaster.intersectObjects(currentScene.children, true);
         if (intersects.length > 0) {
             const intersectedObject = intersects[0].object;
-            console.log('Intersección detectada:', intersectedObject);
-            if (intersectedObject.userData.targetSceneIndex !== undefined) {
-                changeScene(intersectedObject.userData.targetSceneIndex);
+            if (intersectedObject.userData.targetScene) {
+                changeScene(intersectedObject.userData.targetScene);
+            } else {
+                // Obtener las coordenadas del punto de clic
+                console.log('Clicked coordinates:', intersects[0].point);
             }
         }
     }
 
     window.addEventListener('click', onMouseClick, false);
 
-    
-    const controllerModelFactory = new XRControllerModelFactory();
+    // Expansión del botón cuando el mouse pasa por encima
+    function onMouseOver(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
 
-    const controller1 = renderer.xr.getController(0);
-    controller1.addEventListener('selectstart', onSelectStart);
-    controller1.addEventListener('selectend', onSelectEnd);
-
-    const controller2 = renderer.xr.getController(1);
-    controller2.addEventListener('selectstart', onSelectStart);
-    controller2.addEventListener('selectend', onSelectEnd);
-
-    const controllerGrip1 = renderer.xr.getControllerGrip(0);
-    controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-
-    const controllerGrip2 = renderer.xr.getControllerGrip(1);
-    controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
-
-    
-    const geometry1 = new THREE.BufferGeometry();
-    geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
-    
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-    const line1 = new THREE.Line(geometry1, lineMaterial);
-    controller1.add(line1);
-
-    const line2 = new THREE.Line(geometry1, lineMaterial);
-    controller2.add(line2);
-
-    function updateVRControllers() {
-        
-        currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
-
-       
-        currentScene.add(controller1);
-        currentScene.add(controller2);
-        currentScene.add(controllerGrip1);
-        currentScene.add(controllerGrip2);
-    }
-
-    function onSelectStart(event) {
-        const controller = event.target;
-        const intersections = getIntersections(controller);
-        if (intersections.length > 0) {
-            const intersection = intersections[0];
-            const object = intersection.object;
-            if (object.userData.targetSceneIndex !== undefined) {
-                changeScene(object.userData.targetSceneIndex);
+        const intersects = raycaster.intersectObjects(currentScene.children, true);
+        if (intersects.length > 0) {
+            const intersectedObject = intersects[0].object;
+            if (intersectedObject.userData.targetScene) {
+                new TWEEN.Tween(intersectedObject.scale)
+                    .to({ x: 75, y: 75, z: 1 }, 200)
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    .start();
             }
         }
     }
 
-    function onSelectEnd(event) {
-        
-    }
+    function onMouseOut(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
 
-    function getIntersections(controller) {
-        const tempMatrix = new THREE.Matrix4();
-        tempMatrix.identity().extractRotation(controller.matrixWorld);
-        raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-        raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
-        return raycaster.intersectObjects(currentScene.children, true);
-    }
-
-    
-    const MIN_ZOOM = 0.5;
-    const MAX_ZOOM = 2;
-
-    function onDocumentMouseWheel(event) {
-        event.preventDefault();
-        if (event.deltaY < 0) {
-            camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
-        } else {
-            camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
-        }
-        camera.updateProjectionMatrix();
-    }
-
-    renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
-
-    
-    let isPinching = false;
-    let initialPinchDistance = 0;
-    let initialZoom = 1;
-
-    function onTouchStart(event) {
-        if (event.touches.length === 2) {
-            isPinching = true;
-            initialPinchDistance = getPinchDistance(event);
-            initialZoom = camera.zoom;
+        const intersects = raycaster.intersectObjects(currentScene.children, true);
+        if (intersects.length > 0) {
+            const intersectedObject = intersects[0].object;
+            if (intersectedObject.userData.targetScene) {
+                new TWEEN.Tween(intersectedObject.scale)
+                    .to({ x: 50, y: 50, z: 1 }, 200)
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    .start();
+            }
         }
     }
 
-    function onTouchMove(event) {
-        if (isPinching && event.touches.length === 2) {
-            const newPinchDistance = getPinchDistance(event);
-            const zoomFactor = newPinchDistance / initialPinchDistance;
-            camera.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, initialZoom * zoomFactor));
-            camera.updateProjectionMatrix();
-        }
-    }
+    window.addEventListener('mousemove', onMouseOver, false);
+    window.addEventListener('mouseout', onMouseOut, false);
 
-    function onTouchEnd(event) {
-        if (event.touches.length < 2) {
-            isPinching = false;
-        }
-    }
-
-    function getPinchDistance(event) {
-        const dx = event.touches[0].clientX - event.touches[1].clientX;
-        const dy = event.touches[0].clientY - event.touches[1].clientY;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-    renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-    renderer.domElement.addEventListener('touchend', onTouchEnd, false);
-
-    
+    // Animación
     function animate() {
+        requestAnimationFrame(animate);
         controls.update();
         TWEEN.update();
         renderer.render(currentScene, camera);
     }
-    renderer.setAnimationLoop(animate);
+    animate();
 
-    
+    // Ajustar la ventana
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
