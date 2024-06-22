@@ -90,6 +90,8 @@
         controls.rotateSpeed = -0.3;
         camera.position.set(0, 0, 0.1);
 
+        //-----------Texturas----------------------------------------
+
         const textureLoader = new THREE.TextureLoader();
         const texturePaths = [
             'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
@@ -130,6 +132,8 @@
                 renderer.render(currentScene, camera);
             }
 
+            //-----------------Controles de VR----------------------
+
             const controllerModelFactory = new XRControllerModelFactory();
 
             const controller1 = renderer.xr.getController(0);
@@ -148,6 +152,8 @@
 
             const geometry1 = new THREE.BufferGeometry();
             geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
+
+            // ----------------Rayos de los controles--------------------
             
             const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 
@@ -157,6 +163,8 @@
             const line2 = new THREE.Line(geometry1, lineMaterial);
             controller2.add(line2);
 
+            //----------------Actualizar controles cuando se cambia la escena--------------
+
             function updateVRControllers() {
                 currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
                 currentScene.add(controller1);
@@ -164,6 +172,8 @@
                 currentScene.add(controllerGrip1);
                 currentScene.add(controllerGrip2);
             }
+
+            // --------------Cambio de escena con controles-------------
 
             function onSelectStart(event) {
                 const controller = event.target;
@@ -187,6 +197,8 @@
                 return raycaster.intersectObjects(currentScene.children, true);
             }
 
+            //-------------zoom--------------------
+
             const MIN_ZOOM = 1;
             const MAX_ZOOM = 3;
 
@@ -201,6 +213,8 @@
             }
 
             renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
+
+            //--------------zoom en dispositivos táctiles------------------
 
             let isPinching = false;
             let initialPinchDistance = 0;
@@ -241,6 +255,8 @@
 
             const arrowTexture = textureLoader.load('images/next.png');
 
+            //----------Sprites para cambio de escena----------------
+
             function createArrow(position, targetSceneIndex) {
                 const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
                 const sprite = new THREE.Sprite(spriteMaterial);
@@ -260,6 +276,8 @@
 
                 return sprite;
             }
+
+            //-------------Enlazar escenas con los sprites para cambio de escena--------------------------
 
             scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
             scenes[0].add(createArrow(new THREE.Vector3(484, -120, -16), 2));
@@ -287,6 +305,8 @@
 
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
+
+            //------------Raycaster para clicks en objetos dentro de la escena--------------------
 
             function onMouseClick(event) {
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;

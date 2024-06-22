@@ -4,7 +4,7 @@ import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/js
 import { XRControllerModelFactory } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/jsm/webxr/XRControllerModelFactory.js';
 import TWEEN from 'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.esm.js';
 
-// Escena, cámara y renderizador
+
 const container = document.getElementById('container');
 const scenes = [];
 for (let i = 0; i < 11; i++) {
@@ -18,17 +18,17 @@ renderer.xr.enabled = true;
 container.appendChild(renderer.domElement);
 document.body.appendChild(VRButton.createButton(renderer));
 
-// Controles
+
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.12;
 
-controls.enableZoom = true;  // Habilitar el zoom
-controls.zoomSpeed = 0.3;    // Ajustar la velocidad del zoom
+controls.enableZoom = true;  
+controls.zoomSpeed = 0.3;    
 controls.enablePan = false;
 camera.position.set(0, 0, 0.1);
 
-// Cargar texturas equirectangulares
+
 const textureLoader = new THREE.TextureLoader();
 const texturePaths = [
     'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
@@ -49,9 +49,9 @@ texturePaths.forEach((path, index) => {
 });
 
 function init() {
-    // Crear esferas para cada escena
+   
     const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1); // Invertir la esfera para mirar hacia dentro
+    geometry.scale(-1, 1, 1); 
 
     textures.forEach((texture, index) => {
         const material = new THREE.MeshBasicMaterial({ map: texture });
@@ -59,12 +59,11 @@ function init() {
         scenes[index].add(sphere);
     });
 
-    // Establecer la escena inicial
     let currentSceneIndex = 0;
     let currentScene = scenes[currentSceneIndex];
     renderer.render(currentScene, camera);
 
-    // Función para cambiar de escena con transición de smooth camera zoom in
+    
     function changeScene(targetSceneIndex) {
         console.log(`Cambiando a la escena: ${targetSceneIndex}`);
         new TWEEN.Tween(camera.position)
@@ -82,7 +81,7 @@ function init() {
             .start();
     }
 
-    // Crear las flechas de navegación
+    
     const arrowTexture = textureLoader.load('images/next.png');
 
     function createArrow(position, targetSceneIndex) {
@@ -91,12 +90,11 @@ function init() {
         sprite.position.copy(position);
         sprite.scale.set(20, 20, 1);
         sprite.userData = { targetSceneIndex };
-        sprite.material.depthTest = false; // Para evitar la deformación
+        sprite.material.depthTest = false; 
         sprite.material.depthWrite = false;
         return sprite;
     }
 
-    // Enlazar escenas con flechas
     scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
     scenes[0].add(createArrow(new THREE.Vector3(484, -120, -16), 2));
     scenes[0].add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
@@ -121,7 +119,7 @@ function init() {
 
     scenes[5].add(createArrow(new THREE.Vector3(469, -161, 56), 1));
 
-    // Raycaster para detectar clics en las flechas
+
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -130,7 +128,7 @@ function init() {
         mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
 
-        // Filtrar solo los sprites de flecha
+       
         const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
 
         const intersects = raycaster.intersectObjects(clickableObjects, true);
@@ -145,7 +143,7 @@ function init() {
 
     window.addEventListener('click', onMouseClick, false);
 
-    // Controladores de VR
+    
     const controllerModelFactory = new XRControllerModelFactory();
 
     const controller1 = renderer.xr.getController(0);
@@ -162,7 +160,7 @@ function init() {
     const controllerGrip2 = renderer.xr.getControllerGrip(1);
     controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
 
-    // Crear rayos para los controladores
+    
     const geometry1 = new THREE.BufferGeometry();
     geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
     
@@ -175,10 +173,10 @@ function init() {
     controller2.add(line2);
 
     function updateVRControllers() {
-        // Eliminar controladores de la escena anterior
+        
         currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
 
-        // Agregar controladores a la escena actual
+       
         currentScene.add(controller1);
         currentScene.add(controller2);
         currentScene.add(controllerGrip1);
@@ -198,7 +196,7 @@ function init() {
     }
 
     function onSelectEnd(event) {
-        // Aquí puedes agregar lógica adicional para cuando termine la selección
+        
     }
 
     function getIntersections(controller) {
@@ -209,7 +207,7 @@ function init() {
         return raycaster.intersectObjects(currentScene.children, true);
     }
 
-    // Manejo del zoom con rueda del ratón
+    
     const MIN_ZOOM = 0.5;
     const MAX_ZOOM = 2;
 
@@ -225,7 +223,7 @@ function init() {
 
     renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
 
-    // Manejo del zoom con gestos de pinza en dispositivos táctiles
+    
     let isPinching = false;
     let initialPinchDistance = 0;
     let initialZoom = 1;
@@ -263,7 +261,7 @@ function init() {
     renderer.domElement.addEventListener('touchmove', onTouchMove, false);
     renderer.domElement.addEventListener('touchend', onTouchEnd, false);
 
-    // Animación
+    
     function animate() {
         controls.update();
         TWEEN.update();
@@ -271,7 +269,7 @@ function init() {
     }
     renderer.setAnimationLoop(animate);
 
-    // Ajustar la ventana
+    
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();

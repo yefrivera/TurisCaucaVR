@@ -16,15 +16,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
     const muteBtn = document.getElementById('mute-btn');
 
-    // Agregar un evento de clic al botón "muted" para controlar el estado de silencio del video y cambiar la imagen
     muteBtn.addEventListener('click', function() {
         if (video.muted) {
             video.muted = false;
-            // Cambiar la imagen a "unmuted"
             muteBtn.querySelector('img').src = muteBtn.querySelector('img').getAttribute('data-original-src');
         } else {
             video.muted = true;
-            // Cambiar la imagen a "muted"
             muteBtn.querySelector('img').src = muteBtn.querySelector('img').getAttribute('data-alt-src');
         }
     });
@@ -32,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //---------------------------------------------
 
     expandBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent default behavior of the link
+        event.preventDefault();
         var element = document.documentElement;
 
         if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
