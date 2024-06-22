@@ -7,8 +7,6 @@
     <title>TurismoCauca3.0</title>
 </head>
 <body>
-
-
     <div id="container"></div>
     <div id="content"></div>
 
@@ -40,14 +38,22 @@
         </a>
     </div>
 
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.159.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.159.0/examples/jsm/"
+            }
+        }
+    </script>
+
     <script src="menu.js"></script> 
 
     <script type="module">
-        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.0/build/three.module.js';
-        import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/jsm/controls/OrbitControls.js';
-        import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/jsm/webxr/VRButton.js';
-        import { XRControllerModelFactory } from 'https://cdn.jsdelivr.net/npm/three@0.121.0/examples/jsm/webxr/XRControllerModelFactory.js';
-        import TWEEN from 'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.esm.js';
+        import * as THREE from 'three';
+        import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+        import { VRButton } from './node_modules/three/examples/jsm/webxr/VRButton.js';
+        import { XRControllerModelFactory } from './node_modules/three/examples/jsm/webxr/XRControllerModelFactory.js';
 
         const container = document.getElementById('container');
         const scenes = [];
@@ -78,7 +84,6 @@
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.12;
-
         controls.enableZoom = true;  
         controls.zoomSpeed = 0.3;    
         controls.enablePan = false;
@@ -87,13 +92,10 @@
 
         const textureLoader = new THREE.TextureLoader();
         const texturePaths = [
-            'images/centrocaldas.jpg'/*, 'images/catedral.jpg', 'images/bancolombia.jpg',
-            'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg'/*,
-            'images/reloj.jpg', 'images/esq-b.jpg', 'images/esq-bb.jpg',
-            'images/esq-c.jpg', 'images/humilladero1.jpg'*/
+            'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
+            'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg'
         ];
         const textures = new Array(texturePaths.length);
-
         let texturesLoaded = 0;
 
         texturePaths.forEach((path, index) => {
@@ -122,20 +124,10 @@
             renderer.render(currentScene, camera);
 
             function changeScene(targetSceneIndex) {
-                console.log(`Cambiando a la escena: ${targetSceneIndex}`);
-                new TWEEN.Tween(camera.position)
-                    .to({ z: 0.01 }, 3000)
-                    .easing(TWEEN.Easing.Quadratic.Out)
-                    .onComplete(() => {
-                        currentSceneIndex = targetSceneIndex;
-                        currentScene = scenes[currentSceneIndex];
-                        updateVRControllers();
-                        new TWEEN.Tween(camera.position)
-                            .to({ z: 0.1 }, 3000)
-                            .easing(TWEEN.Easing.Quadratic.In)
-                            .start();
-                    })
-                    .start();
+                currentSceneIndex = targetSceneIndex;
+                currentScene = scenes[currentSceneIndex];
+                updateVRControllers();
+                renderer.render(currentScene, camera);
             }
 
             const controllerModelFactory = new XRControllerModelFactory();
@@ -167,7 +159,6 @@
 
             function updateVRControllers() {
                 currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
-
                 currentScene.add(controller1);
                 currentScene.add(controller2);
                 currentScene.add(controllerGrip1);
@@ -254,14 +245,23 @@
                 const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
                 const sprite = new THREE.Sprite(spriteMaterial);
                 sprite.position.copy(position);
-                sprite.scale.set(30, 30, 5);
+                sprite.scale.set(30, 30, 1);
                 sprite.userData = { targetSceneIndex };
                 sprite.material.depthTest = false; 
                 sprite.material.depthWrite = false;
+
+                sprite.onPointerOver = function() {
+                    sprite.scale.set(35, 35, 1); 
+                };
+
+                sprite.onPointerOut = function() {
+                    sprite.scale.set(30, 30, 1); 
+                };
+
                 return sprite;
             }
 
-            /*scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
+            scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
             scenes[0].add(createArrow(new THREE.Vector3(484, -120, -16), 2));
             scenes[0].add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
             scenes[0].add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
@@ -285,21 +285,6 @@
 
             scenes[5].add(createArrow(new THREE.Vector3(469, -161, 56), 1));
 
-            /*scenes[6].add(createArrow(new THREE.Vector3(-305, -114, -377), 1));
-            scenes[6].add(createArrow(new THREE.Vector3(-244, -126, 416), 4));
-
-            scenes[7].add(createArrow(new THREE.Vector3(-255, -82, 421), 3));
-            scenes[7].add(createArrow(new THREE.Vector3(-388, -87, -301), 4));
-
-            scenes[8].add(createArrow(new THREE.Vector3(-273, -97, 405), 2));
-            scenes[8].add(createArrow(new THREE.Vector3(-385, -78, -307), 3));
-            scenes[8].add(createArrow(new THREE.Vector3(431, -112, -223), 10));
-
-            scenes[9].add(createArrow(new THREE.Vector3(-91, -125, 474), 1));
-            scenes[9].add(createArrow(new THREE.Vector3(-421, -96, -250), 2));
-
-            scenes[10].add(createArrow(new THREE.Vector3(88, -145, 469), 2));*/
-
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
 
@@ -320,11 +305,33 @@
                 }
             }
 
+            function onMouseMove(event) {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+
+                const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
+
+                const intersects = raycaster.intersectObjects(clickableObjects, true);
+                if (intersects.length > 0) {
+                    const intersectedObject = intersects[0].object;
+                    if (intersectedObject.onPointerOver) {
+                        intersectedObject.onPointerOver();
+                    }
+                } else {
+                    clickableObjects.forEach(child => {
+                        if (child.onPointerOut) {
+                            child.onPointerOut();
+                        }
+                    });
+                }
+            }
+
             window.addEventListener('click', onMouseClick, false);
+            window.addEventListener('mousemove', onMouseMove, false);
 
             function animate() {
                 controls.update();
-                TWEEN.update();
                 renderer.render(currentScene, camera);
             }
             renderer.setAnimationLoop(animate);
@@ -336,7 +343,6 @@
             });
 
             updateVRControllers(); 
-
         }
     </script>
 
