@@ -32,9 +32,7 @@ camera.position.set(0, 0, 0.1);
 const textureLoader = new THREE.TextureLoader();
 const texturePaths = [
     'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
-    'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg',
-    'images/reloj.jpg', 'images/esq-b.jpg', 'images/esq-bb.jpg',
-    'images/esq-c.jpg', 'images/humilladero1.jpg'
+    'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg'
 ];
 const textures = new Array(texturePaths.length);
 
@@ -105,38 +103,23 @@ function init() {
     scenes[0].add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
 
     scenes[1].add(createArrow(new THREE.Vector3(453, -135, -157), 0));
-    scenes[1].add(createArrow(new THREE.Vector3(185, -94, 453), 9));
-    scenes[1].add(createArrow(new THREE.Vector3(-142, -91, -470), 6));
+    scenes[1].add(createArrow(new THREE.Vector3(185, -94, 453), 2));
+    scenes[1].add(createArrow(new THREE.Vector3(-142, -91, -470), 4));
     scenes[1].add(createArrow(new THREE.Vector3(-462, -76, 171), 5));
 
     scenes[2].add(createArrow(new THREE.Vector3(-443, -150, 173), 0));
-    scenes[2].add(createArrow(new THREE.Vector3(144, -122, 462), 9));
-    scenes[2].add(createArrow(new THREE.Vector3(-111, -85, -479), 8));
+    scenes[2].add(createArrow(new THREE.Vector3(144, -122, 462), 1));
+    scenes[2].add(createArrow(new THREE.Vector3(-111, -85, -479), 3));
 
     scenes[3].add(createArrow(new THREE.Vector3(-465, -141, 113), 0));
-    scenes[3].add(createArrow(new THREE.Vector3(75, -124, 477), 8));
-    scenes[3].add(createArrow(new THREE.Vector3(-137, -109, -467), 7));
+    scenes[3].add(createArrow(new THREE.Vector3(75, -124, 477), 2));
+    scenes[3].add(createArrow(new THREE.Vector3(-137, -109, -467), 4));
 
     scenes[4].add(createArrow(new THREE.Vector3(-480, -130, -24), 0));
-    scenes[4].add(createArrow(new THREE.Vector3(-20, -105, -487), 6));
-    scenes[4].add(createArrow(new THREE.Vector3(-68, -100, 484), 7));
+    scenes[4].add(createArrow(new THREE.Vector3(-20, -105, -487), 1));
+    scenes[4].add(createArrow(new THREE.Vector3(-68, -100, 484), 3));
 
     scenes[5].add(createArrow(new THREE.Vector3(469, -161, 56), 1));
-
-    scenes[6].add(createArrow(new THREE.Vector3(-305, -114, -377), 1));
-    scenes[6].add(createArrow(new THREE.Vector3(-244, -126, 416), 4));
-
-    scenes[7].add(createArrow(new THREE.Vector3(-255, -82, 421), 3));
-    scenes[7].add(createArrow(new THREE.Vector3(-388, -87, -301), 4));
-
-    scenes[8].add(createArrow(new THREE.Vector3(-273, -97, 405), 2));
-    scenes[8].add(createArrow(new THREE.Vector3(-385, -78, -307), 3));
-    scenes[8].add(createArrow(new THREE.Vector3(431, -112, -223), 10));
-
-    scenes[9].add(createArrow(new THREE.Vector3(-91, -125, 474), 1));
-    scenes[9].add(createArrow(new THREE.Vector3(-421, -96, -250), 2));
-
-    scenes[10].add(createArrow(new THREE.Vector3(88, -145, 469), 2));
 
     // Raycaster para detectar clics en las flechas
     const raycaster = new THREE.Raycaster();
