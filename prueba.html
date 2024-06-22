@@ -10,7 +10,16 @@
     </style>
 </head>
 <body>
-    <div id="container"></div>
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.159.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.159.0/examples/jsm/"
+        }
+    }
+</script>
+
+<div id="container"></div>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.0/build/three.module.js';
