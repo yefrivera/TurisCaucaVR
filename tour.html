@@ -87,7 +87,7 @@
 
         const textureLoader = new THREE.TextureLoader();
         const texturePaths = [
-            'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
+            'images/centrocaldas.jpg'/*, 'images/catedral.jpg', 'images/bancolombia.jpg',
             'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg'/*,
             'images/reloj.jpg', 'images/esq-b.jpg', 'images/esq-bb.jpg',
             'images/esq-c.jpg', 'images/humilladero1.jpg'*/
@@ -261,7 +261,7 @@
                 return sprite;
             }
 
-            scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
+            /*scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
             scenes[0].add(createArrow(new THREE.Vector3(484, -120, -16), 2));
             scenes[0].add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
             scenes[0].add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
