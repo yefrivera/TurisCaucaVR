@@ -51,9 +51,9 @@
 
     <script type="module">
         import * as THREE from 'three';
-        import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
-        import { VRButton } from './node_modules/three/examples/jsm/webxr/VRButton.js';
-        import { XRControllerModelFactory } from './node_modules/three/examples/jsm/webxr/XRControllerModelFactory.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { VRButton } from 'three/addons/webxr/VRButton.js';
+        import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 
         const container = document.getElementById('container');
         const scenes = [];
@@ -138,7 +138,7 @@
 
             const controller2 = renderer.xr.getController(1);
             controller2.addEventListener('selectstart', onSelectStart);
-            controller2.addEventListener('selectend', onSelectEnd);
+            controller2.addEventListener('selectend');
 
             const controllerGrip1 = renderer.xr.getControllerGrip(0);
             controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
