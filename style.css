@@ -131,7 +131,7 @@ nav {
 
 #cards-container {
     position: absolute;
-    top: 20px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -144,8 +144,8 @@ nav {
 
 .card {
     position: relative; /* Necesario para el tooltip */
-    width: 150px;
-    height: 100px;
+    width: 100px;
+    height:70px;
     overflow: hidden;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
