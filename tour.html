@@ -7,6 +7,22 @@
     <title>TurismoCauca3.0</title>
 </head>
 <body>
+
+    <div id="cards-container">
+        <div class="card" data-scene-index="0" data-name="Escena 1">
+            <img src="images/a.jpg" alt="Escena 1">
+        </div>
+        <div class="card" data-scene-index="1" data-name="Escena 2">
+            <img src="images/d.jpg" alt="Escena 2">
+        </div>
+        <div class="card" data-scene-index="2" data-name="Escena 3">
+            <img src="images/v.jpg" alt="Escena 3">
+        </div>
+        <div class="card" data-scene-index="3" data-name="Escena 4">
+            <img src="images/72.jpg" alt="Escena 4">
+        </div>
+    </div>
+
     <div id="container"></div>
     <div id="content"></div>
 
@@ -37,6 +53,7 @@
             <img src="textures/home.png" alt="Button Image">
         </a>
     </div>
+
 
     <script type="importmap">
         {
@@ -131,6 +148,14 @@
                 updateVRControllers();
                 renderer.render(currentScene, camera);
             }
+
+
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', (event) => {
+                    const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
+                    changeScene(targetSceneIndex);
+                });
+            });
 
             //-----------------Controles de VR----------------------
 
