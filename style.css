@@ -197,7 +197,7 @@ nav {
     #cards-container {
         flex-direction: column;
         position: fixed;
-        top: 34%;
+        top: 50%;
         left: 0;
         transform: translateY(-50%);
         width: auto;
