@@ -197,12 +197,12 @@ nav {
     #cards-container {
         flex-direction: column;
         position: fixed;
-        top: 50%;
+        top: 36%;
         left: 0;
-        transform: translateY(-75%);
+        transform: translateY(-50%);
         width: auto;
         /*background: rgba(255, 255, 255, 0.9);*/
-        border-radius: 10px;
+        /*border-radius: 10px;
         padding: 10px;
         /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
         
@@ -211,7 +211,7 @@ nav {
     .card {
         width: 80px;
         height: 56px;
-        margin-bottom: 10px; /* Añade una separación vertical fija de 10px entre las tarjetas */
+        margin-bottom: 5px; /* Añade una separación vertical fija de 10px entre las tarjetas */
     }
 
     .card img {
