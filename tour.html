@@ -5,18 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>TurismoCauca3.0</title>
-    <style>
-        #tooltip {
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-            display: none;
-            pointer-events: none;
-            z-index: 1000;
-        }
-    </style>
+
 </head>
 <body>
 
@@ -218,6 +207,7 @@
         controller2.add(line2);
 
         function updateVRControllers() {
+            if (!currentScene) return;
             currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
             currentScene.add(controller1);
             currentScene.add(controller2);
@@ -226,6 +216,7 @@
         }
 
         function onSelectStart(event) {
+            if (!currentScene) return;
             const controller = event.target;
             const intersections = getIntersections(controller);
             if (intersections.length > 0) {
@@ -240,6 +231,7 @@
         function onSelectEnd(event) {}
 
         function getIntersections(controller) {
+            if (!currentScene) return [];
             const tempMatrix = new THREE.Matrix4();
             tempMatrix.identity().extractRotation(controller.matrixWorld);
             raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
@@ -312,10 +304,12 @@
 
             sprite.onPointerOver = function() {
                 sprite.scale.set(35, 35, 1); 
+                document.body.classList.add('pointer-cursor');
             };
 
             sprite.onPointerOut = function() {
                 sprite.scale.set(30, 30, 1); 
+                document.body.classList.remove('pointer-cursor');
             };
 
             return sprite;
@@ -397,15 +391,18 @@
         });
         videoControlSprite.onPointerOver = function() {
             videoControlSprite.scale.set(20, 20, 1); 
+            document.body.classList.add('pointer-cursor');
         };
         videoControlSprite.onPointerOut = function() {
             videoControlSprite.scale.set(15, 15, 1); 
+            document.body.classList.remove('pointer-cursor');
         };
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
         function onMouseClick(event) {
+            if (!currentScene) return;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
@@ -425,6 +422,7 @@
         }
 
         function onMouseMove(event) {
+            if (!currentScene) return;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
