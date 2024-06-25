@@ -3,12 +3,12 @@ body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 
 /*boton home---------------*/
 
-body {
+/*body {
     margin: 0;
     height: 100vh;
     background-color: #f0f0f0;
     overflow: hidden; 
-}
+}*/
 
 .button-container {
     position: absolute;
