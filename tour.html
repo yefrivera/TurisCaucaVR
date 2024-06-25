@@ -5,11 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>TurismoCauca3.0</title>
-
 </head>
 <body>
 
-    <div id="cards-container">
+    <div class="menu-icon" id="menu-icon">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <div id="cards-container" class="hidden">
         <div class="card" data-scene-index="0" data-name="Escena 1">
             <img src="images/a.jpg" alt="Escena 1">
         </div>
@@ -466,11 +477,21 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        document.addEventListener("DOMContentLoaded", () => {
+        const menuIcon = document.getElementById("menu-icon");
+        const cardsContainer = document.getElementById("cards-container");
+
+        menuIcon.addEventListener("click", () => {
+            cardsContainer.classList.toggle("hidden");
+        });
+    });
+
         // Cargar la primera escena
         changeScene(0);
 
         animate();
         updateVRControllers(); 
+
     </script>
 
 </body>

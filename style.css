@@ -1,14 +1,16 @@
-body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-#container { width: 100%; height: 100%; }
+body, html { 
+    margin: 0; 
+    padding: 0; 
+    height: 100%; 
+    overflow: hidden; 
+}
+
+#container { 
+    width: 100%; 
+    height: 100%; 
+}
 
 /*boton home---------------*/
-
-/*body {
-    margin: 0;
-    height: 100vh;
-    background-color: #f0f0f0;
-    overflow: hidden; 
-}*/
 
 .button-container {
     position: absolute;
@@ -129,26 +131,55 @@ nav {
 
 /*---------------tarjetas-------*/
 
+/* Menú icono 9 puntos */
+.menu-icon {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: repeat(3, 10px);
+    grid-gap: 5px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: #000;
+    border-radius: 80%;
+}
+
+/* Contenedor de tarjetas */
 #cards-container {
     position: absolute;
-    top: 10px;
+    bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    justify-content: center; /* Ajusta esto si necesitas centrar las tarjetas */
+    justify-content: center;
     align-items: center;
     padding: 10px;
     gap: 20px;
-    z-index: 1000; /* Asegura que las tarjetas estén por encima del entorno 3D */
+    z-index: 1000;
+    /*background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.hidden {
+    opacity: 0;
+    visibility: hidden;
 }
 
 .card {
-    position: relative; /* Necesario para el tooltip */
+    position: relative;
     width: 100px;
-    height:70px;
+    height: 70px;
     overflow: hidden;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     cursor: pointer;
 }
@@ -174,7 +205,7 @@ nav {
 .card::after {
     content: attr(data-name);
     position: absolute;
-    bottom: 110%; /* Posiciona el tooltip por encima de la tarjeta */
+    bottom: 110%;
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(0, 0, 0, 0.75);
@@ -184,41 +215,14 @@ nav {
     white-space: nowrap;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
-    pointer-events: none; /* Para que el tooltip no interfiera con otros eventos */
-    z-index: 10000; /* Asegura que el tooltip esté por encima de la tarjeta */
+    pointer-events: none;
+    z-index: 10000;
 }
 
 .card:hover::after {
-    opacity: 1; /* Muestra el tooltip al pasar el mouse */
+    opacity: 1;
 }
 
-/* Responsive styles for small screens */
-@media (max-width: 768px) {
-    #cards-container {
-        flex-direction: column;
-        position: fixed;
-        top: 36%;
-        left: 0;
-        transform: translateY(-50%);
-        width: auto;
-        /*background: rgba(255, 255, 255, 0.9);*/
-        /*border-radius: 10px;
-        padding: 10px;
-        /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
-        
-    }
-
-    .card {
-        width: 80px;
-        height: 56px;
-        margin-bottom: 5px; /* Añade una separación vertical fija de 10px entre las tarjetas */
-    }
-
-    .card img {
-        width: 100%;
-        height: 100%;
-    }
-}
 
 #tooltip {
     position: absolute;
