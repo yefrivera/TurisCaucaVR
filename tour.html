@@ -130,18 +130,24 @@
             scene.add(directionalLight.clone());
 
             const texturePath = texturePaths[sceneIndex];
-            textureLoader.load(texturePath, (texture) => {
-                texture.colorSpace = THREE.SRGBColorSpace; 
-                const geometry = new THREE.SphereGeometry(500, 32, 32); // Cambiado a 32 segmentos
-                geometry.scale(-1, 1, 1); 
-                const material = new THREE.MeshBasicMaterial({ map: texture });
-                const sphere = new THREE.Mesh(geometry, material);
-                scene.add(sphere);
+            const texture = textureLoader.load(
+                texturePath,
+                (texture) => {
+                    texture.colorSpace = THREE.SRGBColorSpace; 
+                    const geometry = new THREE.SphereGeometry(500, 32, 32); // Cambiado a 32 segmentos
+                    geometry.scale(-1, 1, 1); 
+                    const material = new THREE.MeshBasicMaterial({ map: texture });
+                    const sphere = new THREE.Mesh(geometry, material);
+                    scene.add(sphere);
 
-                loadArrows(scene, sceneIndex); // Asegúrate de cargar los sprites en la escena
-
-                if (callback) callback(scene);
-            });
+                    loadArrows(scene, sceneIndex); // Asegúrate de cargar los sprites en la escena
+                    if (callback) callback(scene);
+                },
+                undefined,
+                (error) => {
+                    console.error('Error loading texture:', error);
+                }
+            );
         }
 
         let currentScene = null;
