@@ -54,7 +54,6 @@
         </a>
     </div>
 
-
     <script type="importmap">
         {
             "imports": {
@@ -74,9 +73,6 @@
 
         const container = document.getElementById('container');
         const scenes = [];
-        for (let i = 0; i < 11; i++) {
-            scenes.push(new THREE.Scene());
-        }
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -88,15 +84,16 @@
             container.appendChild(renderer.domElement);
         }
 
-        if (!document.body.contains(document.querySelector('.vr-button'))) {
-            document.body.appendChild(VRButton.createButton(renderer));
-        }
+        const vrButton = VRButton.createButton(renderer);
+        vrButton.style.display = 'none';
+        const vrMenuButton = document.getElementById('vr-btn');
+        vrMenuButton.addEventListener('click', () => {
+            vrButton.click();
+        });
 
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1); 
-        scenes.forEach(scene => scene.add(ambientLight));
-        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1); 
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.6); 
+        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8); 
         directionalLight.position.set(0, 10, 0); 
-        scenes.forEach(scene => scene.add(directionalLight));
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
@@ -107,352 +104,343 @@
         controls.rotateSpeed = -0.3;
         camera.position.set(0, 0, 0.1);
 
-        //-----------Texturas----------------------------------------
-
         const textureLoader = new THREE.TextureLoader();
         const texturePaths = [
             'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
             'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg'
         ];
-        const textures = new Array(texturePaths.length);
-        let texturesLoaded = 0;
 
-        texturePaths.forEach((path, index) => {
-            textureLoader.load(path, (texture) => {
+        function loadScene(sceneIndex, callback) {
+            const scene = new THREE.Scene();
+            scene.add(ambientLight.clone());
+            scene.add(directionalLight.clone());
+
+            const texturePath = texturePaths[sceneIndex];
+            textureLoader.load(texturePath, (texture) => {
                 texture.colorSpace = THREE.SRGBColorSpace; 
-                textures[index] = texture;
-                texturesLoaded++;
-                if (texturesLoaded === texturePaths.length) {
-                    init();
+                const geometry = new THREE.SphereGeometry(500, 32, 32); // Cambiado a 32 segmentos
+                geometry.scale(-1, 1, 1); 
+                const material = new THREE.MeshBasicMaterial({ map: texture });
+                const sphere = new THREE.Mesh(geometry, material);
+                scene.add(sphere);
+
+                loadArrows(scene, sceneIndex); // Asegúrate de cargar los sprites en la escena
+
+                if (callback) callback(scene);
+            });
+        }
+
+        let currentScene = null;
+        let currentSceneIndex = 0;
+
+        function changeScene(targetSceneIndex) {
+            if (currentScene) {
+                // Destruir la escena actual para liberar memoria
+                while (currentScene.children.length > 0) {
+                    currentScene.remove(currentScene.children[0]);
                 }
+                currentScene = null;
+            }
+
+            // Cargar la nueva escena
+            loadScene(targetSceneIndex, (scene) => {
+                currentSceneIndex = targetSceneIndex;
+                currentScene = scene;
+                updateVRControllers();
+                renderer.render(currentScene, camera);
+            });
+        }
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', (event) => {
+                const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
+                changeScene(targetSceneIndex);
             });
         });
 
-        function init() {
-            const geometry = new THREE.SphereGeometry(500, 60, 40);
-            geometry.scale(-1, 1, 1); 
+        const controllerModelFactory = new XRControllerModelFactory();
 
-            textures.forEach((texture, index) => {
-                const material = new THREE.MeshBasicMaterial({ map: texture });
-                const sphere = new THREE.Mesh(geometry, material);
-                scenes[index].add(sphere);
-            });
+        const controller1 = renderer.xr.getController(0);
+        controller1.addEventListener('selectstart', onSelectStart);
+        controller1.addEventListener('selectend', onSelectEnd);
 
-            let currentSceneIndex = 0;
-            let currentScene = scenes[currentSceneIndex];
-            renderer.render(currentScene, camera);
+        const controller2 = renderer.xr.getController(1);
+        controller2.addEventListener('selectstart', onSelectStart);
+        controller2.addEventListener('selectend');
 
-            function changeScene(targetSceneIndex) {
-                currentSceneIndex = targetSceneIndex;
-                currentScene = scenes[currentSceneIndex];
-                updateVRControllers();
-                renderer.render(currentScene, camera);
-            }
+        const controllerGrip1 = renderer.xr.getControllerGrip(0);
+        controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
 
+        const controllerGrip2 = renderer.xr.getControllerGrip(1);
+        controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
 
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('click', (event) => {
-                    const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
-                    changeScene(targetSceneIndex);
-                });
-            });
+        const geometry1 = new THREE.BufferGeometry();
+        geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
 
-            //-----------------Controles de VR----------------------
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 
-            const controllerModelFactory = new XRControllerModelFactory();
+        const line1 = new THREE.Line(geometry1, lineMaterial);
+        controller1.add(line1);
 
-            const controller1 = renderer.xr.getController(0);
-            controller1.addEventListener('selectstart', onSelectStart);
-            controller1.addEventListener('selectend', onSelectEnd);
+        const line2 = new THREE.Line(geometry1, lineMaterial);
+        controller2.add(line2);
 
-            const controller2 = renderer.xr.getController(1);
-            controller2.addEventListener('selectstart', onSelectStart);
-            controller2.addEventListener('selectend');
-
-            const controllerGrip1 = renderer.xr.getControllerGrip(0);
-            controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-
-            const controllerGrip2 = renderer.xr.getControllerGrip(1);
-            controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
-
-            const geometry1 = new THREE.BufferGeometry();
-            geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
-
-            // ----------------Rayos de los controles--------------------
-            
-            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-            const line1 = new THREE.Line(geometry1, lineMaterial);
-            controller1.add(line1);
-
-            const line2 = new THREE.Line(geometry1, lineMaterial);
-            controller2.add(line2);
-
-            //----------------Actualizar controles cuando se cambia la escena--------------
-
-            function updateVRControllers() {
-                currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
-                currentScene.add(controller1);
-                currentScene.add(controller2);
-                currentScene.add(controllerGrip1);
-                currentScene.add(controllerGrip2);
-            }
-
-            // --------------Cambio de escena con controles-------------
-
-            function onSelectStart(event) {
-                const controller = event.target;
-                const intersections = getIntersections(controller);
-                if (intersections.length > 0) {
-                    const intersection = intersections[0];
-                    const object = intersection.object;
-                    if (object.userData.targetSceneIndex !== undefined) {
-                        changeScene(object.userData.targetSceneIndex);
-                    }
-                }
-            }
-
-            function onSelectEnd(event) {}
-
-            function getIntersections(controller) {
-                const tempMatrix = new THREE.Matrix4();
-                tempMatrix.identity().extractRotation(controller.matrixWorld);
-                raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-                raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
-                return raycaster.intersectObjects(currentScene.children, true);
-            }
-
-            //-------------zoom--------------------
-
-            const MIN_ZOOM = 1;
-            const MAX_ZOOM = 3;
-
-            function onDocumentMouseWheel(event) {
-                event.preventDefault();
-                if (event.deltaY < 0) {
-                    camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
-                } else {
-                    camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
-                }
-                camera.updateProjectionMatrix();
-            }
-
-            renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
-
-            //--------------zoom en dispositivos táctiles------------------
-
-            let isPinching = false;
-            let initialPinchDistance = 0;
-            let initialZoom = 1;
-
-            function onTouchStart(event) {
-                if (event.touches.length === 2) {
-                    isPinching = true;
-                    initialPinchDistance = getPinchDistance(event);
-                    initialZoom = camera.zoom;
-                }
-            }
-
-            function onTouchMove(event) {
-                if (isPinching && event.touches.length === 2) {
-                    const newPinchDistance = getPinchDistance(event);
-                    const zoomFactor = newPinchDistance / initialPinchDistance;
-                    camera.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, initialZoom * zoomFactor));
-                    camera.updateProjectionMatrix();
-                }
-            }
-
-            function onTouchEnd(event) {
-                if (event.touches.length < 2) {
-                    isPinching = false;
-                }
-            }
-
-            function getPinchDistance(event) {
-                const dx = event.touches[0].clientX - event.touches[1].clientX;
-                const dy = event.touches[0].clientY - event.touches[1].clientY;
-                return Math.sqrt(dx * dx + dy * dy);
-            }
-
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-            renderer.domElement.addEventListener('touchend', onTouchEnd, false);
-
-            const arrowTexture = textureLoader.load('images/next.png');
-
-            //----------Sprites para cambio de escena----------------
-
-            function createArrow(position, targetSceneIndex) {
-                const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
-                const sprite = new THREE.Sprite(spriteMaterial);
-                sprite.position.copy(position);
-                sprite.scale.set(30, 30, 1);
-                sprite.userData = { targetSceneIndex };
-                sprite.material.depthTest = false; 
-                sprite.material.depthWrite = false;
-
-                sprite.onPointerOver = function() {
-                    sprite.scale.set(35, 35, 1); 
-                };
-
-                sprite.onPointerOut = function() {
-                    sprite.scale.set(30, 30, 1); 
-                };
-
-                return sprite;
-            }
-
-            //-------------Enlazar escenas con los sprites para cambio de escena--------------------------
-
-            scenes[0].add(createArrow(new THREE.Vector3(32, -130, 480), 1));
-            scenes[0].add(createArrow(new THREE.Vector3(484, -120, -16), 2));
-            scenes[0].add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
-            scenes[0].add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
-
-            scenes[1].add(createArrow(new THREE.Vector3(453, -135, -157), 0));
-            scenes[1].add(createArrow(new THREE.Vector3(185, -94, 453), 2));
-            scenes[1].add(createArrow(new THREE.Vector3(-142, -91, -470), 4));
-            scenes[1].add(createArrow(new THREE.Vector3(-462, -76, 171), 5));
-
-            scenes[2].add(createArrow(new THREE.Vector3(-443, -150, 173), 0));
-            scenes[2].add(createArrow(new THREE.Vector3(144, -122, 462), 1));
-            scenes[2].add(createArrow(new THREE.Vector3(-111, -85, -479), 3));
-
-            scenes[3].add(createArrow(new THREE.Vector3(-465, -141, 113), 0));
-            scenes[3].add(createArrow(new THREE.Vector3(75, -124, 477), 2));
-            scenes[3].add(createArrow(new THREE.Vector3(-137, -109, -467), 4));
-
-            scenes[4].add(createArrow(new THREE.Vector3(-480, -130, -24), 0));
-            scenes[4].add(createArrow(new THREE.Vector3(-20, -105, -487), 1));
-            scenes[4].add(createArrow(new THREE.Vector3(-68, -100, 484), 3));
-
-            scenes[5].add(createArrow(new THREE.Vector3(469, -161, 56), 1));
-
-
-            //------------Video en 2d en la escena 1--------------------
-
-            const video = document.createElement('video');
-            video.src = 'videos/caldas1.mp4';
-            video.crossOrigin = 'anonymous';
-            video.loop = false;
-            video.muted = false;
-            video.playsInline = true;
-            video.style.display = 'none';
-
-            const videoTexture = new THREE.VideoTexture(video);
-            const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-            const videoGeometry = new THREE.PlaneGeometry(160, 120);
-
-            const videoMesh = new THREE.Mesh(videoGeometry, videoMaterial);
-            videoMesh.visible = false; 
-            scenes[0].add(videoMesh);
-
-            //-----------------Creación del sprite para controlar el video-----------
-
-            const videoControlTexture = textureLoader.load('images/infobb.png'); 
-            const videoControlSpriteMaterial = new THREE.SpriteMaterial({ map: videoControlTexture });
-            const videoControlSprite = new THREE.Sprite(videoControlSpriteMaterial);
-            videoControlSprite.position.set(-250, -10, 10); 
-            videoControlSprite.scale.set(15, 15, 1);
-            scenes[0].add(videoControlSprite);
-
-
-            function onVideoControlClick() {
-                if (video.paused) {
-                    video.play();
-                    videoMesh.visible = true;
-                    videoMesh.position.copy(videoControlSprite.position);
-                    videoMesh.position.y += 90; 
-                    videoMesh.lookAt(camera.position);
-                } else {
-                    video.pause();
-                    video.currentTime = 0; 
-                    videoMesh.visible = false;
-                }
-            }
-
-            videoControlSprite.onClick = onVideoControlClick;
-
-            video.addEventListener('ended', () => {
-                videoMesh.visible = false;
-            });
-            videoControlSprite.onPointerOver = function() {
-                videoControlSprite.scale.set(20, 20, 1); 
-            };
-            videoControlSprite.onPointerOut = function() {
-                videoControlSprite.scale.set(15, 15, 1); 
-            };
-
-            //------------raycaster para detectar objetos y poder dar click sobre ellos----------
-
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
-
-            function onMouseClick(event) {
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-                raycaster.setFromCamera(mouse, camera);
-
-                const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
-
-                const intersects = raycaster.intersectObjects(clickableObjects, true);
-                if (intersects.length > 0) {
-                    const intersectedObject = intersects[0].object;
-                    console.log('Intersección detectada:', intersectedObject);
-                    if (intersectedObject.userData.targetSceneIndex !== undefined) {
-                        changeScene(intersectedObject.userData.targetSceneIndex);
-                    } else if (intersectedObject === videoControlSprite) {
-                        onVideoControlClick();
-                    }
-                }
-            }
-
-            function onMouseMove(event) {
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-                raycaster.setFromCamera(mouse, camera);
-
-                const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
-
-                const intersects = raycaster.intersectObjects(clickableObjects, true);
-                if (intersects.length > 0) {
-                    const intersectedObject = intersects[0].object;
-                    if (intersectedObject.onPointerOver) {
-                        intersectedObject.onPointerOver();
-                    }
-                } else {
-                    clickableObjects.forEach(child => {
-                        if (child.onPointerOut) {
-                            child.onPointerOut();
-                        }
-                    });
-                }
-            }
-
-            window.addEventListener('click', onMouseClick, false);
-            window.addEventListener('mousemove', onMouseMove, false);
-
-            function animate() {
-                requestAnimationFrame(animate);
-                controls.update();
-                renderer.render(currentScene, camera);
-
-                if (videoMesh.visible) {
-                    const cameraDirection = new THREE.Vector3();
-                    camera.getWorldDirection(cameraDirection);
-                    videoMesh.lookAt(camera.position);
-                }
-            }
-            renderer.setAnimationLoop(animate);
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-            animate();
-            updateVRControllers(); 
+        function updateVRControllers() {
+            currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
+            currentScene.add(controller1);
+            currentScene.add(controller2);
+            currentScene.add(controllerGrip1);
+            currentScene.add(controllerGrip2);
         }
+
+        function onSelectStart(event) {
+            const controller = event.target;
+            const intersections = getIntersections(controller);
+            if (intersections.length > 0) {
+                const intersection = intersections[0];
+                const object = intersection.object;
+                if (object.userData.targetSceneIndex !== undefined) {
+                    changeScene(object.userData.targetSceneIndex);
+                }
+            }
+        }
+
+        function onSelectEnd(event) {}
+
+        function getIntersections(controller) {
+            const tempMatrix = new THREE.Matrix4();
+            tempMatrix.identity().extractRotation(controller.matrixWorld);
+            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+            return raycaster.intersectObjects(currentScene.children, true);
+        }
+
+        const MIN_ZOOM = 1;
+        const MAX_ZOOM = 3;
+
+        function onDocumentMouseWheel(event) {
+            event.preventDefault();
+            if (event.deltaY < 0) {
+                camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
+            } else {
+                camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
+            }
+            camera.updateProjectionMatrix();
+        }
+
+        renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
+
+        let isPinching = false;
+        let initialPinchDistance = 0;
+        let initialZoom = 1;
+
+        function onTouchStart(event) {
+            if (event.touches.length === 2) {
+                isPinching = true;
+                initialPinchDistance = getPinchDistance(event);
+                initialZoom = camera.zoom;
+            }
+        }
+
+        function onTouchMove(event) {
+            if (isPinching && event.touches.length === 2) {
+                const newPinchDistance = getPinchDistance(event);
+                const zoomFactor = newPinchDistance / initialPinchDistance;
+                camera.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, initialZoom * zoomFactor));
+                camera.updateProjectionMatrix();
+            }
+        }
+
+        function onTouchEnd(event) {
+            if (event.touches.length < 2) {
+                isPinching = false;
+            }
+        }
+
+        function getPinchDistance(event) {
+            const dx = event.touches[0].clientX - event.touches[1].clientX;
+            const dy = event.touches[0].clientY - event.touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+        renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+        renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+
+        const arrowTexture = textureLoader.load('images/next.png');
+
+        function createArrow(position, targetSceneIndex) {
+            const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.copy(position);
+            sprite.scale.set(30, 30, 1);
+            sprite.userData = { targetSceneIndex };
+            sprite.material.depthTest = false; 
+            sprite.material.depthWrite = false;
+
+            sprite.onPointerOver = function() {
+                sprite.scale.set(35, 35, 1); 
+            };
+
+            sprite.onPointerOut = function() {
+                sprite.scale.set(30, 30, 1); 
+            };
+
+            return sprite;
+        }
+
+        function loadArrows(scene, sceneIndex) {
+            if (sceneIndex === 0) {
+                scene.add(createArrow(new THREE.Vector3(32, -130, 480), 1));
+                scene.add(createArrow(new THREE.Vector3(484, -120, -16), 2));
+                scene.add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
+                scene.add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
+
+                // Añadir el sprite de información en la escena 1
+                scene.add(videoMesh); // Añadir el videoMesh a la escena
+                scene.add(videoControlSprite); // Añadir el control de video a la escena
+            } else if (sceneIndex === 1) {
+                scene.add(createArrow(new THREE.Vector3(453, -135, -157), 0));
+                scene.add(createArrow(new THREE.Vector3(185, -94, 453), 2));
+                scene.add(createArrow(new THREE.Vector3(-142, -91, -470), 4));
+                scene.add(createArrow(new THREE.Vector3(-462, -76, 171), 5));
+            } else if (sceneIndex === 2) {
+                scene.add(createArrow(new THREE.Vector3(-443, -150, 173), 0));
+                scene.add(createArrow(new THREE.Vector3(144, -122, 462), 1));
+                scene.add(createArrow(new THREE.Vector3(-111, -85, -479), 3));
+            } else if (sceneIndex === 3) {
+                scene.add(createArrow(new THREE.Vector3(-465, -141, 113), 0));
+                scene.add(createArrow(new THREE.Vector3(75, -124, 477), 2));
+                scene.add(createArrow(new THREE.Vector3(-137, -109, -467), 4));
+            } else if (sceneIndex === 4) {
+                scene.add(createArrow(new THREE.Vector3(-480, -130, -24), 0));
+                scene.add(createArrow(new THREE.Vector3(-20, -105, -487), 1));
+                scene.add(createArrow(new THREE.Vector3(-68, -100, 484), 3));
+            } else if (sceneIndex === 5) {
+                scene.add(createArrow(new THREE.Vector3(469, -161, 56), 1));
+            }
+        }
+
+        const video = document.createElement('video');
+        video.src = 'videos/caldas1.mp4';
+        video.crossOrigin = 'anonymous';
+        video.loop = false;
+        video.muted = false;
+        video.playsInline = true;
+        video.style.display = 'none';
+
+        const videoTexture = new THREE.VideoTexture(video);
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
+        const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+        const videoGeometry = new THREE.PlaneGeometry(160, 120);
+
+        const videoMesh = new THREE.Mesh(videoGeometry, videoMaterial);
+        videoMesh.visible = false; 
+
+        const videoControlTexture = textureLoader.load('images/infobb.png'); 
+        const videoControlSpriteMaterial = new THREE.SpriteMaterial({ map: videoControlTexture });
+        const videoControlSprite = new THREE.Sprite(videoControlSpriteMaterial);
+        videoControlSprite.position.set(-250, -10, 10); 
+        videoControlSprite.scale.set(15, 15, 1);
+
+        function onVideoControlClick() {
+            if (video.paused) {
+                video.play();
+                videoMesh.visible = true;
+                videoMesh.position.copy(videoControlSprite.position);
+                videoMesh.position.y += 90; 
+                videoMesh.lookAt(camera.position);
+            } else {
+                video.pause();
+                video.currentTime = 0; 
+                videoMesh.visible = false;
+            }
+        }
+
+        videoControlSprite.onClick = onVideoControlClick;
+
+        video.addEventListener('ended', () => {
+            videoMesh.visible = false;
+        });
+        videoControlSprite.onPointerOver = function() {
+            videoControlSprite.scale.set(20, 20, 1); 
+        };
+        videoControlSprite.onPointerOut = function() {
+            videoControlSprite.scale.set(15, 15, 1); 
+        };
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+
+            const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
+
+            const intersects = raycaster.intersectObjects(clickableObjects, true);
+            if (intersects.length > 0) {
+                const intersectedObject = intersects[0].object;
+                console.log('Intersección detectada:', intersectedObject);
+                if (intersectedObject.userData.targetSceneIndex !== undefined) {
+                    changeScene(intersectedObject.userData.targetSceneIndex);
+                } else if (intersectedObject === videoControlSprite) {
+                    onVideoControlClick();
+                }
+            }
+        }
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+
+            const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
+
+            const intersects = raycaster.intersectObjects(clickableObjects, true);
+            if (intersects.length > 0) {
+                const intersectedObject = intersects[0].object;
+                if (intersectedObject.onPointerOver) {
+                    intersectedObject.onPointerOver();
+                }
+            } else {
+                clickableObjects.forEach(child => {
+                    if (child.onPointerOut) {
+                        child.onPointerOut();
+                    }
+                });
+            }
+        }
+
+        window.addEventListener('click', onMouseClick, false);
+        window.addEventListener('mousemove', onMouseMove, false);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            if (currentScene) {
+                renderer.render(currentScene, camera);
+            }
+
+            if (videoMesh.visible) {
+                videoMesh.lookAt(camera.position);
+            }
+        }
+        renderer.setAnimationLoop(animate);
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Cargar la primera escena
+        changeScene(0);
+
+        animate();
+        updateVRControllers(); 
     </script>
 
 </body>
