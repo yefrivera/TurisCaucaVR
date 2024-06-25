@@ -199,7 +199,7 @@ nav {
         position: fixed;
         top: 50%;
         left: 0;
-        transform: translateY(-50%);
+        transform: translateY(-75%);
         width: auto;
         /*background: rgba(255, 255, 255, 0.9);*/
         border-radius: 10px;
@@ -211,7 +211,7 @@ nav {
     .card {
         width: 80px;
         height: 56px;
-        margin-bottom: 3px; /* Añade una separación vertical fija de 10px entre las tarjetas */
+        margin-bottom: 10px; /* Añade una separación vertical fija de 10px entre las tarjetas */
     }
 
     .card img {
