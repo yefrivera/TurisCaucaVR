@@ -334,8 +334,10 @@
                 scene.add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
 
                 // Añadir el sprite de información en la escena 1
+                /*
                 scene.add(videoMesh); // Añadir el videoMesh a la escena
                 scene.add(videoControlSprite); // Añadir el control de video a la escena
+                */
             } else if (sceneIndex === 1) {
                 scene.add(createArrow(new THREE.Vector3(453, -135, -157), 0));
                 scene.add(createArrow(new THREE.Vector3(185, -94, 453), 2));
@@ -358,6 +360,7 @@
             }
         }
 
+        /*
         const video = document.createElement('video');
         video.src = 'videos/caldas1.mp4';
         video.crossOrigin = 'anonymous';
@@ -408,6 +411,7 @@
             videoControlSprite.scale.set(15, 15, 1); 
             document.body.classList.remove('pointer-cursor');
         };
+        */
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -426,9 +430,12 @@
                 console.log('Intersección detectada:', intersectedObject);
                 if (intersectedObject.userData.targetSceneIndex !== undefined) {
                     changeScene(intersectedObject.userData.targetSceneIndex);
-                } else if (intersectedObject === videoControlSprite) {
+                } 
+                /*
+                else if (intersectedObject === videoControlSprite) {
                     onVideoControlClick();
                 }
+                */
             }
         }
 
@@ -465,9 +472,11 @@
                 renderer.render(currentScene, camera);
             }
 
+            /*
             if (videoMesh.visible) {
                 videoMesh.lookAt(camera.position);
             }
+            */
         }
         renderer.setAnimationLoop(animate);
 
