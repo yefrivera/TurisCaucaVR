@@ -195,22 +195,23 @@ nav {
 /* Responsive styles for small screens */
 @media (max-width: 768px) {
     #cards-container {
-        flex-direction: row; /* Mantiene las tarjetas en una fila */
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
+        flex-direction: column;
+        position: fixed;
+        top: 34%;
+        left: 0;
+        transform: translateY(-50%);
         width: auto;
         /*background: rgba(255, 255, 255, 0.9);*/
         border-radius: 10px;
         padding: 10px;
         /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+        
     }
 
     .card {
-        width: 80px; /* Reduce el tamaño de la tarjeta */
-        height: 56px; /* Mantiene la proporción de la tarjeta */
-        margin-bottom: 0; /* Elimina la separación vertical entre las tarjetas */
+        width: 80px;
+        height: 56px;
+        margin-bottom: 3px; /* Añade una separación vertical fija de 10px entre las tarjetas */
     }
 
     .card img {
