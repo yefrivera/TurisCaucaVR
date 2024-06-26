@@ -134,7 +134,7 @@ nav {
 /* Menú icono 9 puntos */
 .menu-icon {
     position: absolute;
-    bottom: 20px;
+    bottom: 35px;
     left: 50%;
     transform: translateX(-50%);
     display: grid;
@@ -154,13 +154,13 @@ nav {
 /* Contenedor de tarjetas */
 #cards-container {
     position: absolute;
-    bottom: 70px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 40px;
     gap: 20px;
     z-index: 1000;
     /*background: rgba(255, 255, 255, 0.9);*/
@@ -246,7 +246,7 @@ nav {
     }
 
     .card {
-        width: 80px;
+        width: 70px;
         height: 56px;
     }
 
