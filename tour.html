@@ -90,8 +90,10 @@
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const pixelRatio = Math.min(window.devicePixelRatio, 2); // Limitar el pixel ratio
+        renderer.setPixelRatio(pixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.outputColorSpace = THREE.SRGBColorSpace; 
+        renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.xr.enabled = true;
 
         if (!container.contains(renderer.domElement)) {
@@ -119,28 +121,41 @@
         camera.position.set(0, 0, 0.1);
 
         const textureLoader = new THREE.TextureLoader();
-        const texturePaths = [
-            'images/centrocaldas.jpg', 'images/catedral.jpg', 'images/bancolombia.jpg',
-            'images/bancobogota.jpg', 'images/juanvaldez.jpg', 'images/catt.jpg'
-        ];
 
         function loadScene(sceneIndex, callback) {
             const scene = new THREE.Scene();
             scene.add(ambientLight.clone());
             scene.add(directionalLight.clone());
 
-            const texturePath = texturePaths[sceneIndex];
+            let texturePath;
+            if (sceneIndex === 0) {
+                texturePath = 'images/centrocaldas.jpg';
+            } else if (sceneIndex === 1) {
+                texturePath = 'images/catedral.jpg';
+            } else if (sceneIndex === 2) {
+                texturePath = 'images/bancolombia.jpg';
+            } else if (sceneIndex === 3) {
+                texturePath = 'images/bancobogota.jpg';
+            } else if (sceneIndex === 4) {
+                texturePath = 'images/juanvaldez.jpg';
+            } else if (sceneIndex === 5) {
+                texturePath = 'images/catt.jpg';
+            }
+
             const texture = textureLoader.load(
                 texturePath,
                 (texture) => {
-                    texture.colorSpace = THREE.SRGBColorSpace; 
-                    const geometry = new THREE.SphereGeometry(500, 32, 32); // Cambiado a 32 segmentos
+                    texture.minFilter = THREE.LinearFilter;
+                    texture.magFilter = THREE.LinearFilter;
+                    texture.anisotropy = 4; // Mejorar calidad a menores resoluciones
+                    texture.encoding = THREE.sRGBEncoding; 
+                    const geometry = new THREE.SphereGeometry(500, 60, 40); // Ajustar segmentos según sea necesario
                     geometry.scale(-1, 1, 1); 
                     const material = new THREE.MeshBasicMaterial({ map: texture });
                     const sphere = new THREE.Mesh(geometry, material);
                     scene.add(sphere);
 
-                    loadArrows(scene, sceneIndex); // Asegúrate de cargar los sprites en la escena
+                    loadArrows(scene, sceneIndex); // cargar los sprites en la escena
                     if (callback) callback(scene);
                 },
                 undefined,
@@ -204,7 +219,7 @@
 
         const controller2 = renderer.xr.getController(1);
         controller2.addEventListener('selectstart', onSelectStart);
-        controller2.addEventListener('selectend');
+        controller2.addEventListener('selectend', onSelectEnd);
 
         const controllerGrip1 = renderer.xr.getControllerGrip(0);
         controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
@@ -338,12 +353,6 @@
                 scene.add(createArrow(new THREE.Vector3(484, -120, -16), 2));
                 scene.add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
                 scene.add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
-
-                // Añadir el sprite de información en la escena 1
-                /*
-                scene.add(videoMesh); // Añadir el videoMesh a la escena
-                scene.add(videoControlSprite); // Añadir el control de video a la escena
-                */
             } else if (sceneIndex === 1) {
                 scene.add(createArrow(new THREE.Vector3(453, -135, -157), 0));
                 scene.add(createArrow(new THREE.Vector3(185, -94, 453), 2));
@@ -366,59 +375,6 @@
             }
         }
 
-        /*
-        const video = document.createElement('video');
-        video.src = 'videos/caldas1.mp4';
-        video.crossOrigin = 'anonymous';
-        video.loop = false;
-        video.muted = false;
-        video.playsInline = true;
-        video.style.display = 'none';
-
-        const videoTexture = new THREE.VideoTexture(video);
-        videoTexture.minFilter = THREE.LinearFilter;
-        videoTexture.magFilter = THREE.LinearFilter;
-        const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-        const videoGeometry = new THREE.PlaneGeometry(160, 120);
-
-        const videoMesh = new THREE.Mesh(videoGeometry, videoMaterial);
-        videoMesh.visible = false; 
-
-        const videoControlTexture = textureLoader.load('images/infobb.png'); 
-        const videoControlSpriteMaterial = new THREE.SpriteMaterial({ map: videoControlTexture });
-        const videoControlSprite = new THREE.Sprite(videoControlSpriteMaterial);
-        videoControlSprite.position.set(-250, -10, 10); 
-        videoControlSprite.scale.set(15, 15, 1);
-
-        function onVideoControlClick() {
-            if (video.paused) {
-                video.play();
-                videoMesh.visible = true;
-                videoMesh.position.copy(videoControlSprite.position);
-                videoMesh.position.y += 90; 
-                videoMesh.lookAt(camera.position);
-            } else {
-                video.pause();
-                video.currentTime = 0; 
-                videoMesh.visible = false;
-            }
-        }
-
-        videoControlSprite.onClick = onVideoControlClick;
-
-        video.addEventListener('ended', () => {
-            videoMesh.visible = false;
-        });
-        videoControlSprite.onPointerOver = function() {
-            videoControlSprite.scale.set(20, 20, 1); 
-            document.body.classList.add('pointer-cursor');
-        };
-        videoControlSprite.onPointerOut = function() {
-            videoControlSprite.scale.set(15, 15, 1); 
-            document.body.classList.remove('pointer-cursor');
-        };
-        */
-
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
@@ -436,12 +392,7 @@
                 console.log('Intersección detectada:', intersectedObject);
                 if (intersectedObject.userData.targetSceneIndex !== undefined) {
                     changeScene(intersectedObject.userData.targetSceneIndex);
-                } 
-                /*
-                else if (intersectedObject === videoControlSprite) {
-                    onVideoControlClick();
                 }
-                */
             }
         }
 
@@ -477,12 +428,6 @@
             if (currentScene) {
                 renderer.render(currentScene, camera);
             }
-
-            /*
-            if (videoMesh.visible) {
-                videoMesh.lookAt(camera.position);
-            }
-            */
         }
         renderer.setAnimationLoop(animate);
 
@@ -493,19 +438,18 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-        const menuIcon = document.getElementById("menu-icon");
-        const cardsContainer = document.getElementById("cards-container");
+            const menuIcon = document.getElementById("menu-icon");
+            const cardsContainer = document.getElementById("cards-container");
 
-        menuIcon.addEventListener("click", () => {
-            cardsContainer.classList.toggle("hidden");
+            menuIcon.addEventListener("click", () => {
+                cardsContainer.classList.toggle("hidden");
+            });
         });
-    });
 
         // Cargar la primera escena
         changeScene(0);
-
         animate();
-        updateVRControllers(); 
+        updateVRControllers();
 
     </script>
 
