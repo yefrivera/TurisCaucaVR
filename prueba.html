@@ -79,10 +79,9 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { VRButton } from 'three/addons/webxr/VRButton.js';
 
-
-        let camera, scene, renderer, controls, vrButton, vrControls, vrEffect;
+        
+        let camera, scene, renderer, controls;
         let environments = [];
         let sprites = [];
         let currentEnvironmentIndex = 0;
@@ -97,25 +96,20 @@
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
             camera.position.set(0, 0, 0.1);
             scene = new THREE.Scene();
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Configurar efecto VR
-            vrEffect = new VREffect(renderer);
-            vrControls = new VRControls(camera);
-            vrButton = VRButton.createButton(renderer);
 
-            document.body.appendChild(vrButton);
-
-            // Añadir controles de órbita
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.12;
-            controls.enableZoom = true;
-            controls.zoomSpeed = 0.3;
+            controls.enableZoom = true;  
+            controls.zoomSpeed = 0.3;    
             controls.enablePan = false;
             controls.rotateSpeed = -0.3;
+
+
 
             // Crear los entornos 360 con la posibilidad de modificar manualmente
             const textureLoader = new THREE.TextureLoader();
@@ -134,7 +128,7 @@
                 geometry.scale(-1, 1, 1);
 
                 const texture = textureLoader.load(environmentImages[i]);
-                texture.colorSpace = THREE.SRGBColorSpace;
+                texture.colorSpace = THREE.SRGBColorSpace; // Aquí se añade la línea
                 const material = new THREE.MeshBasicMaterial({
                     map: texture
                 });
@@ -216,74 +210,184 @@
                 const spritesInEnvironment = [];
                 for (let j = 0; j < spriteData[i].positions.length; j++) {
                     const sprite = new THREE.Sprite(spriteMaterial);
-                    sprite.position.set(
-                        spriteData[i].positions[j].x,
-                        spriteData[i].positions[j].y,
-                        spriteData[i].positions[j].z
-                    );
-                    sprite.scale.set(5, 5, 1);
-                    sprite.name = spriteData[i].destinations[j].toString();
+                    sprite.position.set(spriteData[i].positions[j].x, spriteData[i].positions[j].y, spriteData[i].positions[j].z);
+                    sprite.scale.set(8, 8, 1);
+                    sprite.name = `env${i}-sprite${j}`;
+                    sprite.userData.destination = spriteData[i].destinations[j];
+
                     spritesInEnvironment.push(sprite);
-                    scene.add(sprite);
                 }
                 sprites.push(spritesInEnvironment);
             }
 
-            // Event listeners
-            window.addEventListener('resize', onWindowResize, false);
-            window.addEventListener('click', onClick, false);
+
+
+            // Añadir los sprites del primer entorno a la escena
+            sprites[currentEnvironmentIndex].forEach(sprite => scene.add(sprite));
+
+            // Event listeners para cambiar el entorno al hacer clic en un sprite y para detectar movimiento del ratón
+            document.addEventListener('click', onDocumentMouseDown, false);
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
         }
 
-        function animate() {
-            renderer.setAnimationLoop(render);
-        }
-
-        function render() {
-            controls.update();
-
-            // Actualizar VRControls y VREffect para modo VR
-            if (vrButton.isPresenting()) {
-                vrControls.update();
-                vrEffect.render(scene, camera);
-            } else {
-                renderer.render(scene, camera);
-            }
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function onClick(event) {
+        function onDocumentMouseDown(event) {
             event.preventDefault();
 
-            // Obtener coordenadas del clic
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-            // Realizar la intersección entre el rayo y los sprites
             raycaster.setFromCamera(mouse, camera);
+
             const intersects = raycaster.intersectObjects(sprites[currentEnvironmentIndex]);
 
             if (intersects.length > 0) {
-                const sprite = intersects[0].object;
-                const destinationIndex = parseInt(sprite.name);
-                changeEnvironment(destinationIndex);
-            }
-        }
+                const intersected = intersects[0].object;
+                const destinationIndex = intersected.userData.destination;
 
-        function changeEnvironment(index) {
-            if (index !== currentEnvironmentIndex && index >= 0 && index < environments.length) {
-                // Quitar entorno actual
+                // Limpiar el entorno actual
                 scene.remove(environments[currentEnvironmentIndex]);
+                sprites[currentEnvironmentIndex].forEach(sprite => scene.remove(sprite));
 
-                // Añadir nuevo entorno
-                currentEnvironmentIndex = index;
+                // Añadir el nuevo entorno
+                currentEnvironmentIndex = destinationIndex;
                 scene.add(environments[currentEnvironmentIndex]);
+                sprites[currentEnvironmentIndex].forEach(sprite => scene.add(sprite));
             }
         }
+
+        function onDocumentMouseMove(event) {
+            event.preventDefault();
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(sprites[currentEnvironmentIndex]);
+
+            if (intersects.length > 0) {
+                document.body.classList.add('hand-cursor');
+                const intersected = intersects[0].object;
+                intersected.scale.set(10, 10, 1); // Expandir el sprite
+            } else {
+                document.body.classList.remove('hand-cursor');
+                sprites[currentEnvironmentIndex].forEach(sprite => sprite.scale.set(8, 8, 1)); // Restaurar el tamaño del sprite
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        //------------------zoom------------
+
+        const MIN_ZOOM = 1;
+        const MAX_ZOOM = 3;
+
+        function onDocumentMouseWheel(event) {
+            event.preventDefault();
+            if (event.deltaY < 0) {
+                camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
+            } else {
+                camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
+            }
+            camera.updateProjectionMatrix();
+        }
+
+        renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
+
+        let isPinching = false;
+        let initialPinchDistance = 0;
+        let initialZoom = 1;
+
+        function onTouchStart(event) {
+            if (event.touches.length === 2) {
+                isPinching = true;
+                initialPinchDistance = getPinchDistance(event);
+                initialZoom = camera.zoom;
+            }
+        }
+
+        function onTouchMove(event) {
+            if (isPinching && event.touches.length === 2) {
+                const newPinchDistance = getPinchDistance(event);
+                const zoomFactor = newPinchDistance / initialPinchDistance;
+                camera.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, initialZoom * zoomFactor));
+                camera.updateProjectionMatrix();
+            }
+        }
+
+        function onTouchEnd(event) {
+            if (event.touches.length < 2) {
+                isPinching = false;
+            }
+        }
+
+        function getPinchDistance(event) {
+            const dx = event.touches[0].clientX - event.touches[1].clientX;
+            const dy = event.touches[0].clientY - event.touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+        renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+        renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+
+        //--------------------------------
+        //------------tarjetas--------
+        document.querySelectorAll('.card').forEach(card => {
+
+            card.addEventListener('click', (event) => {
+                const targetSceneEnviroment = parseInt(event.currentTarget.getAttribute('data-scene-index'));
+                changeScene(targetSceneIndex);
+
+                // Limpiar el entorno actual
+                scene.remove(environments[currentEnvironmentIndex]);
+                sprites[currentEnvironmentIndex].forEach(sprite => scene.remove(sprite));
+
+                // Añadir el nuevo entorno
+                currentEnvironmentIndex = destinationIndex;
+                scene.add(environments[currentEnvironmentIndex]);
+                sprites[currentEnvironmentIndex].forEach(sprite => scene.add(sprite));
+
+            });
+
+            // Mostrar el tooltip al pasar el mouse por encima
+            card.addEventListener('mouseenter', (event) => {
+                const name = event.currentTarget.getAttribute('data-name');
+                tooltip.innerHTML = name;
+                tooltip.style.display = 'block';
+            });
+
+            // Mover el tooltip con el mouse
+            card.addEventListener('mousemove', (event) => {
+                tooltip.style.left = event.pageX + 10 + 'px';
+                tooltip.style.top = event.pageY + 10 + 'px';
+            });
+
+            // Ocultar el tooltip al salir del área de la tarjeta
+            card.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+            });
+        });
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const menuIcon = document.getElementById("menu-icon");
+            const cardsContainer = document.getElementById("cards-container");
+
+            menuIcon.addEventListener("click", () => {
+                cardsContainer.classList.toggle("hidden");
+            });
+        });
+
     </script>
 </body>
 </html>
