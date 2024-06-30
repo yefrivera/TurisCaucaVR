@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>TurismoCauca3.0</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="menu-icon" id="menu-icon">
         <div class="dot"></div>
         <div class="dot"></div>
@@ -44,7 +43,7 @@
             <li><a href="#" id="vr-btn"><img src="textures/VR.png" alt="VR"></a></li>
             <li>
                 <a href="#" id="mute-btn">
-                    <img id="mute-icon" class="normal" src="textures/muted.png" data-original-src="textures/muted.png" data-alt-src="textures/unmuted.png" alt="Mute" />
+                    <img id="mute-icon" class="normal" src="textures/muted.png" data-original-src="textures/muted.png" data-alt-src="textures/unmuted.png" alt="Mute">
                 </a>
             </li>
             <li><a href="#" id="expand-btn"><img class="normal" src="textures/fullscreen.png" data-original-src="textures/fullscreen.png" data-alt-src="textures/reducescreen.png" alt="Fullscreen"></a></li>
@@ -71,18 +70,19 @@
         {
             "imports": {
                 "three": "https://unpkg.com/three@0.159.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.159.0/examples/jsm/"
+                "three/addons/": "https://unpkg.com/three@0.159.0/examples/jsm/",
+                "three/examples/jsm/": "https://unpkg.com/three@0.159.0/examples/jsm/"
             }
         }
     </script>
 
-    <script src="menu.js"></script> 
+    <script src="menu.js"></script>
 
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { VRButton } from 'three/addons/webxr/VRButton.js';
-        import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+        import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+        import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 
         let container, tooltip, camera, renderer, controls, currentScene, currentSceneIndex;
         let controller1, controller2, controllerGrip1, controllerGrip2;
@@ -90,36 +90,47 @@
         const textureLoader = new THREE.TextureLoader();
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
+        let videoElement, videoTexture, videoMesh;
+        const audioLoader = new THREE.AudioLoader();
+        const listener = new THREE.AudioListener();
+        const audioElements = {};
+
+        const spritePositions = [
+            new THREE.Vector3(-100, -5, 4),  // Posición para escena 0
+            new THREE.Vector3(50, -10, 20), // Posición para escena 1
+            new THREE.Vector3(0, 15, -30),  // Posición para escena 2
+            new THREE.Vector3(75, -25, 60), // Posición para escena 3
+            new THREE.Vector3(-50, 30, -10) // Posición para escena 4
+        ];
 
         function init() {
             container = document.getElementById('container');
             tooltip = document.getElementById('tooltip');
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.add(listener);
+
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            const pixelRatio = Math.min(window.devicePixelRatio, 2);
-            renderer.setPixelRatio(pixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.outputColorSpace = THREE.SRGBColorSpace;
             renderer.xr.enabled = true;
 
-            if (!container.contains(renderer.domElement)) {
-                container.appendChild(renderer.domElement);
-            }
+            container.appendChild(renderer.domElement);
 
             const vrButton = VRButton.createButton(renderer);
-            document.body.appendChild(vrButton); // Asegurarse de que el botón VR se añade al documento
-            const vrMenuButton = document.getElementById('vr-btn');
-            vrMenuButton.addEventListener('click', () => {
-                renderer.xr.enabled = true; // Habilitar WebXR
-                vrButton.click(); // Simular clic en el botón VR para entrar en modo VR
+            vrButton.style.display = 'none'; // Ocultar el botón VR por defecto
+
+            document.getElementById('vr-btn').addEventListener('click', () => {
+                renderer.xr.enabled = true;
+                vrButton.click(); // Simular el clic del botón VR por defecto
             });
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.12;
-            controls.enableZoom = true;  
-            controls.zoomSpeed = 0.3;    
+            controls.enableZoom = true;
+            controls.zoomSpeed = 0.3;
             controls.enablePan = false;
             controls.rotateSpeed = -0.3;
             camera.position.set(0, 0, 0.1);
@@ -128,35 +139,6 @@
             setupVRControllers();
             changeScene(0);
             animate();
-        }
-
-        function setupVRControllers() {
-            const controllerModelFactory = new XRControllerModelFactory();
-
-            controller1 = renderer.xr.getController(0);
-            controller1.addEventListener('selectstart', onSelectStart);
-            controller1.addEventListener('selectend', onSelectEnd);
-
-            controller2 = renderer.xr.getController(1);
-            controller2.addEventListener('selectstart', onSelectStart);
-            controller2.addEventListener('selectend', onSelectEnd);
-
-            controllerGrip1 = renderer.xr.getControllerGrip(0);
-            controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-
-            controllerGrip2 = renderer.xr.getControllerGrip(1);
-            controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
-
-            const geometry1 = new THREE.BufferGeometry();
-            geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
-
-            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-            const line1 = new THREE.Line(geometry1, lineMaterial);
-            controller1.add(line1);
-
-            const line2 = new THREE.Line(geometry1, lineMaterial);
-            controller2.add(line2);
         }
 
         function loadScene(sceneIndex, callback) {
@@ -169,7 +151,7 @@
             scene.add(directionalLight);
 
             let texturePath;
-            switch(sceneIndex) {
+            switch (sceneIndex) {
                 case 0:
                     texturePath = 'images/centrocaldas.jpg';
                     break;
@@ -198,14 +180,15 @@
                     texture.minFilter = THREE.LinearFilter;
                     texture.magFilter = THREE.LinearFilter;
                     texture.anisotropy = 4;
-                    texture.colorSpace = THREE.SRGBColorSpace; 
+                    texture.colorSpace = THREE.SRGBColorSpace;
                     const geometry = new THREE.SphereGeometry(500, 60, 40);
-                    geometry.scale(-1, 1, 1); 
+                    geometry.scale(-1, 1, 1);
                     const material = new THREE.MeshBasicMaterial({ map: texture });
                     const sphere = new THREE.Mesh(geometry, material);
                     scene.add(sphere);
 
                     loadArrows(scene, sceneIndex);
+                    loadInteractiveSprite(scene, sceneIndex);
                     if (callback) callback(scene);
                 },
                 undefined,
@@ -273,39 +256,6 @@
             });
         }
 
-        function updateVRControllers() {
-            if (!currentScene) return;
-            currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
-            currentScene.add(controller1);
-            currentScene.add(controller2);
-            currentScene.add(controllerGrip1);
-            currentScene.add(controllerGrip2);
-        }
-
-        function onSelectStart(event) {
-            if (!currentScene) return;
-            const controller = event.target;
-            const intersections = getIntersections(controller);
-            if (intersections.length > 0) {
-                const intersection = intersections[0];
-                const object = intersection.object;
-                if (object.userData.targetSceneIndex !== undefined) {
-                    changeScene(object.userData.targetSceneIndex);
-                }
-            }
-        }
-
-        function onSelectEnd(event) {}
-
-        function getIntersections(controller) {
-            if (!currentScene) return [];
-            const tempMatrix = new THREE.Matrix4();
-            tempMatrix.identity().extractRotation(controller.matrixWorld);
-            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
-            return raycaster.intersectObjects(currentScene.children, true);
-        }
-
         const MIN_ZOOM = 1;
         const MAX_ZOOM = 3;
 
@@ -353,23 +303,69 @@
         }
 
         const arrowTexture = textureLoader.load('images/next.png');
+        const videoSpriteTexture = textureLoader.load('images/infobb.png');
+        const audioSpriteTexture = textureLoader.load('images/infobb.png');
 
         function createArrow(position, targetSceneIndex) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
-            sprite.scale.set(30, 30, 1);
+            sprite.scale.set(8, 8, 1);
             sprite.userData = { targetSceneIndex };
-            sprite.material.depthTest = false; 
+            sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
             sprite.onPointerOver = function() {
-                sprite.scale.set(35, 35, 1); 
+                sprite.scale.set(11, 11, 1);
                 document.body.classList.add('pointer-cursor');
             };
 
             sprite.onPointerOut = function() {
-                sprite.scale.set(30, 30, 1); 
+                sprite.scale.set(8, 8, 1);
+                document.body.classList.remove('pointer-cursor');
+            };
+
+            return sprite;
+        }
+
+        function createVideoSprite(position) {
+            const spriteMaterial = new THREE.SpriteMaterial({ map: videoSpriteTexture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.copy(position);
+            sprite.scale.set(8, 8, 1);
+            sprite.userData = { type: 'video' };
+            sprite.material.depthTest = false;
+            sprite.material.depthWrite = false;
+
+            sprite.onPointerOver = function() {
+                sprite.scale.set(11, 11, 1);
+                document.body.classList.add('pointer-cursor');
+            };
+
+            sprite.onPointerOut = function() {
+                sprite.scale.set(8, 8, 1);
+                document.body.classList.remove('pointer-cursor');
+            };
+
+            return sprite;
+        }
+
+        function createAudioSprite(position) {
+            const spriteMaterial = new THREE.SpriteMaterial({ map: audioSpriteTexture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.copy(position);
+            sprite.scale.set(8, 8, 1);
+            sprite.userData = { type: 'audio' };
+            sprite.material.depthTest = false;
+            sprite.material.depthWrite = false;
+
+            sprite.onPointerOver = function() {
+                sprite.scale.set(11, 11, 1);
+                document.body.classList.add('pointer-cursor');
+            };
+
+            sprite.onPointerOut = function() {
+                sprite.scale.set(8, 8, 1);
                 document.body.classList.remove('pointer-cursor');
             };
 
@@ -378,29 +374,40 @@
 
         function loadArrows(scene, sceneIndex) {
             if (sceneIndex === 0) {
-                scene.add(createArrow(new THREE.Vector3(32, -130, 480), 1));
-                scene.add(createArrow(new THREE.Vector3(484, -120, -16), 2));
-                scene.add(createArrow(new THREE.Vector3(-3, -150, -480), 3));
-                scene.add(createArrow(new THREE.Vector3(-477, -65, 130), 4));
+                scene.add(createArrow(new THREE.Vector3(10, -25, 100), 1));
+                scene.add(createArrow(new THREE.Vector3(100, -30, -5), 2));
+                scene.add(createArrow(new THREE.Vector3(-5, -27, -90), 3));
+                scene.add(createArrow(new THREE.Vector3(-100, -10, 27), 4));
             } else if (sceneIndex === 1) {
-                scene.add(createArrow(new THREE.Vector3(453, -135, -157), 0));
-                scene.add(createArrow(new THREE.Vector3(185, -94, 453), 2));
-                scene.add(createArrow(new THREE.Vector3(-142, -91, -470), 4));
-                scene.add(createArrow(new THREE.Vector3(-462, -76, 171), 5));
+                scene.add(createArrow(new THREE.Vector3(100, -30, -35), 0));
+                scene.add(createArrow(new THREE.Vector3(42, -25, 100), 2));
+                scene.add(createArrow(new THREE.Vector3(-25, -25, -90), 4));
+                scene.add(createArrow(new THREE.Vector3(-80, -15, 28), 5));
             } else if (sceneIndex === 2) {
-                scene.add(createArrow(new THREE.Vector3(-443, -150, 173), 0));
-                scene.add(createArrow(new THREE.Vector3(144, -122, 462), 1));
-                scene.add(createArrow(new THREE.Vector3(-111, -85, -479), 3));
+                scene.add(createArrow(new THREE.Vector3(-90, -32, 35), 0));
+                scene.add(createArrow(new THREE.Vector3(25, -25, 100), 1));
+                scene.add(createArrow(new THREE.Vector3(-27, -27, -100), 3));
             } else if (sceneIndex === 3) {
-                scene.add(createArrow(new THREE.Vector3(-465, -141, 113), 0));
-                scene.add(createArrow(new THREE.Vector3(75, -124, 477), 2));
-                scene.add(createArrow(new THREE.Vector3(-137, -109, -467), 4));
+                scene.add(createArrow(new THREE.Vector3(-80, -25, 20), 0));
+                scene.add(createArrow(new THREE.Vector3(10, -25, 90), 2));
+                scene.add(createArrow(new THREE.Vector3(-30, -27, -90), 4));
             } else if (sceneIndex === 4) {
-                scene.add(createArrow(new THREE.Vector3(-480, -130, -24), 0));
-                scene.add(createArrow(new THREE.Vector3(-20, -105, -487), 1));
-                scene.add(createArrow(new THREE.Vector3(-68, -100, 484), 3));
+                scene.add(createArrow(new THREE.Vector3(-90, -22, -5), 0));
+                scene.add(createArrow(new THREE.Vector3(-5, -27, -80), 1));
+                scene.add(createArrow(new THREE.Vector3(-15, -35, 90), 3));
             } else if (sceneIndex === 5) {
-                scene.add(createArrow(new THREE.Vector3(469, -161, 56), 1));
+                scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));
+            }
+        }
+
+        function loadInteractiveSprite(scene, sceneIndex) {
+            const position = spritePositions[sceneIndex]; // Obtener la posición específica para cada entorno
+            if (sceneIndex === 0) {
+                const videoSprite = createVideoSprite(position);
+                scene.add(videoSprite);
+            } else {
+                const audioSprite = createAudioSprite(position);
+                scene.add(audioSprite);
             }
         }
 
@@ -411,15 +418,78 @@
             raycaster.setFromCamera(mouse, camera);
 
             const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
-
             const intersects = raycaster.intersectObjects(clickableObjects, true);
             if (intersects.length > 0) {
                 const intersectedObject = intersects[0].object;
-                console.log('Intersección detectada:', intersectedObject);
                 if (intersectedObject.userData.targetSceneIndex !== undefined) {
                     changeScene(intersectedObject.userData.targetSceneIndex);
+                } else if (intersectedObject.userData.type === 'video') {
+                    handleVideoSpriteClick(intersectedObject);
+                } else if (intersectedObject.userData.type === 'audio') {
+                    handleAudioSpriteClick(intersectedObject);
                 }
             }
+        }
+
+        function handleVideoSpriteClick(sprite) {
+            if (videoElement && !videoElement.paused) {
+                closeVideo();
+            } else {
+                openVideo(sprite.position);
+            }
+        }
+
+        function openVideo(position) {
+            videoElement = document.createElement('video');
+            videoElement.src = 'videos/caldas1.mp4';
+            videoElement.loop = false;
+            videoElement.autoplay = true;
+            videoElement.crossOrigin = "anonymous";
+            videoElement.style.display = 'none'; // Ocultar el elemento HTML del video
+
+            videoTexture = new THREE.VideoTexture(videoElement);
+            const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+            const geometry = new THREE.PlaneGeometry(70, 50);
+            videoMesh = new THREE.Mesh(geometry, videoMaterial);
+            videoMesh.position.copy(position);
+            videoMesh.position.y += 30; // Ajustar la posición frente a la cámara
+            videoMesh.lookAt(camera.position);
+            currentScene.add(videoMesh);
+
+            videoElement.play();
+            videoElement.onended = closeVideo;
+        }
+
+        function closeVideo() {
+            if (videoMesh) {
+                currentScene.remove(videoMesh);
+                videoMesh = null;
+            }
+            if (videoElement) {
+                videoElement.pause();
+                videoElement = null;
+            }
+        }
+
+        function handleAudioSpriteClick(sprite) {
+            const audioKey = `audio_${sprite.id}`;
+            if (audioElements[audioKey] && audioElements[audioKey].isPlaying) {
+                audioElements[audioKey].stop();
+            } else {
+                playAudio(sprite);
+            }
+        }
+
+        function playAudio(sprite) {
+            const audio = new THREE.PositionalAudio(listener);
+            audioLoader.load('videos/corcho.mp3', function(buffer) {
+                audio.setBuffer(buffer);
+                audio.setRefDistance(20);
+                audio.play();
+                audio.onEnded = () => { audioElements[`audio_${sprite.id}`] = null; };
+            });
+            sprite.add(audio);
+            audioElements[`audio_${sprite.id}`] = audio;
         }
 
         function onMouseMove(event) {
@@ -429,7 +499,6 @@
             raycaster.setFromCamera(mouse, camera);
 
             const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
-
             const intersects = raycaster.intersectObjects(clickableObjects, true);
             if (intersects.length > 0) {
                 const intersectedObject = intersects[0].object;
@@ -446,11 +515,12 @@
         }
 
         function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            if (currentScene) {
-                renderer.render(currentScene, camera);
-            }
+            renderer.setAnimationLoop(() => {
+                controls.update();
+                if (currentScene) {
+                    renderer.render(currentScene, camera);
+                }
+            });
         }
 
         function onWindowResize() {
@@ -459,9 +529,75 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        function setupVRControllers() {
+            const controllerModelFactory = new XRControllerModelFactory();
+
+            controller1 = renderer.xr.getController(0);
+            controller1.addEventListener('selectstart', onSelectStart);
+            controller1.addEventListener('selectend', onSelectEnd);
+
+            controller2 = renderer.xr.getController(1);
+            controller2.addEventListener('selectstart', onSelectStart);
+            controller2.addEventListener('selectend', onSelectEnd);
+
+            controllerGrip1 = renderer.xr.getControllerGrip(0);
+            controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+
+            controllerGrip2 = renderer.xr.getControllerGrip(1);
+            controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
+
+            const geometry1 = new THREE.BufferGeometry();
+            geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
+
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+
+            const line1 = new THREE.Line(geometry1, lineMaterial);
+            controller1.add(line1);
+
+            const line2 = new THREE.Line(geometry1, lineMaterial);
+            controller2.add(line2);
+
+            updateVRControllers();
+        }
+
+        function updateVRControllers() {
+            if (!currentScene) return;
+            currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
+            currentScene.add(controller1);
+            currentScene.add(controller2);
+            currentScene.add(controllerGrip1);
+            currentScene.add(controllerGrip2);
+        }
+
+        function onSelectStart(event) {
+            if (!currentScene) return;
+            const controller = event.target;
+            const intersections = getIntersections(controller);
+            if (intersections.length > 0) {
+                const intersection = intersections[0];
+                const object = intersection.object;
+                if (object.userData.targetSceneIndex !== undefined) {
+                    changeScene(object.userData.targetSceneIndex);
+                } else if (object.userData.type === 'video') {
+                    handleVideoSpriteClick(object);
+                } else if (object.userData.type === 'audio') {
+                    handleAudioSpriteClick(object);
+                }
+            }
+        }
+
+        function onSelectEnd(event) {}
+
+        function getIntersections(controller) {
+            if (!currentScene) return [];
+            const tempMatrix = new THREE.Matrix4();
+            tempMatrix.identity().extractRotation(controller.matrixWorld);
+            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+            return raycaster.intersectObjects(currentScene.children, true);
+        }
+
         init();
-
     </script>
-
 </body>
 </html>
