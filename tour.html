@@ -16,7 +16,6 @@
         <div class="dot"></div>
         <div class="dot"></div>
         <div class="dot"></div>
-        <div class="dot"></div>
     </div>
 
     <div id="cards-container" class="hidden">
@@ -94,14 +93,6 @@
         const audioLoader = new THREE.AudioLoader();
         const listener = new THREE.AudioListener();
         const audioElements = {};
-
-        const spritePositions = [
-            new THREE.Vector3(-100, -5, 4),  // Posición para escena 0
-            new THREE.Vector3(50, -10, 20), // Posición para escena 1
-            new THREE.Vector3(0, 15, -30),  // Posición para escena 2
-            new THREE.Vector3(75, -25, 60), // Posición para escena 3
-            new THREE.Vector3(-50, 30, -10) // Posición para escena 4
-        ];
 
         function init() {
             container = document.getElementById('container');
@@ -401,12 +392,42 @@
         }
 
         function loadInteractiveSprite(scene, sceneIndex) {
-            const position = spritePositions[sceneIndex]; // Obtener la posición específica para cada entorno
-            if (sceneIndex === 0) {
-                const videoSprite = createVideoSprite(position);
-                scene.add(videoSprite);
-            } else {
+            let position;
+            let audioPath;
+            switch (sceneIndex) {
+                case 0:
+                    position = new THREE.Vector3(-50, -10, 30);
+                    const videoSprite = createVideoSprite(position);
+                    scene.add(videoSprite);
+                    break;
+                case 1:
+                    position = new THREE.Vector3(30, -20, -50);
+                    audioPath = 'audios/audio1.mp3';
+                    break;
+                case 2:
+                    position = new THREE.Vector3(40, -15, 40);
+                    audioPath = 'audios/audio2.mp3';
+                    break;
+                case 3:
+                    position = new THREE.Vector3(-30, -10, 50);
+                    audioPath = 'audios/audio3.mp3';
+                    break;
+                case 4:
+                    position = new THREE.Vector3(20, -25, -30);
+                    audioPath = 'audios/audio4.mp3';
+                    break;
+                case 5:
+                    position = new THREE.Vector3(10, -15, 20);
+                    audioPath = 'audios/audio5.mp3';
+                    break;
+                default:
+                    position = new THREE.Vector3(0, 0, 0);
+                    audioPath = 'audios/default.mp3';
+            }
+
+            if (sceneIndex > 0) {
                 const audioSprite = createAudioSprite(position);
+                audioSprite.userData.audioPath = audioPath;
                 scene.add(audioSprite);
             }
         }
@@ -482,7 +503,8 @@
 
         function playAudio(sprite) {
             const audio = new THREE.PositionalAudio(listener);
-            audioLoader.load('videos/corcho.mp3', function(buffer) {
+            const audioPath = sprite.userData.audioPath;
+            audioLoader.load(audioPath, function(buffer) {
                 audio.setBuffer(buffer);
                 audio.setRefDistance(20);
                 audio.play();
