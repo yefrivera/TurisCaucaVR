@@ -10,6 +10,10 @@ body, html {
     height: 100%; 
 }
 
+.hand-cursor {
+    cursor: pointer;
+}
+
 /*boton home---------------*/
 
 .button-container {
@@ -75,12 +79,12 @@ body, html {
 }
 
 nav {
-    padding: 1rem;
+    /*padding: 1rem;*/
     display: flex;
 }
 
 .ham-menu {
-    position: fixed;
+    Position: fixed;
     top: 20px;
     right: 20px; /* Ajustado a la esquina superior derecha */
     display: flex;
@@ -242,7 +246,7 @@ nav {
 /* Responsive styles for small screens */
 @media (max-width: 768px) {
     #cards-container {
-        bottom: 70px; /* Ajustar según sea necesario */
+        bottom: 80px; /* Ajustar según sea necesario */
     }
 
     .card {
