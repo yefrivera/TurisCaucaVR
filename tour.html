@@ -84,62 +84,112 @@
         import { VRButton } from 'three/addons/webxr/VRButton.js';
         import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 
-        const container = document.getElementById('container');
-        const tooltip = document.getElementById('tooltip');
+        let container, tooltip, camera, renderer, controls, currentScene, currentSceneIndex;
+        let controller1, controller2, controllerGrip1, controllerGrip2;
         const scenes = [];
+        const textureLoader = new THREE.TextureLoader();
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        const pixelRatio = Math.min(window.devicePixelRatio, 2); // Limitar el pixel ratio
-        renderer.setPixelRatio(pixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.outputEncoding = THREE.sRGBEncoding;
-        renderer.xr.enabled = true;
+        function init() {
+            container = document.getElementById('container');
+            tooltip = document.getElementById('tooltip');
 
-        if (!container.contains(renderer.domElement)) {
-            container.appendChild(renderer.domElement);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            const pixelRatio = Math.min(window.devicePixelRatio, 2);
+            renderer.setPixelRatio(pixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.outputColorSpace = THREE.SRGBColorSpace;
+            renderer.xr.enabled = true;
+
+            if (!container.contains(renderer.domElement)) {
+                container.appendChild(renderer.domElement);
+            }
+
+            const vrButton = VRButton.createButton(renderer);
+            document.body.appendChild(vrButton); // Asegurarse de que el botón VR se añade al documento
+            const vrMenuButton = document.getElementById('vr-btn');
+            vrMenuButton.addEventListener('click', () => {
+                renderer.xr.enabled = true; // Habilitar WebXR
+                vrButton.click(); // Simular clic en el botón VR para entrar en modo VR
+            });
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.12;
+            controls.enableZoom = true;  
+            controls.zoomSpeed = 0.3;    
+            controls.enablePan = false;
+            controls.rotateSpeed = -0.3;
+            camera.position.set(0, 0, 0.1);
+
+            setupEventListeners();
+            setupVRControllers();
+            changeScene(0);
+            animate();
         }
 
-        const vrButton = VRButton.createButton(renderer);
-        vrButton.style.display = 'none';
-        const vrMenuButton = document.getElementById('vr-btn');
-        vrMenuButton.addEventListener('click', () => {
-            vrButton.click();
-        });
+        function setupVRControllers() {
+            const controllerModelFactory = new XRControllerModelFactory();
 
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.6); 
-        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8); 
-        directionalLight.position.set(0, 10, 0); 
+            controller1 = renderer.xr.getController(0);
+            controller1.addEventListener('selectstart', onSelectStart);
+            controller1.addEventListener('selectend', onSelectEnd);
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.12;
-        controls.enableZoom = true;  
-        controls.zoomSpeed = 0.3;    
-        controls.enablePan = false;
-        controls.rotateSpeed = -0.3;
-        camera.position.set(0, 0, 0.1);
+            controller2 = renderer.xr.getController(1);
+            controller2.addEventListener('selectstart', onSelectStart);
+            controller2.addEventListener('selectend', onSelectEnd);
 
-        const textureLoader = new THREE.TextureLoader();
+            controllerGrip1 = renderer.xr.getControllerGrip(0);
+            controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+
+            controllerGrip2 = renderer.xr.getControllerGrip(1);
+            controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
+
+            const geometry1 = new THREE.BufferGeometry();
+            geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
+
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+
+            const line1 = new THREE.Line(geometry1, lineMaterial);
+            controller1.add(line1);
+
+            const line2 = new THREE.Line(geometry1, lineMaterial);
+            controller2.add(line2);
+        }
 
         function loadScene(sceneIndex, callback) {
             const scene = new THREE.Scene();
-            scene.add(ambientLight.clone());
-            scene.add(directionalLight.clone());
+            const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+            directionalLight.position.set(0, 10, 0);
+            scene.add(directionalLight);
 
             let texturePath;
-            if (sceneIndex === 0) {
-                texturePath = 'images/centrocaldas.jpg';
-            } else if (sceneIndex === 1) {
-                texturePath = 'images/catedral.jpg';
-            } else if (sceneIndex === 2) {
-                texturePath = 'images/bancolombia.jpg';
-            } else if (sceneIndex === 3) {
-                texturePath = 'images/bancobogota.jpg';
-            } else if (sceneIndex === 4) {
-                texturePath = 'images/juanvaldez.jpg';
-            } else if (sceneIndex === 5) {
-                texturePath = 'images/catt.jpg';
+            switch(sceneIndex) {
+                case 0:
+                    texturePath = 'images/centrocaldas.jpg';
+                    break;
+                case 1:
+                    texturePath = 'images/catedral.jpg';
+                    break;
+                case 2:
+                    texturePath = 'images/bancolombia.jpg';
+                    break;
+                case 3:
+                    texturePath = 'images/bancobogota.jpg';
+                    break;
+                case 4:
+                    texturePath = 'images/juanvaldez.jpg';
+                    break;
+                case 5:
+                    texturePath = 'images/catt.jpg';
+                    break;
+                default:
+                    texturePath = 'images/default.jpg';
             }
 
             const texture = textureLoader.load(
@@ -147,15 +197,15 @@
                 (texture) => {
                     texture.minFilter = THREE.LinearFilter;
                     texture.magFilter = THREE.LinearFilter;
-                    texture.anisotropy = 4; // Mejorar calidad a menores resoluciones
-                    texture.encoding = THREE.sRGBEncoding; 
-                    const geometry = new THREE.SphereGeometry(500, 60, 40); // Ajustar segmentos según sea necesario
+                    texture.anisotropy = 4;
+                    texture.colorSpace = THREE.SRGBColorSpace; 
+                    const geometry = new THREE.SphereGeometry(500, 60, 40);
                     geometry.scale(-1, 1, 1); 
                     const material = new THREE.MeshBasicMaterial({ map: texture });
                     const sphere = new THREE.Mesh(geometry, material);
                     scene.add(sphere);
 
-                    loadArrows(scene, sceneIndex); // cargar los sprites en la escena
+                    loadArrows(scene, sceneIndex);
                     if (callback) callback(scene);
                 },
                 undefined,
@@ -165,19 +215,14 @@
             );
         }
 
-        let currentScene = null;
-        let currentSceneIndex = 0;
-
         function changeScene(targetSceneIndex) {
             if (currentScene) {
-                // Destruir la escena actual para liberar memoria
                 while (currentScene.children.length > 0) {
                     currentScene.remove(currentScene.children[0]);
                 }
                 currentScene = null;
             }
 
-            // Cargar la nueva escena
             loadScene(targetSceneIndex, (scene) => {
                 currentSceneIndex = targetSceneIndex;
                 currentScene = scene;
@@ -186,57 +231,47 @@
             });
         }
 
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', (event) => {
-                const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
-                changeScene(targetSceneIndex);
+        function setupEventListeners() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', (event) => {
+                    const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
+                    changeScene(targetSceneIndex);
+                });
+
+                card.addEventListener('mouseenter', (event) => {
+                    const name = event.currentTarget.getAttribute('data-name');
+                    tooltip.innerHTML = name;
+                    tooltip.style.display = 'block';
+                });
+
+                card.addEventListener('mousemove', (event) => {
+                    tooltip.style.left = event.pageX + 10 + 'px';
+                    tooltip.style.top = event.pageY + 10 + 'px';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
             });
 
-            // Mostrar el tooltip al pasar el mouse por encima
-            card.addEventListener('mouseenter', (event) => {
-                const name = event.currentTarget.getAttribute('data-name');
-                tooltip.innerHTML = name;
-                tooltip.style.display = 'block';
+            window.addEventListener('click', onMouseClick, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+            window.addEventListener('resize', onWindowResize, false);
+
+            renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
+            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+            renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const menuIcon = document.getElementById("menu-icon");
+                const cardsContainer = document.getElementById("cards-container");
+
+                menuIcon.addEventListener("click", () => {
+                    cardsContainer.classList.toggle("hidden");
+                });
             });
-
-            // Mover el tooltip con el mouse
-            card.addEventListener('mousemove', (event) => {
-                tooltip.style.left = event.pageX + 10 + 'px';
-                tooltip.style.top = event.pageY + 10 + 'px';
-            });
-
-            // Ocultar el tooltip al salir del área de la tarjeta
-            card.addEventListener('mouseleave', () => {
-                tooltip.style.display = 'none';
-            });
-        });
-
-        const controllerModelFactory = new XRControllerModelFactory();
-
-        const controller1 = renderer.xr.getController(0);
-        controller1.addEventListener('selectstart', onSelectStart);
-        controller1.addEventListener('selectend', onSelectEnd);
-
-        const controller2 = renderer.xr.getController(1);
-        controller2.addEventListener('selectstart', onSelectStart);
-        controller2.addEventListener('selectend', onSelectEnd);
-
-        const controllerGrip1 = renderer.xr.getControllerGrip(0);
-        controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-
-        const controllerGrip2 = renderer.xr.getControllerGrip(1);
-        controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
-
-        const geometry1 = new THREE.BufferGeometry();
-        geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
-
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-        const line1 = new THREE.Line(geometry1, lineMaterial);
-        controller1.add(line1);
-
-        const line2 = new THREE.Line(geometry1, lineMaterial);
-        controller2.add(line2);
+        }
 
         function updateVRControllers() {
             if (!currentScene) return;
@@ -284,8 +319,6 @@
             camera.updateProjectionMatrix();
         }
 
-        renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
-
         let isPinching = false;
         let initialPinchDistance = 0;
         let initialZoom = 1;
@@ -318,10 +351,6 @@
             const dy = event.touches[0].clientY - event.touches[1].clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
-
-        renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-        renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-        renderer.domElement.addEventListener('touchend', onTouchEnd, false);
 
         const arrowTexture = textureLoader.load('images/next.png');
 
@@ -375,9 +404,6 @@
             }
         }
 
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
         function onMouseClick(event) {
             if (!currentScene) return;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -419,9 +445,6 @@
             }
         }
 
-        window.addEventListener('click', onMouseClick, false);
-        window.addEventListener('mousemove', onMouseMove, false);
-
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
@@ -429,27 +452,14 @@
                 renderer.render(currentScene, camera);
             }
         }
-        renderer.setAnimationLoop(animate);
 
-        window.addEventListener('resize', () => {
+        function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const menuIcon = document.getElementById("menu-icon");
-            const cardsContainer = document.getElementById("cards-container");
-
-            menuIcon.addEventListener("click", () => {
-                cardsContainer.classList.toggle("hidden");
-            });
-        });
-
-        // Cargar la primera escena
-        changeScene(0);
-        animate();
-        updateVRControllers();
+        init();
 
     </script>
 

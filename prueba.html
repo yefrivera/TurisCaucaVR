@@ -14,6 +14,7 @@
             }
         }
     </script>
+
 </head>
 <body>
 
@@ -45,34 +46,24 @@
         </ul>
     </div>
 
-    <div class="menu-icon" id="menu-icon">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-    </div>
-
-    <div id="cards-container" class="hidden">
-        <div class="card" data-scene-index="0" data-name="Escena 1">
-            <img src="images/a.jpg" alt="Escena 1">
+    <div class="card-container">
+        <div class="card" data-environment="0">
+            <img src="images/centrocaldas.jpg" alt="Centro Caldas">
+            <div class="card-title">Centro Caldas</div>
         </div>
-        <div class="card" data-scene-index="1" data-name="Escena 2">
-            <img src="images/d.jpg" alt="Escena 2">
+        <div class="card" data-environment="1">
+            <img src="images/catedral.jpg" alt="Catedral">
+            <div class="card-title">Catedral</div>
         </div>
-        <div class="card" data-scene-index="2" data-name="Escena 3">
-            <img src="images/v.jpg" alt="Escena 3">
+        <div class="card" data-environment="2">
+            <img src="images/bancolombia.jpg" alt="Bancolombia">
+            <div class="card-title">Bancolombia</div>
         </div>
-        <div class="card" data-scene-index="3" data-name="Escena 4">
-            <img src="images/72.jpg" alt="Escena 4">
+        <div class="card" data-environment="3">
+            <img src="images/bancobogota.jpg" alt="Banco de Bogotá">
+            <div class="card-title">Banco de Bogotá</div>
         </div>
     </div>
-
-    <div id="tooltip"></div>
 
     <script src="menu.js"></script> 
 
@@ -80,7 +71,6 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        
         let camera, scene, renderer, controls;
         let environments = [];
         let sprites = [];
@@ -92,7 +82,6 @@
         animate();
 
         function init() {
-            // Crear la cámara, escena y renderizador
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
             camera.position.set(0, 0, 0.1);
             scene = new THREE.Scene();
@@ -100,20 +89,15 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.12;
-            controls.enableZoom = true;  
-            controls.zoomSpeed = 0.3;    
+            controls.enableZoom = true;
+            controls.zoomSpeed = 0.3;
             controls.enablePan = false;
             controls.rotateSpeed = -0.3;
 
-
-
-            // Crear los entornos 360 con la posibilidad de modificar manualmente
             const textureLoader = new THREE.TextureLoader();
-            
             const environmentImages = [
                 'images/centrocaldas.jpg',
                 'images/catedral.jpg',
@@ -128,53 +112,43 @@
                 geometry.scale(-1, 1, 1);
 
                 const texture = textureLoader.load(environmentImages[i]);
-                texture.colorSpace = THREE.SRGBColorSpace; // Aquí se añade la línea
-                const material = new THREE.MeshBasicMaterial({
-                    map: texture
-                });
+                texture.colorSpace = THREE.SRGBColorSpace;
+                const material = new THREE.MeshBasicMaterial({ map: texture });
 
                 const mesh = new THREE.Mesh(geometry, material);
                 environments.push(mesh);
             }
 
-            // Añadir el primer entorno a la escena
             scene.add(environments[currentEnvironmentIndex]);
 
-            // Crear los sprites de navegación para cada entorno
             const spriteData = [
                 {
-                    //centro
                     positions: [
                         { x: 10, y: -25, z: 100 },
                         { x: 100, y: -30, z: -5 },
                         { x: -5, y: -27, z: -90 },
                         { x: -100, y: -10, z: 27 }
-
                     ],
                     destinations: [1, 2, 3, 4]
                 },
                 {
-                    //catedral
                     positions: [
                         { x: 100, y: -30, z: -35 },
                         { x: 42, y: -25, z: 100 },
                         { x: -25, y: -25, z: -90 },
-                        { x: -80, y: -15, z: 28  }
+                        { x: -80, y: -15, z: 28 }
                     ],
                     destinations: [0, 2, 4, 5]
                 },
                 {
-                    //bancolombia
                     positions: [
                         { x: -90, y: -32, z: 35 },
                         { x: 25, y: -25, z: 100 },
                         { x: -27, y: -27, z: -100 }
-                        
                     ],
                     destinations: [0, 1, 3]
                 },
                 {
-                    //bancobogota
                     positions: [
                         { x: -80, y: -25, z: 20 },
                         { x: 10, y: -25, z: 90 },
@@ -183,7 +157,6 @@
                     destinations: [0, 2, 4]
                 },
                 {
-                    //juanvaldez
                     positions: [
                         { x: -90, y: -22, z: -5 },
                         { x: -5, y: -27, z: -80 },
@@ -192,19 +165,15 @@
                     destinations: [0, 1, 3]
                 },
                 {
-                    //catedral-in
                     positions: [
                         { x: 100, y: -35, z: 12 }
                     ],
                     destinations: [1]
-                },
-                
+                }
             ];
 
             const spriteImage = 'images/next.png';
-            const spriteMaterial = new THREE.SpriteMaterial({
-                map: textureLoader.load(spriteImage)
-            });
+            const spriteMaterial = new THREE.SpriteMaterial({ map: textureLoader.load(spriteImage) });
 
             for (let i = 0; i < spriteData.length; i++) {
                 const spritesInEnvironment = [];
@@ -220,14 +189,19 @@
                 sprites.push(spritesInEnvironment);
             }
 
-
-
-            // Añadir los sprites del primer entorno a la escena
             sprites[currentEnvironmentIndex].forEach(sprite => scene.add(sprite));
 
-            // Event listeners para cambiar el entorno al hacer clic en un sprite y para detectar movimiento del ratón
             document.addEventListener('click', onDocumentMouseDown, false);
             document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+            // Add event listeners to cards for changing environments
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('click', (event) => {
+                    const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-environment'));
+                    changeEnvironment(targetSceneIndex);
+                });
+            });
         }
 
         function onDocumentMouseDown(event) {
@@ -244,14 +218,7 @@
                 const intersected = intersects[0].object;
                 const destinationIndex = intersected.userData.destination;
 
-                // Limpiar el entorno actual
-                scene.remove(environments[currentEnvironmentIndex]);
-                sprites[currentEnvironmentIndex].forEach(sprite => scene.remove(sprite));
-
-                // Añadir el nuevo entorno
-                currentEnvironmentIndex = destinationIndex;
-                scene.add(environments[currentEnvironmentIndex]);
-                sprites[currentEnvironmentIndex].forEach(sprite => scene.add(sprite));
+                changeEnvironment(destinationIndex);
             }
         }
 
@@ -268,11 +235,26 @@
             if (intersects.length > 0) {
                 document.body.classList.add('hand-cursor');
                 const intersected = intersects[0].object;
-                intersected.scale.set(10, 10, 1); // Expandir el sprite
+                intersected.scale.set(10, 10, 1);
             } else {
                 document.body.classList.remove('hand-cursor');
-                sprites[currentEnvironmentIndex].forEach(sprite => sprite.scale.set(8, 8, 1)); // Restaurar el tamaño del sprite
+                sprites[currentEnvironmentIndex].forEach(sprite => sprite.scale.set(8, 8, 1));
             }
+        }
+
+        function changeEnvironment(destinationIndex) {
+            // Remove current environment and its sprites
+            if (scene.children.includes(environments[currentEnvironmentIndex])) {
+                scene.remove(environments[currentEnvironmentIndex]);
+                sprites[currentEnvironmentIndex].forEach(sprite => scene.remove(sprite));
+            }
+
+            // Update current environment index
+            currentEnvironmentIndex = destinationIndex;
+
+            // Add new environment and its sprites
+            scene.add(environments[currentEnvironmentIndex]);
+            sprites[currentEnvironmentIndex].forEach(sprite => scene.add(sprite));
         }
 
         function animate() {
@@ -286,8 +268,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        //------------------zoom------------
 
         const MIN_ZOOM = 1;
         const MAX_ZOOM = 3;
@@ -340,54 +320,6 @@
         renderer.domElement.addEventListener('touchstart', onTouchStart, false);
         renderer.domElement.addEventListener('touchmove', onTouchMove, false);
         renderer.domElement.addEventListener('touchend', onTouchEnd, false);
-
-        //--------------------------------
-        //------------tarjetas--------
-        document.querySelectorAll('.card').forEach(card => {
-
-            card.addEventListener('click', (event) => {
-                const targetSceneEnviroment = parseInt(event.currentTarget.getAttribute('data-scene-index'));
-                changeScene(targetSceneIndex);
-
-                // Limpiar el entorno actual
-                scene.remove(environments[currentEnvironmentIndex]);
-                sprites[currentEnvironmentIndex].forEach(sprite => scene.remove(sprite));
-
-                // Añadir el nuevo entorno
-                currentEnvironmentIndex = destinationIndex;
-                scene.add(environments[currentEnvironmentIndex]);
-                sprites[currentEnvironmentIndex].forEach(sprite => scene.add(sprite));
-
-            });
-
-            // Mostrar el tooltip al pasar el mouse por encima
-            card.addEventListener('mouseenter', (event) => {
-                const name = event.currentTarget.getAttribute('data-name');
-                tooltip.innerHTML = name;
-                tooltip.style.display = 'block';
-            });
-
-            // Mover el tooltip con el mouse
-            card.addEventListener('mousemove', (event) => {
-                tooltip.style.left = event.pageX + 10 + 'px';
-                tooltip.style.top = event.pageY + 10 + 'px';
-            });
-
-            // Ocultar el tooltip al salir del área de la tarjeta
-            card.addEventListener('mouseleave', () => {
-                tooltip.style.display = 'none';
-            });
-        });
-        
-        document.addEventListener("DOMContentLoaded", () => {
-            const menuIcon = document.getElementById("menu-icon");
-            const cardsContainer = document.getElementById("cards-container");
-
-            menuIcon.addEventListener("click", () => {
-                cardsContainer.classList.toggle("hidden");
-            });
-        });
-
     </script>
 </body>
 </html>
