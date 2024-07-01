@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
     <div class="menu-icon" id="menu-icon">
@@ -94,6 +95,7 @@
         const audioLoader = new THREE.AudioLoader();
         const listener = new THREE.AudioListener();
         const audioElements = {};
+        const textSprites = [];
 
         const MIN_ZOOM = 1;
         const MAX_ZOOM = 3;
@@ -320,48 +322,87 @@
             return sprite;
         }
 
-        function createVideoSprite(position) {
+        function createVideoSprite(position, label) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: videoSpriteTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
             sprite.scale.set(8, 8, 1);
-            sprite.userData = { type: 'video' };
+            sprite.userData = { type: 'video', label: label };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
-            sprite.onPointerOver = function() {
+            sprite.onPointerOver = function(event) {
                 sprite.scale.set(11, 11, 1);
+                showTextLabel(sprite);
                 document.body.classList.add('pointer-cursor');
             };
 
             sprite.onPointerOut = function() {
                 sprite.scale.set(8, 8, 1);
+                hideTextLabel(sprite);
                 document.body.classList.remove('pointer-cursor');
             };
 
             return sprite;
         }
 
-        function createAudioSprite(position) {
+        function createAudioSprite(position, label) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: audioSpriteTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
             sprite.scale.set(8, 8, 1);
-            sprite.userData = { type: 'audio' };
+            sprite.userData = { type: 'audio', label: label };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
-            sprite.onPointerOver = function() {
+            sprite.onPointerOver = function(event) {
                 sprite.scale.set(11, 11, 1);
+                showTextLabel(sprite);
                 document.body.classList.add('pointer-cursor');
             };
 
             sprite.onPointerOut = function() {
                 sprite.scale.set(8, 8, 1);
+                hideTextLabel(sprite);
                 document.body.classList.remove('pointer-cursor');
             };
 
             return sprite;
+        }
+
+        function createTextLabel(message) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const fontSize = 50;
+            context.font = `${fontSize}px Arial`;
+            context.fillStyle = 'white';
+            const metrics = context.measureText(message);
+            const textWidth = metrics.width;
+            canvas.width = textWidth;
+            canvas.height = fontSize * 1.2; 
+            context.font = `${fontSize}px Arial`;
+            context.fillStyle = 'white';
+            context.fillText(message, 0, fontSize);
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(textWidth * 0.1, fontSize * 0.1, 1); 
+            return sprite;
+        }
+
+        function showTextLabel(sprite) {
+            const textLabel = createTextLabel(sprite.userData.label);
+            textLabel.position.set(sprite.position.x, sprite.position.y + 12, sprite.position.z);
+            textLabel.name = 'textLabel';
+            currentScene.add(textLabel);
+            textSprites.push(textLabel);
+        }
+
+        function hideTextLabel(sprite) {
+            const textLabel = currentScene.getObjectByName('textLabel');
+            if (textLabel) {
+                currentScene.remove(textLabel);
+            }
         }
 
         function loadArrows(scene, sceneIndex) {
@@ -398,41 +439,39 @@
             switch (sceneIndex) {
                 case 0:
                     position = new THREE.Vector3(-100, -5, 4);
-                    const videoSprite = createVideoSprite(position);
-                    scene.add(videoSprite);
+                    scene.add(createVideoSprite(position, "Francisco José de Caldas"));
 
-                    position = new THREE.Vector3(30, -20, -50);
-                    audioPath = 'audios/corcho.mp3';
+                    position = new THREE.Vector3(-100, 25, -65);
+                    audioPath = 'audios/corcho1.mp3';
+                    const audioSprite = createAudioSprite(position, "Árbol de corcho");
+                    audioSprite.userData.audioPath = audioPath;
+                    scene.add(audioSprite);
+                    //scene.add(createAudioSprite(position, "Árbol de corcho"));
                     break;
                 case 1:
-                    position = new THREE.Vector3(30, -20, -50);
+                    position = new THREE.Vector3(-80, 5, 28);
                     audioPath = 'audios/catedral.mp3';
+                    const audioSprite1 = createAudioSprite(position,"Catedral Basílica Nuestra Señora de la Asunción");
+                    audioSprite1.userData.audioPath = audioPath;
+                    scene.add(audioSprite1);
+                    //scene.add(createAudioSprite(position, "Catedral Basílica Nuestra Señora de la Asunción"));
                     break;
                 case 2:
-                    position = new THREE.Vector3(40, -15, 40);
-                    audioPath = 'audios/audio2.mp3';
                     break;
                 case 3:
-                    position = new THREE.Vector3(-30, -10, 50);
-                    audioPath = 'audios/audio3.mp3';
                     break;
                 case 4:
-                    position = new THREE.Vector3(20, -25, -30);
-                    audioPath = 'audios/audio4.mp3';
+                    position = new THREE.Vector3(1, 3, -140);
+                    audioPath = 'audios/torre_reloj.mp3';
+                    const audioSprite2 = createAudioSprite(position, "Torre del Reloj");
+                    audioSprite2.userData.audioPath = audioPath;
+                    scene.add(audioSprite2);
+                    //scene.add(createAudioSprite(position, "Torre del Reloj"));
                     break;
                 case 5:
-                    position = new THREE.Vector3(10, -15, 20);
-                    audioPath = 'audios/audio5.mp3';
                     break;
                 default:
-                    position = new THREE.Vector3(0, 0, 0);
-                    audioPath = 'audios/default.mp3';
-            }
-
-            if (sceneIndex > 0) {
-                const audioSprite = createAudioSprite(position);
-                audioSprite.userData.audioPath = audioPath;
-                scene.add(audioSprite);
+                    break;
             }
         }
 
@@ -470,14 +509,14 @@
             videoElement.loop = false;
             videoElement.autoplay = true;
             videoElement.crossOrigin = "anonymous";
-            videoElement.style.display = 'none'; // Ocultar el elemento HTML del video
+            videoElement.style.display = 'none'; 
 
             videoTexture = new THREE.VideoTexture(videoElement);
             const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
             const geometry = new THREE.PlaneGeometry(70, 50);
             videoMesh = new THREE.Mesh(geometry, videoMaterial);
             videoMesh.position.copy(position);
-            videoMesh.position.y += 30; // Ajustar la posición frente a la cámara
+            videoMesh.position.y += 30; 
             videoMesh.lookAt(camera.position);
             currentScene.add(videoMesh);
 
@@ -513,7 +552,7 @@
                 audio.setRefDistance(20);
                 audio.play();
                 audio.onEnded = () => { audioElements[`audio_${sprite.id}`] = null; };
-            });
+            },);
             sprite.add(audio);
             audioElements[`audio_${sprite.id}`] = audio;
         }
@@ -529,7 +568,7 @@
             if (intersects.length > 0) {
                 const intersectedObject = intersects[0].object;
                 if (intersectedObject.onPointerOver) {
-                    intersectedObject.onPointerOver();
+                    intersectedObject.onPointerOver(event);
                 }
             } else {
                 clickableObjects.forEach(child => {
