@@ -16,6 +16,7 @@
         <div class="dot"></div>
         <div class="dot"></div>
         <div class="dot"></div>
+        <div class="dot"></div>
     </div>
 
     <div id="cards-container" class="hidden">
@@ -94,6 +95,13 @@
         const listener = new THREE.AudioListener();
         const audioElements = {};
 
+        const MIN_ZOOM = 1;
+        const MAX_ZOOM = 3;
+
+        let isPinching = false;
+        let initialPinchDistance = 0;
+        let initialZoom = 1;
+
         function init() {
             container = document.getElementById('container');
             tooltip = document.getElementById('tooltip');
@@ -110,11 +118,11 @@
             container.appendChild(renderer.domElement);
 
             const vrButton = VRButton.createButton(renderer);
-            vrButton.style.display = 'none'; // Ocultar el botón VR por defecto
+            vrButton.style.display = 'none';
 
             document.getElementById('vr-btn').addEventListener('click', () => {
                 renderer.xr.enabled = true;
-                vrButton.click(); // Simular el clic del botón VR por defecto
+                vrButton.click(); 
             });
 
             controls = new OrbitControls(camera, renderer.domElement);
@@ -247,9 +255,6 @@
             });
         }
 
-        const MIN_ZOOM = 1;
-        const MAX_ZOOM = 3;
-
         function onDocumentMouseWheel(event) {
             event.preventDefault();
             if (event.deltaY < 0) {
@@ -259,10 +264,6 @@
             }
             camera.updateProjectionMatrix();
         }
-
-        let isPinching = false;
-        let initialPinchDistance = 0;
-        let initialZoom = 1;
 
         function onTouchStart(event) {
             if (event.touches.length === 2) {
@@ -396,13 +397,16 @@
             let audioPath;
             switch (sceneIndex) {
                 case 0:
-                    position = new THREE.Vector3(-50, -10, 30);
+                    position = new THREE.Vector3(-100, -5, 4);
                     const videoSprite = createVideoSprite(position);
                     scene.add(videoSprite);
+
+                    position = new THREE.Vector3(30, -20, -50);
+                    audioPath = 'audios/corcho.mp3';
                     break;
                 case 1:
                     position = new THREE.Vector3(30, -20, -50);
-                    audioPath = 'audios/audio1.mp3';
+                    audioPath = 'audios/catedral.mp3';
                     break;
                 case 2:
                     position = new THREE.Vector3(40, -15, 40);
