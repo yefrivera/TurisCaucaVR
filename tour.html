@@ -5,23 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="style.css">
-    <style>
-        #loading-bar-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background-color: rgba(0, 0, 0, 0.3);
-            display: none;
-        }
-        #loading-bar {
-            height: 100%;
-            width: 0;
-            background-color: #ffffff;
-            transition: width 2s;
-        }
-    </style>
 </head>
 <body>
     <div class="menu-icon" id="menu-icon">
@@ -37,16 +20,16 @@
     </div>
 
     <div id="cards-container" class="hidden">
-        <div class="card" data-scene-index="0" data-name="Escena 1">
+        <div class="card" data-scene-index="0" data-name="Centro Parque Caldas">
             <img src="images/a.jpg" alt="Escena 1">
         </div>
-        <div class="card" data-scene-index="1" data-name="Escena 2">
+        <div class="card" data-scene-index="1" data-name="Catedral Nuestra Señora de La Asunción">
             <img src="images/d.jpg" alt="Escena 2">
         </div>
-        <div class="card" data-scene-index="2" data-name="Escena 3">
+        <div class="card" data-scene-index="2" data-name="Zona Oriental Parque Caldas">
             <img src="images/v.jpg" alt="Escena 3">
         </div>
-        <div class="card" data-scene-index="3" data-name="Escena 4">
+        <div class="card" data-scene-index="3" data-name="Zona Norte parque Caldas">
             <img src="images/72.jpg" alt="Escena 4">
         </div>
     </div>
@@ -117,6 +100,7 @@
         const listener = new THREE.AudioListener();
         const audioElements = {};
         const textSprites = [];
+        const loadedTextures = {};
 
         const MIN_ZOOM = 1;
         const MAX_ZOOM = 3;
@@ -124,6 +108,10 @@
         let isPinching = false;
         let initialPinchDistance = 0;
         let initialZoom = 1;
+
+        const arrowTexture = textureLoader.load('images/next.png');
+        const videoSpriteTexture = textureLoader.load('images/infobb.png');
+        const audioSpriteTexture = textureLoader.load('images/infobb.png');
 
         function init() {
             container = document.getElementById('container');
@@ -164,6 +152,8 @@
             setupWeatherInfo();
         }
 
+        //-----------Función para cargas las escenas-------------------------------------
+
         function loadScene(sceneIndex, callback) {
             const scene = new THREE.Scene();
             const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.6);
@@ -173,56 +163,69 @@
             directionalLight.position.set(0, 10, 0);
             scene.add(directionalLight);
 
-            let texturePath;
-            switch (sceneIndex) {
-                case 0:
-                    texturePath = 'images/centrocaldas.jpg';
-                    break;
-                case 1:
-                    texturePath = 'images/catedral.jpg';
-                    break;
-                case 2:
-                    texturePath = 'images/bancolombia.jpg';
-                    break;
-                case 3:
-                    texturePath = 'images/bancobogota.jpg';
-                    break;
-                case 4:
-                    texturePath = 'images/juanvaldez.jpg';
-                    break;
-                case 5:
-                    texturePath = 'images/catt.jpg';
-                    break;
-                default:
-                    texturePath = 'images/default.jpg';
-            }
-
-            const texture = textureLoader.load(
-                texturePath,
-                (texture) => {
-                    texture.minFilter = THREE.LinearFilter;
-                    texture.magFilter = THREE.LinearFilter;
-                    texture.anisotropy = 4;
-                    texture.colorSpace = THREE.SRGBColorSpace;
-                    const geometry = new THREE.SphereGeometry(500, 60, 40);
-                    geometry.scale(-1, 1, 1);
-                    const material = new THREE.MeshBasicMaterial({ map: texture });
-                    const sphere = new THREE.Mesh(geometry, material);
-                    scene.add(sphere);
-
-                    loadArrows(scene, sceneIndex);
-                    loadInteractiveSprite(scene, sceneIndex);
-                    if (callback) callback(scene);
-                },
-                (xhr) => {
-                    // Progress event
-                    updateLoadingBar(xhr.loaded / xhr.total * 100);
-                },
-                (error) => {
-                    console.error('Error loading texture:', error);
+            if (loadedTextures[sceneIndex]) {
+                addTextureToScene(scene, loadedTextures[sceneIndex], sceneIndex);
+                if (callback) callback(scene);
+            } else {
+                let texturePath;
+                switch (sceneIndex) {
+                    case 0:
+                        texturePath = 'images/centrocaldas.jpg';
+                        break;
+                    case 1:
+                        texturePath = 'images/catedral.jpg';
+                        break;
+                    case 2:
+                        texturePath = 'images/bancolombia.jpg';
+                        break;
+                    case 3:
+                        texturePath = 'images/bancobogota.jpg';
+                        break;
+                    case 4:
+                        texturePath = 'images/juanvaldez.jpg';
+                        break;
+                    case 5:
+                        texturePath = 'images/catt.jpg';
+                        break;
+                    default:
+                        texturePath = 'images/default.jpg';
                 }
-            );
+
+                const texture = textureLoader.load(
+                    texturePath,
+                    (texture) => {
+                        loadedTextures[sceneIndex] = texture;
+                        addTextureToScene(scene, texture, sceneIndex);
+                        if (callback) callback(scene);
+                    },
+                    (xhr) => {
+                        updateLoadingBar(xhr.loaded / xhr.total * 100);
+                    },
+                    (error) => {
+                        console.error('Error loading texture:', error);
+                    }
+                );
+            }
         }
+
+        //------Agregar texturas a la escena mediantes esferas------
+
+        function addTextureToScene(scene, texture, sceneIndex) {
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.anisotropy = 4;
+            texture.colorSpace = THREE.SRGBColorSpace;
+            const geometry = new THREE.SphereGeometry(500, 60, 40);
+            geometry.scale(-1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+            const sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+
+            loadArrows(scene, sceneIndex);
+            loadInteractiveSprite(scene, sceneIndex);
+        }
+
+        //-----------Barra de carga-----------------------
 
         function updateLoadingBar(percentage) {
             const loadingBar = document.getElementById('loading-bar');
@@ -243,8 +246,10 @@
             setTimeout(() => {
                 loadingBarContainer.style.display = 'none';
                 loadingBar.style.width = '0';
-            }, 2000); // Adjust duration as necessary
+            }, 2000); 
         }
+
+        //----------Camabiar escena----------------
 
         function changeScene(targetSceneIndex) {
             showLoadingBar();
@@ -265,6 +270,8 @@
             });
         }
 
+        //------------Quitar video y audio-------------------
+
         function stopAllMedia() {
             if (videoElement && !videoElement.paused) {
                 videoElement.pause();
@@ -280,6 +287,8 @@
             updateMuteIcon(false);
         }
 
+        //-----------Actualizar ícono de sonido del menú-------------
+
         function updateMuteIcon(isPlaying) {
             const muteIcon = document.getElementById('mute-icon');
             if (isPlaying) {
@@ -288,6 +297,8 @@
                 muteIcon.src = muteIcon.getAttribute('data-original-src');
             }
         }
+
+        //-----------Listeners para eventos de click------------
 
         function setupEventListeners() {
             document.querySelectorAll('.card').forEach(card => {
@@ -333,6 +344,8 @@
             document.getElementById('mute-btn').addEventListener('click', toggleMute);
         }
 
+        //---------Zoom en pc------------------------------------
+
         function onDocumentMouseWheel(event) {
             event.preventDefault();
             if (event.deltaY < 0) {
@@ -342,6 +355,8 @@
             }
             camera.updateProjectionMatrix();
         }
+
+        //-----------Zoom en dispositivos táctiles----------------
 
         function onTouchStart(event) {
             if (event.touches.length === 2) {
@@ -372,26 +387,24 @@
             return Math.sqrt(dx * dx + dy * dy);
         }
 
-        const arrowTexture = textureLoader.load('images/next.png');
-        const videoSpriteTexture = textureLoader.load('images/infobb.png');
-        const audioSpriteTexture = textureLoader.load('images/infobb.png');
+        //----------------Sprites para cambio de escena--------------------
 
         function createArrow(position, targetSceneIndex) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: arrowTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
-            sprite.scale.set(8, 8, 1);
+            sprite.scale.set(8, 8, 8);
             sprite.userData = { targetSceneIndex };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
             sprite.onPointerOver = function() {
-                sprite.scale.set(11, 11, 1);
+                sprite.scale.set(11, 11, 11);
                 document.body.classList.add('pointer-cursor');
             };
 
             sprite.onPointerOut = function() {
-                sprite.scale.set(8, 8, 1);
+                sprite.scale.set(8, 8, 8);
                 document.body.classList.remove('pointer-cursor');
             };
 
@@ -402,23 +415,25 @@
             return sprite;
         }
 
+        //------------Sprite para video------------------
+
         function createVideoSprite(position, label) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: videoSpriteTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
-            sprite.scale.set(8, 8, 1);
+            sprite.scale.set(8, 8, 8);
             sprite.userData = { type: 'video', label: label };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
             sprite.onPointerOver = function(event) {
-                sprite.scale.set(11, 11, 1);
+                sprite.scale.set(11, 11, 11);
                 showTextLabel(sprite);
                 document.body.classList.add('pointer-cursor');
             };
 
             sprite.onPointerOut = function() {
-                sprite.scale.set(8, 8, 1);
+                sprite.scale.set(8, 8, 8);
                 hideTextLabel(sprite);
                 document.body.classList.remove('pointer-cursor');
             };
@@ -430,23 +445,25 @@
             return sprite;
         }
 
+        //--------------Sprites para audio----------------------------------
+
         function createAudioSprite(position, label) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: audioSpriteTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
-            sprite.scale.set(8, 8, 1);
+            sprite.scale.set(8, 8, 8);
             sprite.userData = { type: 'audio', label: label };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
             sprite.onPointerOver = function(event) {
-                sprite.scale.set(11, 11, 1);
+                sprite.scale.set(11, 11, 11);
                 showTextLabel(sprite);
                 document.body.classList.add('pointer-cursor');
             };
 
             sprite.onPointerOut = function() {
-                sprite.scale.set(8, 8, 1);
+                sprite.scale.set(8, 8, 8);
                 hideTextLabel(sprite);
                 document.body.classList.remove('pointer-cursor');
             };
@@ -454,24 +471,26 @@
             return sprite;
         }
 
+        //-----------Texto para sprites de audio y video---------------------
+
         function createTextLabel(message) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            const fontSize = 50;
-            context.font = `${fontSize}px Arial`;
-            context.fillStyle = 'white';
-            const metrics = context.measureText(message);
-            const textWidth = metrics.width;
-            canvas.width = textWidth;
-            canvas.height = fontSize * 1.2; 
-            context.font = `${fontSize}px Arial`;
-            context.fillStyle = 'white';
-            context.fillText(message, 0, fontSize);
-            const texture = new THREE.CanvasTexture(canvas);
-            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-            const sprite = new THREE.Sprite(spriteMaterial);
-            sprite.scale.set(textWidth * 0.1, fontSize * 0.1, 1); 
-            return sprite;
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const fontSize = 50;
+        context.font = `${fontSize}px "Times New Roman"`;
+        context.fillStyle = 'white';
+        const metrics = context.measureText(message);
+        const textWidth = metrics.width;
+        canvas.width = textWidth;
+        canvas.height = fontSize * 1.2; 
+        context.font = `${fontSize}px "Times New Roman"`;
+        context.fillStyle = 'white';
+        context.fillText(message, 0, fontSize);
+        const texture = new THREE.CanvasTexture(canvas);
+        const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+        const sprite = new THREE.Sprite(spriteMaterial);
+        sprite.scale.set(textWidth * 0.1, fontSize * 0.1, 1); 
+        return sprite;
         }
 
         function showTextLabel(sprite) {
@@ -488,6 +507,8 @@
                 currentScene.remove(textLabel);
             }
         }
+
+        //------Asignar entornos a los sprites para permitir la navegación entre entornos------
 
         function loadArrows(scene, sceneIndex) {
             if (sceneIndex === 0) {
@@ -516,6 +537,8 @@
                 scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));
             }
         }
+
+        //-----------------Asignar texto a sprites de video y audio---------------------------
 
         function loadInteractiveSprite(scene, sceneIndex) {
             let position;
@@ -556,6 +579,8 @@
             }
         }
 
+        //-------------Eventos de click para objetos----------------------------------
+
         function onMouseClick(event) {
             if (!currentScene) return;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -585,6 +610,8 @@
             }
         }
 
+        //---------------Creación de video dentro den entorno 360--------------------
+
         function openVideo(position) {
             videoElement = document.createElement('video');
             videoElement.src = 'videos/caldas1.mp4';
@@ -610,6 +637,8 @@
             };
         }
 
+        //-------------------Cerrar el video al segundo click-----------------------------------
+
         function closeVideo() {
             if (videoMesh) {
                 currentScene.remove(videoMesh);
@@ -622,6 +651,8 @@
             }
         }
 
+
+
         function handleAudioSpriteClick(sprite) {
             const audioKey = `audio_${sprite.id}`;
             if (audioElements[audioKey] && audioElements[audioKey].isPlaying) {
@@ -632,6 +663,8 @@
                 playAudio(sprite);
             }
         }
+
+        //--------------------Crear audio-------------------------
 
         function playAudio(sprite) {
             const audio = new THREE.PositionalAudio(listener);
@@ -649,6 +682,8 @@
             audioElements[`audio_${sprite.id}`] = audio;
             updateMuteIcon(true);
         }
+
+        //---------------Actualizar el icono de muted/unmuted --------------------------------------------
 
         function toggleMute() {
             const muteIcon = document.getElementById('mute-icon');
@@ -701,6 +736,8 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
+
+        //------------------controladores de VR----------------------------------
 
         function setupVRControllers() {
             const controllerModelFactory = new XRControllerModelFactory();
@@ -769,6 +806,8 @@
             raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
             return raycaster.intersectObjects(currentScene.children, true);
         }
+
+        //----------------eventos del clima--------------------------------
 
         function setupWeatherInfo() {
             const weatherInfo = document.getElementById('weather-info');
