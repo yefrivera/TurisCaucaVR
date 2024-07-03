@@ -280,23 +280,7 @@
                 });
             });
 
-            const muteBtn = document.getElementById('mute-btn');
-            muteBtn.addEventListener('click', toggleMute);
-        }
-
-        function toggleMute() {
-            if (videoElement) {
-                videoElement.muted = !videoElement.muted;
-                updateMuteIcon(!videoElement.muted);
-            }
-
-            for (let key in audioElements) {
-                if (audioElements[key]) {
-                    const currentVolume = audioElements[key].getVolume();
-                    audioElements[key].setVolume(currentVolume > 0 ? 0 : 1);
-                    updateMuteIcon(audioElements[key].getVolume() > 0);
-                }
-            }
+            document.getElementById('mute-btn').addEventListener('click', toggleMute);
         }
 
         function onDocumentMouseWheel(event) {
@@ -608,6 +592,21 @@
             updateMuteIcon(true);
         }
 
+        function toggleMute() {
+            const muteIcon = document.getElementById('mute-icon');
+            if (videoElement && !videoElement.paused) {
+                videoElement.muted = !videoElement.muted;
+                muteIcon.src = videoElement.muted ? muteIcon.getAttribute('data-original-src') : muteIcon.getAttribute('data-alt-src');
+            } else {
+                for (let key in audioElements) {
+                    if (audioElements[key] && audioElements[key].isPlaying) {
+                        audioElements[key].setVolume(audioElements[key].getVolume() === 0 ? 1 : 0);
+                        muteIcon.src = audioElements[key].getVolume() === 0 ? muteIcon.getAttribute('data-alt-src') : muteIcon.getAttribute('data-original-src');
+                    }
+                }
+            }
+        }
+
         function onMouseMove(event) {
             if (!currentScene) return;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -715,6 +714,5 @@
 
         init();
     </script>
- 
 </body>
 </html>
