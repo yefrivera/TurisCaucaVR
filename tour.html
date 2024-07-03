@@ -5,7 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="style.css">
-
+    <style>
+        #loading-bar-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        #loading-bar {
+            height: 100%;
+            width: 0;
+            background-color: #ffffff;
+            transition: width 2s;
+        }
+    </style>
 </head>
 <body>
     <div class="menu-icon" id="menu-icon">
@@ -68,6 +84,9 @@
     </div>
 
     <div id="weather-info"></div>
+    <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+    </div>
 
     <script type="importmap">
         {
@@ -195,14 +214,40 @@
                     loadInteractiveSprite(scene, sceneIndex);
                     if (callback) callback(scene);
                 },
-                undefined,
+                (xhr) => {
+                    // Progress event
+                    updateLoadingBar(xhr.loaded / xhr.total * 100);
+                },
                 (error) => {
                     console.error('Error loading texture:', error);
                 }
             );
         }
 
+        function updateLoadingBar(percentage) {
+            const loadingBar = document.getElementById('loading-bar');
+            loadingBar.style.width = percentage + '%';
+        }
+
+        function showLoadingBar() {
+            const loadingBarContainer = document.getElementById('loading-bar-container');
+            const loadingBar = document.getElementById('loading-bar');
+            loadingBarContainer.style.display = 'block';
+            loadingBar.style.width = '0';
+        }
+
+        function hideLoadingBar() {
+            const loadingBarContainer = document.getElementById('loading-bar-container');
+            const loadingBar = document.getElementById('loading-bar');
+            loadingBar.style.width = '100%';
+            setTimeout(() => {
+                loadingBarContainer.style.display = 'none';
+                loadingBar.style.width = '0';
+            }, 2000); // Adjust duration as necessary
+        }
+
         function changeScene(targetSceneIndex) {
+            showLoadingBar();
             if (currentScene) {
                 stopAllMedia();
                 while (currentScene.children.length > 0) {
@@ -216,6 +261,7 @@
                 currentScene = scene;
                 updateVRControllers();
                 renderer.render(currentScene, camera);
+                hideLoadingBar();
             });
         }
 
@@ -349,6 +395,10 @@
                 document.body.classList.remove('pointer-cursor');
             };
 
+            sprite.addEventListener('click', () => {
+                changeScene(targetSceneIndex);
+            });
+
             return sprite;
         }
 
@@ -372,6 +422,10 @@
                 hideTextLabel(sprite);
                 document.body.classList.remove('pointer-cursor');
             };
+
+            sprite.addEventListener('click', () => {
+                showLoadingBar();
+            });
 
             return sprite;
         }
@@ -719,16 +773,16 @@
         function setupWeatherInfo() {
             const weatherInfo = document.getElementById('weather-info');
             const weatherData = [
-                "8:00 am: 15°C, nublado☁️",
-                "9:00 am: 16°C, nublado☁️",
-                "10:00 am: 17°C, parcialmente nublado🌥️",
-                "11:00 am: 20°C, parcialmente nublado🌥️",
-                "12:00 pm: 22°C, parcialmente nublado🌥️",
-                "1:00 pm: 25°C, despejado☀️",
-                "2:00 pm: 26°C, despejado☀️",
-                "3:00 pm: 24°C, despejado☀️",
-                "4:00 pm: 21°C, parcialmente nublado🌥️",
-                "5:00 pm: 19°C, nublado☁️"
+                "08:00 am: 15°C ☁️",
+                "09:00 am: 16°C ☁️",
+                "10:00 am: 17°C 🌥️",
+                "11:00 am: 20°C 🌥️",
+                "12:00 pm: 22°C 🌥️",
+                "13:00 pm: 25°C ☀️",
+                "14:00 pm: 26°C ☀️",
+                "15:00 pm: 24°C ☀️",
+                "16:00 pm: 21°C 🌥️",
+                "17:00 pm: 19°C ☁️"
             ];
 
             let currentIndex = 0;
