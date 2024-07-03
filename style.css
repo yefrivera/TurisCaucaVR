@@ -284,27 +284,30 @@ nav {
 @media (max-width: 1200px) {
     #weather-info {
         font-size: 18px;
-        padding: 12px;
+        bottom: 15px;
+        padding: 15px;
     }
 }
 
 @media (max-width: 992px) {
     #weather-info {
         font-size: 16px;
-        padding: 10px;
+        bottom: 15px;
+        padding: 15px;
     }
 }
 
 @media (max-width: 768px) {
     #weather-info {
         font-size: 14px;
-        padding: 8px;
+        bottom: 15px;
+        padding: 15px;
     }
 }
 
 @media (max-width: 576px) {
     #weather-info {
         font-size: 12px;
-        padding: 6px;
+        padding: 15px;
     }
 }
