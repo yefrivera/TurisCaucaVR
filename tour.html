@@ -279,6 +279,24 @@
                     cardsContainer.classList.toggle("hidden");
                 });
             });
+
+            const muteBtn = document.getElementById('mute-btn');
+            muteBtn.addEventListener('click', toggleMute);
+        }
+
+        function toggleMute() {
+            if (videoElement) {
+                videoElement.muted = !videoElement.muted;
+                updateMuteIcon(!videoElement.muted);
+            }
+
+            for (let key in audioElements) {
+                if (audioElements[key]) {
+                    const currentVolume = audioElements[key].getVolume();
+                    audioElements[key].setVolume(currentVolume > 0 ? 0 : 1);
+                    updateMuteIcon(audioElements[key].getVolume() > 0);
+                }
+            }
         }
 
         function onDocumentMouseWheel(event) {
@@ -697,5 +715,6 @@
 
         init();
     </script>
+ 
 </body>
 </html>

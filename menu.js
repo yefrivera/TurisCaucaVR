@@ -2,13 +2,9 @@ const hamMenu = document.querySelector(".ham-menu");
 const offScreenMenu = document.querySelector(".off-screen-menu");
 
 hamMenu.addEventListener("click", () => {
-hamMenu.classList.toggle("active");
-offScreenMenu.classList.toggle("active");
+    hamMenu.classList.toggle("active");
+    offScreenMenu.classList.toggle("active");
 });
-
-//--------------------------------------
-
-//-------------------------funciones del menú-----------------------------------------
 
 document.addEventListener('DOMContentLoaded', function() {
     var expandBtn = document.getElementById('expand-btn');
@@ -17,16 +13,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const muteBtn = document.getElementById('mute-btn');
 
     muteBtn.addEventListener('click', function() {
-        if (video.muted) {
-            video.muted = false;
-            muteBtn.querySelector('img').src = muteBtn.querySelector('img').getAttribute('data-original-src');
-        } else {
-            video.muted = true;
-            muteBtn.querySelector('img').src = muteBtn.querySelector('img').getAttribute('data-alt-src');
+        if (video && !video.paused) {
+            video.muted = !video.muted;
+            updateMuteIcon(!video.muted);
+        }
+
+        for (let key in audioElements) {
+            if (audioElements[key]) {
+                const currentVolume = audioElements[key].getVolume();
+                audioElements[key].setVolume(currentVolume > 0 ? 0 : 1);
+                updateMuteIcon(audioElements[key].getVolume() > 0);
+            }
         }
     });
-
-    //---------------------------------------------
 
     expandBtn.addEventListener('click', function(event) {
         event.preventDefault();
@@ -79,19 +78,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    
-
-
     document.querySelector('.share-x').addEventListener('click', function(event) {
         event.preventDefault(); 
-
-    window.open('https://x.com/share?url=' + encodeURIComponent(window.location.href), 'Compartir en Twitter', 'width=600,height=400');
+        window.open('https://x.com/share?url=' + encodeURIComponent(window.location.href), 'Compartir en Twitter', 'width=600,height=400');
     });
 
     document.querySelector('.share-facebook').addEventListener('click', function(event) {
         event.preventDefault(); 
-
         window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), 'Compartir en Facebook', 'width=600,height=400');
     });
-
 });
