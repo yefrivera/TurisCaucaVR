@@ -9,35 +9,6 @@ hamMenu.addEventListener("click", () => {
 document.addEventListener('DOMContentLoaded', function() {
     var expandBtn = document.getElementById('expand-btn');
     var expandBtnImg = expandBtn.querySelector('img');  
-    /*const muteBtn = document.getElementById('mute-btn');
-
-    muteBtn.addEventListener('click', function() {
-        var videoElement = document.querySelector('video');
-        var audioElements = document.querySelectorAll('audio');
-
-        let isMuted = true;
-
-        if (videoElement) {
-            videoElement.muted = !videoElement.muted;
-            isMuted = videoElement.muted;
-        }
-
-        audioElements.forEach(audioElement => {
-            audioElement.muted = !audioElement.muted;
-            isMuted = audioElement.muted; // Use the last audio element's muted status
-        });
-
-        updateMuteIcon(isMuted);
-    });
-
-    function updateMuteIcon(isMuted) {
-        const muteIcon = document.getElementById('mute-icon');
-        if (isMuted) {
-            muteIcon.src = muteIcon.getAttribute('data-original-src');
-        } else {
-            muteIcon.src = muteIcon.getAttribute('data-alt-src');
-        }
-    }*/
 
     expandBtn.addEventListener('click', function(event) {
         event.preventDefault();

@@ -268,3 +268,15 @@ nav {
     pointer-events: none;
     display: none;
 }
+
+#weather-info {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background-color: transparent;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+}
