@@ -29,7 +29,7 @@
         <div class="card" data-scene-index="2" data-name="Zona Oriental Parque Caldas">
             <img src="images/v.jpg" alt="Escena 3">
         </div>
-        <div class="card" data-scene-index="3" data-name="Zona Norte parque Caldas">
+        <div class="card" data-scene-index="3" data-name="Zona Norte Parque Caldas">
             <img src="images/72.jpg" alt="Escena 4">
         </div>
     </div>
@@ -152,7 +152,7 @@
             setupWeatherInfo();
         }
 
-        //-----------Función para cargas las escenas-------------------------------------
+        //--------------Cargar las escenas-------------------------------------
 
         function loadScene(sceneIndex, callback) {
             const scene = new THREE.Scene();
@@ -225,31 +225,7 @@
             loadInteractiveSprite(scene, sceneIndex);
         }
 
-        //-----------Barra de carga-----------------------
-
-        function updateLoadingBar(percentage) {
-            const loadingBar = document.getElementById('loading-bar');
-            loadingBar.style.width = percentage + '%';
-        }
-
-        function showLoadingBar() {
-            const loadingBarContainer = document.getElementById('loading-bar-container');
-            const loadingBar = document.getElementById('loading-bar');
-            loadingBarContainer.style.display = 'block';
-            loadingBar.style.width = '0';
-        }
-
-        function hideLoadingBar() {
-            const loadingBarContainer = document.getElementById('loading-bar-container');
-            const loadingBar = document.getElementById('loading-bar');
-            loadingBar.style.width = '100%';
-            setTimeout(() => {
-                loadingBarContainer.style.display = 'none';
-                loadingBar.style.width = '0';
-            }, 2000); 
-        }
-
-        //----------Camabiar escena----------------
+        //----------Cambiar escena----------------
 
         function changeScene(targetSceneIndex) {
             showLoadingBar();
@@ -268,123 +244,6 @@
                 renderer.render(currentScene, camera);
                 hideLoadingBar();
             });
-        }
-
-        //------------Quitar video y audio-------------------
-
-        function stopAllMedia() {
-            if (videoElement && !videoElement.paused) {
-                videoElement.pause();
-                closeVideo();
-            }
-
-            for (let key in audioElements) {
-                if (audioElements[key] && audioElements[key].isPlaying) {
-                    audioElements[key].stop();
-                }
-            }
-
-            updateMuteIcon(false);
-        }
-
-        //-----------Actualizar ícono de sonido del menú-------------
-
-        function updateMuteIcon(isPlaying) {
-            const muteIcon = document.getElementById('mute-icon');
-            if (isPlaying) {
-                muteIcon.src = muteIcon.getAttribute('data-alt-src');
-            } else {
-                muteIcon.src = muteIcon.getAttribute('data-original-src');
-            }
-        }
-
-        //-----------Listeners para eventos de click------------
-
-        function setupEventListeners() {
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('click', (event) => {
-                    const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
-                    changeScene(targetSceneIndex);
-                });
-
-                card.addEventListener('mouseenter', (event) => {
-                    const name = event.currentTarget.getAttribute('data-name');
-                    tooltip.innerHTML = name;
-                    tooltip.style.display = 'block';
-                });
-
-                card.addEventListener('mousemove', (event) => {
-                    tooltip.style.left = event.pageX + 10 + 'px';
-                    tooltip.style.top = event.pageY + 10 + 'px';
-                });
-
-                card.addEventListener('mouseleave', () => {
-                    tooltip.style.display = 'none';
-                });
-            });
-
-            window.addEventListener('click', onMouseClick, false);
-            window.addEventListener('mousemove', onMouseMove, false);
-            window.addEventListener('resize', onWindowResize, false);
-
-            renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-            renderer.domElement.addEventListener('touchend', onTouchEnd, false);
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const menuIcon = document.getElementById("menu-icon");
-                const cardsContainer = document.getElementById("cards-container");
-
-                menuIcon.addEventListener("click", () => {
-                    cardsContainer.classList.toggle("hidden");
-                });
-            });
-
-            document.getElementById('mute-btn').addEventListener('click', toggleMute);
-        }
-
-        //---------Zoom en pc------------------------------------
-
-        function onDocumentMouseWheel(event) {
-            event.preventDefault();
-            if (event.deltaY < 0) {
-                camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
-            } else {
-                camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
-            }
-            camera.updateProjectionMatrix();
-        }
-
-        //-----------Zoom en dispositivos táctiles----------------
-
-        function onTouchStart(event) {
-            if (event.touches.length === 2) {
-                isPinching = true;
-                initialPinchDistance = getPinchDistance(event);
-                initialZoom = camera.zoom;
-            }
-        }
-
-        function onTouchMove(event) {
-            if (isPinching && event.touches.length === 2) {
-                const newPinchDistance = getPinchDistance(event);
-                const zoomFactor = newPinchDistance / initialPinchDistance;
-                camera.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, initialZoom * zoomFactor));
-                camera.updateProjectionMatrix();
-            }
-        }
-
-        function onTouchEnd(event) {
-            if (event.touches.length < 2) {
-                isPinching = false;
-            }
-        }
-
-        function getPinchDistance(event) {
-            const dx = event.touches[0].clientX - event.touches[1].clientX;
-            const dy = event.touches[0].clientY - event.touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
         }
 
         //----------------Sprites para cambio de escena--------------------
@@ -413,6 +272,36 @@
             });
 
             return sprite;
+        }
+
+        //------Asignar entornos a los sprites para permitir la navegación entre entornos------
+
+        function loadArrows(scene, sceneIndex) {
+            if (sceneIndex === 0) {
+                scene.add(createArrow(new THREE.Vector3(10, -25, 100), 1));
+                scene.add(createArrow(new THREE.Vector3(100, -30, -5), 2));
+                scene.add(createArrow(new THREE.Vector3(-5, -27, -90), 3));
+                scene.add(createArrow(new THREE.Vector3(-100, -10, 27), 4));
+            } else if (sceneIndex === 1) {
+                scene.add(createArrow(new THREE.Vector3(100, -30, -35), 0));
+                scene.add(createArrow(new THREE.Vector3(42, -25, 100), 2));
+                scene.add(createArrow(new THREE.Vector3(-25, -25, -90), 4));
+                scene.add(createArrow(new THREE.Vector3(-80, -15, 28), 5));
+            } else if (sceneIndex === 2) {
+                scene.add(createArrow(new THREE.Vector3(-90, -32, 35), 0));
+                scene.add(createArrow(new THREE.Vector3(25, -25, 100), 1));
+                scene.add(createArrow(new THREE.Vector3(-27, -27, -100), 3));
+            } else if (sceneIndex === 3) {
+                scene.add(createArrow(new THREE.Vector3(-80, -25, 20), 0));
+                scene.add(createArrow(new THREE.Vector3(10, -25, 90), 2));
+                scene.add(createArrow(new THREE.Vector3(-30, -27, -90), 4));
+            } else if (sceneIndex === 4) {
+                scene.add(createArrow(new THREE.Vector3(-90, -22, -5), 0));
+                scene.add(createArrow(new THREE.Vector3(-5, -27, -80), 1));
+                scene.add(createArrow(new THREE.Vector3(-15, -35, 90), 3));
+            } else if (sceneIndex === 5) {
+                scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));
+            }
         }
 
         //------------Sprite para video------------------
@@ -445,6 +334,33 @@
             return sprite;
         }
 
+        //---------------Creación de video dentro den entorno 360--------------------
+
+        function openVideo(position) {
+            videoElement = document.createElement('video');
+            videoElement.src = 'videos/caldas1.mp4';
+            videoElement.loop = false;
+            videoElement.autoplay = true;
+            videoElement.crossOrigin = "anonymous";
+            videoElement.style.display = 'none'; 
+
+            videoTexture = new THREE.VideoTexture(videoElement);
+            const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+            const geometry = new THREE.PlaneGeometry(70, 50);
+            videoMesh = new THREE.Mesh(geometry, videoMaterial);
+            videoMesh.position.copy(position);
+            videoMesh.position.y += 30; 
+            videoMesh.lookAt(camera.position);
+            currentScene.add(videoMesh);
+
+            videoElement.play();
+            updateMuteIcon(true);
+            videoElement.onended = () => {
+                closeVideo();
+                updateMuteIcon(false);
+            };
+        }
+
         //--------------Sprites para audio----------------------------------
 
         function createAudioSprite(position, label) {
@@ -471,26 +387,45 @@
             return sprite;
         }
 
+        //--------------------Crear audio-------------------------
+
+        function playAudio(sprite) {
+            const audio = new THREE.PositionalAudio(listener);
+            const audioPath = sprite.userData.audioPath;
+            audioLoader.load(audioPath, function(buffer) {
+                audio.setBuffer(buffer);
+                audio.setRefDistance(20);
+                audio.play();
+                audio.onEnded = () => {
+                    audioElements[`audio_${sprite.id}`] = null;
+                    updateMuteIcon(false);
+                };
+            });
+            sprite.add(audio);
+            audioElements[`audio_${sprite.id}`] = audio;
+            updateMuteIcon(true);
+        }
+
         //-----------Texto para sprites de audio y video---------------------
 
         function createTextLabel(message) {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        const fontSize = 50;
-        context.font = `${fontSize}px "Times New Roman"`;
-        context.fillStyle = 'white';
-        const metrics = context.measureText(message);
-        const textWidth = metrics.width;
-        canvas.width = textWidth;
-        canvas.height = fontSize * 1.2; 
-        context.font = `${fontSize}px "Times New Roman"`;
-        context.fillStyle = 'white';
-        context.fillText(message, 0, fontSize);
-        const texture = new THREE.CanvasTexture(canvas);
-        const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-        const sprite = new THREE.Sprite(spriteMaterial);
-        sprite.scale.set(textWidth * 0.1, fontSize * 0.1, 1); 
-        return sprite;
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const fontSize = 50;
+            context.font = `${fontSize}px "Times New Roman"`;
+            context.fillStyle = 'white';
+            const metrics = context.measureText(message);
+            const textWidth = metrics.width;
+            canvas.width = textWidth;
+            canvas.height = fontSize * 1.2; 
+            context.font = `${fontSize}px "Times New Roman"`;
+            context.fillStyle = 'white';
+            context.fillText(message, 0, fontSize);
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(textWidth * 0.1, fontSize * 0.1, 1); 
+            return sprite;
         }
 
         function showTextLabel(sprite) {
@@ -508,34 +443,57 @@
             }
         }
 
-        //------Asignar entornos a los sprites para permitir la navegación entre entornos------
+        //-------------------Cerrar el video-----------------------------------
 
-        function loadArrows(scene, sceneIndex) {
-            if (sceneIndex === 0) {
-                scene.add(createArrow(new THREE.Vector3(10, -25, 100), 1));
-                scene.add(createArrow(new THREE.Vector3(100, -30, -5), 2));
-                scene.add(createArrow(new THREE.Vector3(-5, -27, -90), 3));
-                scene.add(createArrow(new THREE.Vector3(-100, -10, 27), 4));
-            } else if (sceneIndex === 1) {
-                scene.add(createArrow(new THREE.Vector3(100, -30, -35), 0));
-                scene.add(createArrow(new THREE.Vector3(42, -25, 100), 2));
-                scene.add(createArrow(new THREE.Vector3(-25, -25, -90), 4));
-                scene.add(createArrow(new THREE.Vector3(-80, -15, 28), 5));
-            } else if (sceneIndex === 2) {
-                scene.add(createArrow(new THREE.Vector3(-90, -32, 35), 0));
-                scene.add(createArrow(new THREE.Vector3(25, -25, 100), 1));
-                scene.add(createArrow(new THREE.Vector3(-27, -27, -100), 3));
-            } else if (sceneIndex === 3) {
-                scene.add(createArrow(new THREE.Vector3(-80, -25, 20), 0));
-                scene.add(createArrow(new THREE.Vector3(10, -25, 90), 2));
-                scene.add(createArrow(new THREE.Vector3(-30, -27, -90), 4));
-            } else if (sceneIndex === 4) {
-                scene.add(createArrow(new THREE.Vector3(-90, -22, -5), 0));
-                scene.add(createArrow(new THREE.Vector3(-5, -27, -80), 1));
-                scene.add(createArrow(new THREE.Vector3(-15, -35, 90), 3));
-            } else if (sceneIndex === 5) {
-                scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));
+        function closeVideo() {
+            if (videoMesh) {
+                currentScene.remove(videoMesh);
+                videoMesh = null;
             }
+            if (videoElement) {
+                videoElement.pause();
+                videoElement = null;
+                updateMuteIcon(false);
+            }
+        }
+
+        function handleVideoSpriteClick(sprite) {
+            if (videoElement && !videoElement.paused) {
+                closeVideo();
+            } else {
+                stopAllMedia();
+                openVideo(sprite.position);
+            }
+        }
+
+        //------------cerrar aduio----------------------------------------
+
+        function handleAudioSpriteClick(sprite) {
+            const audioKey = `audio_${sprite.id}`;
+            if (audioElements[audioKey] && audioElements[audioKey].isPlaying) {
+                audioElements[audioKey].stop();
+                updateMuteIcon(false);
+            } else {
+                stopAllMedia();
+                playAudio(sprite);
+            }
+        }
+
+        //------------Quitar video y audio-------------------
+
+        function stopAllMedia() {
+        if (videoElement && !videoElement.paused) {
+            videoElement.pause();
+            closeVideo();
+        }
+
+        for (let key in audioElements) {
+            if (audioElements[key] && audioElements[key].isPlaying) {
+                audioElements[key].stop();
+            }
+        }
+
+        updateMuteIcon(false);
         }
 
         //-----------------Asignar texto a sprites de video y audio---------------------------
@@ -601,89 +559,53 @@
             }
         }
 
-        function handleVideoSpriteClick(sprite) {
-            if (videoElement && !videoElement.paused) {
-                closeVideo();
-            } else {
-                stopAllMedia();
-                openVideo(sprite.position);
-            }
-        }
+        //-----------Listeners para eventos de click------------
 
-        //---------------Creación de video dentro den entorno 360--------------------
+        function setupEventListeners() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', (event) => {
+                    const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
+                    changeScene(targetSceneIndex);
+                });
 
-        function openVideo(position) {
-            videoElement = document.createElement('video');
-            videoElement.src = 'videos/caldas1.mp4';
-            videoElement.loop = false;
-            videoElement.autoplay = true;
-            videoElement.crossOrigin = "anonymous";
-            videoElement.style.display = 'none'; 
+                card.addEventListener('mouseenter', (event) => {
+                    const name = event.currentTarget.getAttribute('data-name');
+                    tooltip.innerHTML = name;
+                    tooltip.style.display = 'block';
+                });
 
-            videoTexture = new THREE.VideoTexture(videoElement);
-            const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-            const geometry = new THREE.PlaneGeometry(70, 50);
-            videoMesh = new THREE.Mesh(geometry, videoMaterial);
-            videoMesh.position.copy(position);
-            videoMesh.position.y += 30; 
-            videoMesh.lookAt(camera.position);
-            currentScene.add(videoMesh);
+                card.addEventListener('mousemove', (event) => {
+                    tooltip.style.left = event.pageX + 10 + 'px';
+                    tooltip.style.top = event.pageY + 10 + 'px';
+                });
 
-            videoElement.play();
-            updateMuteIcon(true);
-            videoElement.onended = () => {
-                closeVideo();
-                updateMuteIcon(false);
-            };
-        }
-
-        //-------------------Cerrar el video al segundo click-----------------------------------
-
-        function closeVideo() {
-            if (videoMesh) {
-                currentScene.remove(videoMesh);
-                videoMesh = null;
-            }
-            if (videoElement) {
-                videoElement.pause();
-                videoElement = null;
-                updateMuteIcon(false);
-            }
-        }
-
-
-
-        function handleAudioSpriteClick(sprite) {
-            const audioKey = `audio_${sprite.id}`;
-            if (audioElements[audioKey] && audioElements[audioKey].isPlaying) {
-                audioElements[audioKey].stop();
-                updateMuteIcon(false);
-            } else {
-                stopAllMedia();
-                playAudio(sprite);
-            }
-        }
-
-        //--------------------Crear audio-------------------------
-
-        function playAudio(sprite) {
-            const audio = new THREE.PositionalAudio(listener);
-            const audioPath = sprite.userData.audioPath;
-            audioLoader.load(audioPath, function(buffer) {
-                audio.setBuffer(buffer);
-                audio.setRefDistance(20);
-                audio.play();
-                audio.onEnded = () => {
-                    audioElements[`audio_${sprite.id}`] = null;
-                    updateMuteIcon(false);
-                };
+                card.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
             });
-            sprite.add(audio);
-            audioElements[`audio_${sprite.id}`] = audio;
-            updateMuteIcon(true);
+
+            window.addEventListener('click', onMouseClick, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+            window.addEventListener('resize', onWindowResize, false);
+
+            renderer.domElement.addEventListener('wheel', onDocumentMouseWheel, false);
+            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+            renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const menuIcon = document.getElementById("menu-icon");
+                const cardsContainer = document.getElementById("cards-container");
+
+                menuIcon.addEventListener("click", () => {
+                    cardsContainer.classList.toggle("hidden");
+                });
+            });
+
+            document.getElementById('mute-btn').addEventListener('click', toggleMute);
         }
 
-        //---------------Actualizar el icono de muted/unmuted --------------------------------------------
+        //---------------Actualizar quitar sonido --------------------------------------------
 
         function toggleMute() {
             const muteIcon = document.getElementById('mute-icon');
@@ -698,6 +620,17 @@
                     }
                 }
             }
+        }
+
+        //-----------Actualizar ícono de sonido del menú-------------
+
+        function updateMuteIcon(isPlaying) {
+        const muteIcon = document.getElementById('mute-icon');
+        if (isPlaying) {
+            muteIcon.src = muteIcon.getAttribute('data-alt-src');
+        } else {
+            muteIcon.src = muteIcon.getAttribute('data-original-src');
+        }
         }
 
         function onMouseMove(event) {
@@ -737,37 +670,132 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        //-----------Barra de carga-----------------------
+
+        function updateLoadingBar(percentage) {
+        const loadingBar = document.getElementById('loading-bar');
+        loadingBar.style.width = percentage + '%';
+        }
+
+        function showLoadingBar() {
+            const loadingBarContainer = document.getElementById('loading-bar-container');
+            const loadingBar = document.getElementById('loading-bar');
+            loadingBarContainer.style.display = 'block';
+            loadingBar.style.width = '0';
+        }
+
+        function hideLoadingBar() {
+            const loadingBarContainer = document.getElementById('loading-bar-container');
+            const loadingBar = document.getElementById('loading-bar');
+            loadingBar.style.width = '100%';
+            setTimeout(() => {
+                loadingBarContainer.style.display = 'none';
+                loadingBar.style.width = '0';
+            }, 2000); 
+        }
+
+        //----------------eventos del clima--------------------------------
+
+        function setupWeatherInfo() {
+            const weatherInfo = document.getElementById('weather-info');
+            const weatherData = [
+                "08:00 am: 15°C ☁️",
+                "09:00 am: 16°C ☁️",
+                "10:00 am: 17°C 🌥️",
+                "11:00 am: 20°C 🌥️",
+                "12:00 pm: 22°C 🌥️",
+                "13:00 pm: 25°C ☀️",
+                "14:00 pm: 26°C ☀️",
+                "15:00 pm: 24°C ☀️",
+                "16:00 pm: 21°C 🌥️",
+                "17:00 pm: 19°C ☁️"
+            ];
+
+            let currentIndex = 0;
+
+            function updateWeatherInfo() {
+                weatherInfo.textContent = weatherData[currentIndex];
+                currentIndex = (currentIndex + 1) % weatherData.length;
+            }
+
+            updateWeatherInfo();
+            setInterval(updateWeatherInfo, 10000);
+        }
+
+        //---------Zoom en pc------------------------------------
+
+        function onDocumentMouseWheel(event) {
+        event.preventDefault();
+        if (event.deltaY < 0) {
+            camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
+        } else {
+            camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
+        }
+        camera.updateProjectionMatrix();
+        }
+
+        //-----------Zoom en dispositivos táctiles----------------
+
+        function onTouchStart(event) {
+            if (event.touches.length === 2) {
+                isPinching = true;
+                initialPinchDistance = getPinchDistance(event);
+                initialZoom = camera.zoom;
+            }
+        }
+
+        function onTouchMove(event) {
+            if (isPinching && event.touches.length === 2) {
+                const newPinchDistance = getPinchDistance(event);
+                const zoomFactor = newPinchDistance / initialPinchDistance;
+                camera.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, initialZoom * zoomFactor));
+                camera.updateProjectionMatrix();
+            }
+        }
+
+        function onTouchEnd(event) {
+            if (event.touches.length < 2) {
+                isPinching = false;
+            }
+        }
+
+        function getPinchDistance(event) {
+            const dx = event.touches[0].clientX - event.touches[1].clientX;
+            const dy = event.touches[0].clientY - event.touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
         //------------------controladores de VR----------------------------------
 
         function setupVRControllers() {
-            const controllerModelFactory = new XRControllerModelFactory();
+        const controllerModelFactory = new XRControllerModelFactory();
 
-            controller1 = renderer.xr.getController(0);
-            controller1.addEventListener('selectstart', onSelectStart);
-            controller1.addEventListener('selectend', onSelectEnd);
+        controller1 = renderer.xr.getController(0);
+        controller1.addEventListener('selectstart', onSelectStart);
+        controller1.addEventListener('selectend', onSelectEnd);
 
-            controller2 = renderer.xr.getController(1);
-            controller2.addEventListener('selectstart', onSelectStart);
-            controller2.addEventListener('selectend', onSelectEnd);
+        controller2 = renderer.xr.getController(1);
+        controller2.addEventListener('selectstart', onSelectStart);
+        controller2.addEventListener('selectend', onSelectEnd);
 
-            controllerGrip1 = renderer.xr.getControllerGrip(0);
-            controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+        controllerGrip1 = renderer.xr.getControllerGrip(0);
+        controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
 
-            controllerGrip2 = renderer.xr.getControllerGrip(1);
-            controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
+        controllerGrip2 = renderer.xr.getControllerGrip(1);
+        controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
 
-            const geometry1 = new THREE.BufferGeometry();
-            geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
+        const geometry1 = new THREE.BufferGeometry();
+        geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
 
-            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 
-            const line1 = new THREE.Line(geometry1, lineMaterial);
-            controller1.add(line1);
+        const line1 = new THREE.Line(geometry1, lineMaterial);
+        controller1.add(line1);
 
-            const line2 = new THREE.Line(geometry1, lineMaterial);
-            controller2.add(line2);
+        const line2 = new THREE.Line(geometry1, lineMaterial);
+        controller2.add(line2);
 
-            updateVRControllers();
+        updateVRControllers();
         }
 
         function updateVRControllers() {
@@ -805,34 +833,6 @@
             raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
             raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
             return raycaster.intersectObjects(currentScene.children, true);
-        }
-
-        //----------------eventos del clima--------------------------------
-
-        function setupWeatherInfo() {
-            const weatherInfo = document.getElementById('weather-info');
-            const weatherData = [
-                "08:00 am: 15°C ☁️",
-                "09:00 am: 16°C ☁️",
-                "10:00 am: 17°C 🌥️",
-                "11:00 am: 20°C 🌥️",
-                "12:00 pm: 22°C 🌥️",
-                "13:00 pm: 25°C ☀️",
-                "14:00 pm: 26°C ☀️",
-                "15:00 pm: 24°C ☀️",
-                "16:00 pm: 21°C 🌥️",
-                "17:00 pm: 19°C ☁️"
-            ];
-
-            let currentIndex = 0;
-
-            function updateWeatherInfo() {
-                weatherInfo.textContent = weatherData[currentIndex];
-                currentIndex = (currentIndex + 1) % weatherData.length;
-            }
-
-            updateWeatherInfo();
-            setInterval(updateWeatherInfo, 10000);
         }
 
         init();
