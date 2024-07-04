@@ -67,9 +67,9 @@
     </div>
 
     <div id="weather-info"></div>
-    <div id="loading-bar-container">
+    <!-- <div id="loading-bar-container">
         <div id="loading-bar"></div>
-    </div>
+    </div> -->
 
     <script type="importmap">
         {
@@ -198,12 +198,12 @@
                         addTextureToScene(scene, texture, sceneIndex);
                         if (callback) callback(scene);
                     },
-                    (xhr) => {
+                    /*(xhr) => {
                         updateLoadingBar(xhr.loaded / xhr.total * 100);
                     },
                     (error) => {
                         console.error('Error loading texture:', error);
-                    }
+                    }*/
                 );
             }
         }
@@ -228,7 +228,7 @@
         //----------Cambiar escena----------------
 
         function changeScene(targetSceneIndex) {
-            showLoadingBar();
+            //showLoadingBar();
             if (currentScene) {
                 stopAllMedia();
                 while (currentScene.children.length > 0) {
@@ -242,7 +242,7 @@
                 currentScene = scene;
                 updateVRControllers();
                 renderer.render(currentScene, camera);
-                hideLoadingBar();
+                //hideLoadingBar();
             });
         }
 
@@ -327,9 +327,9 @@
                 document.body.classList.remove('pointer-cursor');
             };
 
-            sprite.addEventListener('click', () => {
+            /*sprite.addEventListener('click', () => {
                 showLoadingBar();
-            });
+            });*/
 
             return sprite;
         }
@@ -672,7 +672,7 @@
 
         //-----------Barra de carga-----------------------
 
-        function updateLoadingBar(percentage) {
+        /*function updateLoadingBar(percentage) {
         const loadingBar = document.getElementById('loading-bar');
         loadingBar.style.width = percentage + '%';
         }
@@ -692,7 +692,7 @@
                 loadingBarContainer.style.display = 'none';
                 loadingBar.style.width = '0';
             }, 2000); 
-        }
+        }*/
 
         //----------------eventos del clima--------------------------------
 
