@@ -42,10 +42,9 @@ body, html {
 
 /*menu hamburguesa*/
 
-/* Estilos de hamb.css */
-/* Off-screen menu */
+
 .off-screen-menu {
-    height: 68vh; 
+    height: 58vh; 
     width: 100%;
     max-width: 114px;
     position: fixed;
@@ -74,7 +73,7 @@ body, html {
 }
 
 .off-screen-menu ul li img {
-    width: 40px; /* Ajusta el tamaño de las imágenes según sea necesario */
+    width: 40px; 
     height: auto;
 }
 
@@ -86,13 +85,13 @@ nav {
 .ham-menu {
     Position: fixed;
     top: 20px;
-    right: 20px; /* Ajustado a la esquina superior derecha */
+    right: 20px; 
     display: flex;
     flex-direction: column;
     width: 40px;
     height: 50px;
     cursor: pointer;
-    z-index: 10001; /* Asegura que el ícono esté por encima del menú */
+    z-index: 10001;
 }
 
 .ham-menu span {
@@ -128,9 +127,8 @@ nav {
     transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-/* Ajustes para hacer clic en el icono "X" */
 .ham-menu span:nth-child(2) {
-    pointer-events: none; /* Desactiva el evento clic en el segundo span */
+    pointer-events: none; 
 }
 
 /*---------------tarjetas-------*/

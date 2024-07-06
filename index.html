@@ -40,8 +40,8 @@
 
     <div class="off-screen-menu">
         <ul>
-            <li><a href="#" id="vr-btn"><img src="textures/VR.png" alt="VR"></a></li>
-            <li>
+            <!--<li><a href="#" id="vr-btn"><img src="textures/VR.png" alt="VR"></a></li> -->
+            <li> 
                 <a href="#" id="mute-btn">
                     <img id="mute-icon" class="normal" src="textures/muted.png" data-original-src="textures/muted.png" data-alt-src="textures/unmuted.png" alt="Mute">
                 </a>
@@ -86,11 +86,11 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
-        import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
+        /*import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+        import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';*/
 
         let container, tooltip, camera, renderer, controls, currentScene, currentSceneIndex;
-        let controller1, controller2, controllerGrip1, controllerGrip2;
+        //let controller1, controller2, controllerGrip1, controllerGrip2;
         const scenes = [];
         const textureLoader = new THREE.TextureLoader();
         const raycaster = new THREE.Raycaster();
@@ -124,17 +124,17 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.outputColorSpace = THREE.SRGBColorSpace;
-            renderer.xr.enabled = true;
+            //renderer.xr.enabled = true;
 
             container.appendChild(renderer.domElement);
 
-            const vrButton = VRButton.createButton(renderer);
+            /*const vrButton = VRButton.createButton(renderer);
             vrButton.style.display = 'none';
 
             document.getElementById('vr-btn').addEventListener('click', () => {
                 renderer.xr.enabled = true;
                 vrButton.click(); 
-            });
+            });*/
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
@@ -146,7 +146,7 @@
             camera.position.set(0, 0, 0.1);
 
             setupEventListeners();
-            setupVRControllers();
+            //setupVRControllers();
             changeScene(0);
             animate();
             setupWeatherInfo();
@@ -240,7 +240,7 @@
             loadScene(targetSceneIndex, (scene) => {
                 currentSceneIndex = targetSceneIndex;
                 currentScene = scene;
-                updateVRControllers();
+                //updateVRControllers();
                 renderer.render(currentScene, camera);
                 //hideLoadingBar();
             });
@@ -767,7 +767,7 @@
 
         //------------------controladores de VR----------------------------------
 
-        function setupVRControllers() {
+        /*function setupVRControllers() {
         const controllerModelFactory = new XRControllerModelFactory();
 
         controller1 = renderer.xr.getController(0);
@@ -833,7 +833,7 @@
             raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
             raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
             return raycaster.intersectObjects(currentScene.children, true);
-        }
+        }*/
 
         init();
     </script>
