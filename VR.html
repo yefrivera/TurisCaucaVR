@@ -238,6 +238,7 @@
         let listener, positionalAudio;
         const textureCache = {};
         const audioCache = {};
+        let homeButtonPressed = false;
 
         init();
 
@@ -278,7 +279,7 @@
             manager = new THREE.LoadingManager();
             loader = new THREE.TextureLoader(manager);
 
-            loadScene(currentSceneIndex, true);
+            loadScene(currentSceneIndex);
 
             manager.onLoad = function () {
                 scene.add(sphere);
@@ -416,9 +417,25 @@
             rbEntity.addComponent(Pressable);
             rbEntity.addComponent(Object3D, { object: homeButton });
             const rbAction = function () {
+                homeButtonPressed = true;
                 pauseCurrentAudio();
                 currentSceneIndex = 0;
-                loadScene(currentSceneIndex, true);
+                loadScene(currentSceneIndex, false);
+
+                // Reproducir sonido de la escena 1 después de 5 segundos
+                setTimeout(() => {
+                    if (audioCache[currentSceneIndex]) {
+                        positionalAudio.setBuffer(audioCache[currentSceneIndex]);
+                        positionalAudio.play();
+                    } else {
+                        const audioLoader = new THREE.AudioLoader();
+                        audioLoader.load(sounds[currentSceneIndex], function(buffer) {
+                            audioCache[currentSceneIndex] = buffer;
+                            positionalAudio.setBuffer(buffer);
+                            positionalAudio.play();
+                        });
+                    }
+                }, 5000);
             };
             rbEntity.addComponent(Button, { action: rbAction, surfaceY: 0.05, fullPressDistance: 0.02 });
 
@@ -465,7 +482,7 @@
             if (textureCache[index]) {
                 sphere.material.map = textureCache[index];
                 sphere.material.needsUpdate = true;
-                if (playAudio) {
+                if (playAudio && homeButtonPressed) {
                     setTimeout(() => {
                         if (audioCache[index]) {
                             positionalAudio.setBuffer(audioCache[index]);
@@ -482,7 +499,7 @@
                     sphere.material.map = texture;
                     sphere.material.needsUpdate = true;
 
-                    if (playAudio) {
+                    if (playAudio && homeButtonPressed) {
                         const audioLoader = new THREE.AudioLoader();
                         audioLoader.load(sounds[index], function(buffer) {
                             audioCache[index] = buffer;
