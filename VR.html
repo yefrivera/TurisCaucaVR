@@ -445,6 +445,7 @@
             const ebAction = function () {
                 exitText.visible = true;
                 setTimeout(function () {
+                    pauseCurrentAudio();
                     exitText.visible = false; renderer.xr.getSession().end();
                 }, 2000);
             };
