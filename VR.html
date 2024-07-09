@@ -276,6 +276,8 @@
             });
             sphere = new THREE.Mesh(panoSphereGeo, panoSphereMat);
 
+            sphere.scale.set(-1, 1, 1); 
+
             manager = new THREE.LoadingManager();
             loader = new THREE.TextureLoader(manager);
 
