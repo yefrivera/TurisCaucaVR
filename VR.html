@@ -236,6 +236,8 @@
         ];
 
         let listener, positionalAudio;
+        const textureCache = {};
+        const audioCache = {};
 
         init();
 
@@ -276,7 +278,7 @@
             manager = new THREE.LoadingManager();
             loader = new THREE.TextureLoader(manager);
 
-            loadScene(currentSceneIndex);
+            loadScene(currentSceneIndex, true);
 
             manager.onLoad = function () {
                 scene.add(sphere);
@@ -364,7 +366,7 @@
             exitButton.position.set(0.15, 0.04, 0);
             consoleMesh.add(exitButton);
 
-            const instructionText = createText('Wellcome to Cauca in VR, please explore with hands.', 0.04);
+            const instructionText = createText('Welcome to Cauca in VR, please explore with hands.', 0.04);
             instructionText.position.set(0, 1.6, -0.6);
             scene.add(instructionText);
 
@@ -460,21 +462,56 @@
         }
 
         function loadScene(index, playAudio = false) {
-            loader.load(scenes[index], function (texture) {
-                texture.colorSpace = THREE.SRGBColorSpace;
-                texture.minFilter = THREE.NearestFilter;
-                texture.generateMipmaps = false;
-                sphere.material.map = texture;
+            if (textureCache[index]) {
+                sphere.material.map = textureCache[index];
                 sphere.material.needsUpdate = true;
-
                 if (playAudio) {
-                    const audioLoader = new THREE.AudioLoader();
-                    audioLoader.load(sounds[index], function(buffer) {
-                        positionalAudio.setBuffer(buffer);
-                        positionalAudio.play();
-                    });
+                    setTimeout(() => {
+                        if (audioCache[index]) {
+                            positionalAudio.setBuffer(audioCache[index]);
+                            positionalAudio.play();
+                        }
+                    }, 5000); // Delay audio playback by 5 seconds
                 }
-            });
+            } else {
+                loader.load(scenes[index], function (texture) {
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    texture.minFilter = THREE.NearestFilter;
+                    texture.generateMipmaps = false;
+                    textureCache[index] = texture;
+                    sphere.material.map = texture;
+                    sphere.material.needsUpdate = true;
+
+                    if (playAudio) {
+                        const audioLoader = new THREE.AudioLoader();
+                        audioLoader.load(sounds[index], function(buffer) {
+                            audioCache[index] = buffer;
+                            setTimeout(() => {
+                                positionalAudio.setBuffer(buffer);
+                                positionalAudio.play();
+                            }, 5000); // Delay audio playback by 5 seconds
+                        });
+                    }
+                });
+            }
+            preloadNextScene((index + 1) % scenes.length);
+        }
+
+        function preloadNextScene(index) {
+            if (!textureCache[index]) {
+                loader.load(scenes[index], function (texture) {
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    texture.minFilter = THREE.NearestFilter;
+                    texture.generateMipmaps = false;
+                    textureCache[index] = texture;
+                });
+            }
+            if (!audioCache[index]) {
+                const audioLoader = new THREE.AudioLoader();
+                audioLoader.load(sounds[index], function(buffer) {
+                    audioCache[index] = buffer;
+                });
+            }
         }
 
         function pauseCurrentAudio() {

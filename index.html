@@ -198,6 +198,7 @@
                         loadedTextures[sceneIndex] = texture;
                         addTextureToScene(scene, texture, sceneIndex);
                         if (callback) callback(scene);
+                        preloadNextScene(sceneIndex + 1);
                     },
                     /*(xhr) => {
                         updateLoadingBar(xhr.loaded / xhr.total * 100);
@@ -206,6 +207,15 @@
                         console.error('Error loading texture:', error);
                     }*/
                 );
+            }
+        }
+
+        //------Precargar siguiente escena------
+        function preloadNextScene(nextSceneIndex) {
+            if (nextSceneIndex < 6 && !loadedTextures[nextSceneIndex]) {
+                loadScene(nextSceneIndex, () => {
+                    console.log(`Scene ${nextSceneIndex} preloaded.`);
+                });
             }
         }
 
