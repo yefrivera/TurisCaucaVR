@@ -258,6 +258,7 @@
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 0, 0.1);
+            camera.rotation.set(0,Math.PI/2,0);
             scene.add(camera);
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 3);
@@ -332,7 +333,8 @@
             const consoleGeometry = new THREE.BoxGeometry(0.5, 0.12, 0.15);
             const consoleMaterial = new THREE.MeshPhongMaterial({ color: 0x455A64 });
             const consoleMesh = new THREE.Mesh(consoleGeometry, consoleMaterial);
-            consoleMesh.position.set(0, 1, -0.3);
+            consoleMesh.position.set(0.3, 2, -0.3);
+            consoleMesh.rotation.set(Math.PI/5,0,0);
             consoleMesh.castShadow = true;
             consoleMesh.receiveShadow = true;
             scene.add(consoleMesh);
@@ -393,7 +395,7 @@
                 .registerSystem(FingerInputSystem, { hands: [handModel1, handModel2] });
 
             const csEntity = world.createEntity();
-            csEntity.addComponent(OffsetFromCamera, { x: 0, y: -0.4, z: -0.3 });
+            csEntity.addComponent(OffsetFromCamera, { x: 0, y: -0.35, z: -0.5 });
             csEntity.addComponent(NeedCalibration);
             csEntity.addComponent(Object3D, { object: consoleMesh });
 
@@ -424,7 +426,6 @@
                 currentSceneIndex = 0;
                 loadScene(currentSceneIndex, false);
 
-                // Reproducir sonido de la escena 1 después de 5 segundos
                 setTimeout(() => {
                     if (audioCache[currentSceneIndex]) {
                         positionalAudio.setBuffer(audioCache[currentSceneIndex]);
@@ -461,20 +462,21 @@
             camera.add(listener);
 
             positionalAudio = new THREE.PositionalAudio(listener);
-            positionalAudio.setRefDistance(1);  
+            positionalAudio.setRefDistance(10);  
             positionalAudio.setRolloffFactor(0.5); 
             positionalAudio.setDirectionalCone(180, 230, 0);
+            positionalAudio.position.set(-5,-2,-4)
 
             const helper = new PositionalAudioHelper(positionalAudio, 0.1);
             positionalAudio.add(helper);
 
             const gltfLoader = new GLTFLoader();
-            gltfLoader.load('recepcionista.gltf', function (gltf) {
+            gltfLoader.load('/models/recepcionista.gltf', function (gltf) {
                 const model = gltf.scene;
-                model.position.set(5, -2, -3.5);
-                model.scale.set(2, 2, 2);
-                model.rotation.set(0, -Math.PI / 3, 0);
-                model.add(positionalAudio); 
+                model.position.set(-50,-50,-40);
+                model.scale.set(24, 24, 24);
+                model.rotation.set(0, Math.PI / 3, 0);
+                //model.add(positionalAudio); 
                 scene.add(model);
             });
 
@@ -491,7 +493,7 @@
                             positionalAudio.setBuffer(audioCache[index]);
                             positionalAudio.play();
                         }
-                    }, 5000); // Delay audio playback by 5 seconds
+                    }, 5000); 
                 }
             } else {
                 loader.load(scenes[index], function (texture) {
@@ -509,7 +511,7 @@
                             setTimeout(() => {
                                 positionalAudio.setBuffer(buffer);
                                 positionalAudio.play();
-                            }, 5000); // Delay audio playback by 5 seconds
+                            }, 5000); 
                         });
                     }
                 });
