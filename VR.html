@@ -219,8 +219,8 @@
         let camera, scene, renderer, sphere, loader, manager;
         let currentSceneIndex = 0;
         const scenes = [
-            './images/centrocaldas.jpg',
-            './images/catedral.jpg',
+            './images/c_mod.jpg',
+            './images/cat_mod.jpg',
             './images/catt.jpg',
             './images/bancolombia.jpg',
             './images/bancobogota.jpg',
@@ -484,6 +484,28 @@
         }
 
         function loadScene(index, playAudio = false) {
+            // Configuración de rotaciones de cámara para cada escena
+            const cameraRotations = [
+                { x: 0, y: Math.PI / 2, z: 0 },
+                { x: 0, y: Math.PI/2, z: 0 },
+                { x: 0, y: -Math.PI / 2, z: 0 },
+                { x: 0, y: Math.PI / 4, z: 0 },
+                { x: 0, y: -Math.PI / 4, z: 0 },
+                { x: 0, y: 0, z: 0 }
+            ];
+
+            // Asegúrate de que la longitud del array de rotaciones coincida con el número de escenas
+            if (index < cameraRotations.length) {
+                camera.rotation.set(
+                    cameraRotations[index].x,
+                    cameraRotations[index].y,
+                    cameraRotations[index].z
+                );
+            } else {
+                // Valor por defecto si el índice supera la longitud del array
+                camera.rotation.set(0, Math.PI / 2, 0);
+            }
+
             if (textureCache[index]) {
                 sphere.material.map = textureCache[index];
                 sphere.material.needsUpdate = true;
@@ -493,7 +515,7 @@
                             positionalAudio.setBuffer(audioCache[index]);
                             positionalAudio.play();
                         }
-                    }, 5000); 
+                    }, 5000);
                 }
             } else {
                 loader.load(scenes[index], function (texture) {
@@ -506,18 +528,19 @@
 
                     if (playAudio && homeButtonPressed) {
                         const audioLoader = new THREE.AudioLoader();
-                        audioLoader.load(sounds[index], function(buffer) {
+                        audioLoader.load(sounds[index], function (buffer) {
                             audioCache[index] = buffer;
                             setTimeout(() => {
                                 positionalAudio.setBuffer(buffer);
                                 positionalAudio.play();
-                            }, 5000); 
+                            }, 5000);
                         });
                     }
                 });
             }
             preloadNextScene((index + 1) % scenes.length);
         }
+
 
         function preloadNextScene(index) {
             if (!textureCache[index]) {
