@@ -40,7 +40,6 @@
 
     <div class="off-screen-menu">
         <ul>
-            <!--<li><a href="#" id="vr-btn"><img src="textures/VR.png" alt="VR"></a></li> -->
             <li> 
                 <a href="#" id="mute-btn">
                     <img id="mute-icon" class="normal" src="textures/muted.png" data-original-src="textures/muted.png" data-alt-src="textures/unmuted.png" alt="Mute">
@@ -67,9 +66,6 @@
     </div>
 
     <div id="weather-info"></div>
-    <!-- <div id="loading-bar-container">
-        <div id="loading-bar"></div>
-    </div> -->
 
     <script type="importmap">
         {
@@ -86,11 +82,8 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        /*import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
-        import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';*/
 
         let container, tooltip, camera, renderer, controls, currentScene, currentSceneIndex;
-        //let controller1, controller2, controllerGrip1, controllerGrip2;
         const scenes = [];
         const textureLoader = new THREE.TextureLoader();
         const raycaster = new THREE.Raycaster();
@@ -125,18 +118,7 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.outputColorSpace = THREE.SRGBColorSpace;
-            //renderer.xr.enabled = true;
-
             container.appendChild(renderer.domElement);
-
-            /*const vrButton = VRButton.createButton(renderer);
-            vrButton.style.display = 'none';
-
-            document.getElementById('vr-btn').addEventListener('click', () => {
-                renderer.xr.enabled = true;
-                vrButton.click(); 
-            });*/
-
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.12;
@@ -147,7 +129,6 @@
             
 
             setupEventListeners();
-            //setupVRControllers();
             changeScene(0);
             animate();
             setupWeatherInfo();
@@ -180,7 +161,7 @@
                         texturePath = 'images/bancolombia.jpg';
                         break;
                     case 3:
-                        texturePath = 'images/bancobogota.jpg';
+                        texturePath = 'images/humilladero2.jpg';
                         break;
                     case 4:
                         texturePath = 'images/juanvaldez.jpg';
@@ -200,12 +181,6 @@
                         if (callback) callback(scene);
                         preloadNextScene(sceneIndex + 1);
                     },
-                    /*(xhr) => {
-                        updateLoadingBar(xhr.loaded / xhr.total * 100);
-                    },
-                    (error) => {
-                        console.error('Error loading texture:', error);
-                    }*/
                 );
             }
         }
@@ -239,7 +214,6 @@
         //----------Cambiar escena----------------
 
         function changeScene(targetSceneIndex) {
-            //showLoadingBar();
             if (currentScene) {
                 stopAllMedia();
                 while (currentScene.children.length > 0) {
@@ -251,9 +225,7 @@
             loadScene(targetSceneIndex, (scene) => {
                 currentSceneIndex = targetSceneIndex;
                 currentScene = scene;
-                //updateVRControllers();
                 renderer.render(currentScene, camera);
-                //hideLoadingBar();
             });
         }
 
@@ -338,9 +310,6 @@
                 document.body.classList.remove('pointer-cursor');
             };
 
-            /*sprite.addEventListener('click', () => {
-                showLoadingBar();
-            });*/
 
             return sprite;
         }
@@ -681,30 +650,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        //-----------Barra de carga-----------------------
-
-        /*function updateLoadingBar(percentage) {
-        const loadingBar = document.getElementById('loading-bar');
-        loadingBar.style.width = percentage + '%';
-        }
-
-        function showLoadingBar() {
-            const loadingBarContainer = document.getElementById('loading-bar-container');
-            const loadingBar = document.getElementById('loading-bar');
-            loadingBarContainer.style.display = 'block';
-            loadingBar.style.width = '0';
-        }
-
-        function hideLoadingBar() {
-            const loadingBarContainer = document.getElementById('loading-bar-container');
-            const loadingBar = document.getElementById('loading-bar');
-            loadingBar.style.width = '100%';
-            setTimeout(() => {
-                loadingBarContainer.style.display = 'none';
-                loadingBar.style.width = '0';
-            }, 2000); 
-        }*/
-
         //----------------eventos del clima--------------------------------
 
         function setupWeatherInfo() {
@@ -775,76 +720,6 @@
             const dy = event.touches[0].clientY - event.touches[1].clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
-
-        //------------------controladores de VR----------------------------------
-
-        /*function setupVRControllers() {
-        const controllerModelFactory = new XRControllerModelFactory();
-
-        controller1 = renderer.xr.getController(0);
-        controller1.addEventListener('selectstart', onSelectStart);
-        controller1.addEventListener('selectend', onSelectEnd);
-
-        controller2 = renderer.xr.getController(1);
-        controller2.addEventListener('selectstart', onSelectStart);
-        controller2.addEventListener('selectend', onSelectEnd);
-
-        controllerGrip1 = renderer.xr.getControllerGrip(0);
-        controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-
-        controllerGrip2 = renderer.xr.getControllerGrip(1);
-        controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
-
-        const geometry1 = new THREE.BufferGeometry();
-        geometry1.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -5)]);
-
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-        const line1 = new THREE.Line(geometry1, lineMaterial);
-        controller1.add(line1);
-
-        const line2 = new THREE.Line(geometry1, lineMaterial);
-        controller2.add(line2);
-
-        updateVRControllers();
-        }
-
-        function updateVRControllers() {
-            if (!currentScene) return;
-            currentScene.children = currentScene.children.filter(child => child.type !== 'Group');
-            currentScene.add(controller1);
-            currentScene.add(controller2);
-            currentScene.add(controllerGrip1);
-            currentScene.add(controllerGrip2);
-        }
-
-        function onSelectStart(event) {
-            if (!currentScene) return;
-            const controller = event.target;
-            const intersections = getIntersections(controller);
-            if (intersections.length > 0) {
-                const intersection = intersections[0];
-                const object = intersection.object;
-                if (object.userData.targetSceneIndex !== undefined) {
-                    changeScene(object.userData.targetSceneIndex);
-                } else if (object.userData.type === 'video') {
-                    handleVideoSpriteClick(object);
-                } else if (object.userData.type === 'audio') {
-                    handleAudioSpriteClick(object);
-                }
-            }
-        }
-
-        function onSelectEnd(event) {}
-
-        function getIntersections(controller) {
-            if (!currentScene) return [];
-            const tempMatrix = new THREE.Matrix4();
-            tempMatrix.identity().extractRotation(controller.matrixWorld);
-            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
-            return raycaster.intersectObjects(currentScene.children, true);
-        }*/
 
         init();
     </script>
