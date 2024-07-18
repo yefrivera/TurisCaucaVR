@@ -42,6 +42,7 @@
         </div>
     </div>
 
+
     <div class="menu-icon" id="menu-icon">
         <div class="dot"></div>
         <div class="dot"></div>
@@ -490,18 +491,18 @@
         //------------Quitar video y audio-------------------
 
         function stopAllMedia() {
-        if (videoElement && !videoElement.paused) {
-            videoElement.pause();
-            closeVideo();
-        }
-
-        for (let key in audioElements) {
-            if (audioElements[key] && audioElements[key].isPlaying) {
-                audioElements[key].stop();
+            if (videoElement && !videoElement.paused) {
+                videoElement.pause();
+                closeVideo();
             }
-        }
 
-        updateMuteIcon(false);
+            for (let key in audioElements) {
+                if (audioElements[key] && audioElements[key].isPlaying) {
+                    audioElements[key].stop();
+                }
+            }
+
+            updateMuteIcon(false);
         }
 
         //-----------------Asignar texto a sprites de video y audio---------------------------
@@ -609,10 +610,19 @@
                 const menuIcon = document.getElementById("menu-icon");
                 const cardsContainer = document.getElementById("cards-container");
 
+                const menuToggle = document.getElementById('menu-toggle');
+                const menuContent = document.getElementById('menu-content');
+
                 menuIcon.addEventListener("click", () => {
                     cardsContainer.classList.toggle("hidden");
                 });
+
+                
             });
+
+
+
+
 
             document.getElementById('mute-btn').addEventListener('click', toggleMute);
 
@@ -623,6 +633,10 @@
                     const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
                     changeScene(targetSceneIndex);
                 });
+            });
+
+            document.getElementById('menu-toggle').addEventListener('click', () => {
+                document.getElementById('menu-content').classList.toggle('show');
             });
         }
 
@@ -646,12 +660,12 @@
         //-----------Actualizar ícono de sonido del menú-------------
 
         function updateMuteIcon(isPlaying) {
-        const muteIcon = document.getElementById('mute-icon');
-        if (isPlaying) {
-            muteIcon.src = muteIcon.getAttribute('data-alt-src');
-        } else {
-            muteIcon.src = muteIcon.getAttribute('data-original-src');
-        }
+            const muteIcon = document.getElementById('mute-icon');
+            if (isPlaying) {
+                muteIcon.src = muteIcon.getAttribute('data-alt-src');
+            } else {
+                muteIcon.src = muteIcon.getAttribute('data-original-src');
+            }
         }
 
         function onMouseMove(event) {
@@ -727,7 +741,7 @@
                 const time = hours.toString().padStart(2, '0') + ':' + minutes + ' ' + ampm;
 
                 const weatherInfo = document.getElementById('weather-info');
-                weatherInfo.textContent = `${time}: ${temp-3}°C ${description}`;
+                weatherInfo.textContent = `${time}: ${temp}°C ${description}`;
             } catch (error) {
                 console.error('Error al obtener los datos del clima:', error);
                 const weatherInfo = document.getElementById('weather-info');
@@ -740,13 +754,13 @@
         //---------Zoom en pc------------------------------------
 
         function onDocumentMouseWheel(event) {
-        event.preventDefault();
-        if (event.deltaY < 0) {
-            camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
-        } else {
-            camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
-        }
-        camera.updateProjectionMatrix();
+            event.preventDefault();
+            if (event.deltaY < 0) {
+                camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
+            } else {
+                camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
+            }
+            camera.updateProjectionMatrix();
         }
 
         //-----------Zoom en dispositivos táctiles----------------
