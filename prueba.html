@@ -5,63 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="prueba.css">
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .navbar {
-            background-color: #004a8f; /* Royal blue */
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 500px;
-        }
-        .navbar a, .dropdown .dropbtn {
-            font-size: 16px;
-            color: white;
-            text-align: center;
-            padding: 24px 32px;
-            text-decoration: none;
-        }
-        .dropdown {
-            float: left;
-            overflow: hidden;
-        }
-        .dropdown .dropbtn {
-            cursor: pointer;
-            border: none;
-            outline: none;
-            background-color: inherit;
-            margin: 0;
-        }
-        .navbar a:hover, .dropdown:hover .dropbtn {
-            background-color: #0074d9;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-        .dropdown-content a {
-            float: none;
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-        }
-        .dropdown-content a:hover {
-            background-color: #ddd;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-    </style>
 </head>
 <body>
     <div class="button-container">
@@ -70,36 +13,35 @@
         </a>
     </div>
     <div class="navbar">
-        <div class="dropdown">
-            <button class="dropbtn">Arquitectura</button>
-            <div class="dropdown-content">
-                <a href="#" data-scene-index="0">Torre del Reloj</a>
-                <a href="#" data-scene-index="1">Puente del Humilladero</a>
-                <a href="#" data-scene-index="2">Morro de Tulcán</a>
+        <div class="menu-toggle" id="menu-toggle">&#9660;</div>
+        <div class="menu-content" id="menu-content">
+            <div class="dropdown">
+                <button class="dropbtn">Arquitectura</button>
+                <div class="dropdown-content">
+                    <a href="#" data-scene-index="0">Torre del Reloj</a>
+                    <a href="#" data-scene-index="1">Puente del Humilladero</a>
+                    <a href="#" data-scene-index="2">Morro de Tulcán</a>
+                </div>
             </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">Gastronomía</button>
-            <div class="dropdown-content">
-                <a href="#" data-scene-index="3">Opción 1</a>
-                <a href="#" data-scene-index="4">Opción 2</a>
-                <a href="#" data-scene-index="5">Opción 3</a>
+            <div class="dropdown">
+                <button class="dropbtn">Gastronomía</button>
+                <div class="dropdown-content">
+                    <a href="#" data-scene-index="3">Opción 1</a>
+                    <a href="#" data-scene-index="4">Opción 2</a>
+                    <a href="#" data-scene-index="5">Opción 3</a>
+                </div>
             </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">Cultura</button>
-            <div class="dropdown-content">
-                <a href="#" data-scene-index="6">Opción 1</a>
-                <a href="#" data-scene-index="7">Opción 2</a>
-                <a href="#" data-scene-index="8">Opción 3</a>
+            <div class="dropdown">
+                <button class="dropbtn">Cultura</button>
+                <div class="dropdown-content">
+                    <a href="#" data-scene-index="6">Opción 1</a>
+                    <a href="#" data-scene-index="7">Opción 2</a>
+                    <a href="#" data-scene-index="8">Opción 3</a>
+                </div>
             </div>
-        </div>
-        <div class="ham-menu">
-            <span></span>
-            <span></span>
-            <span></span>
         </div>
     </div>
+
 
     <div class="menu-icon" id="menu-icon">
         <div class="dot"></div>
@@ -145,6 +87,14 @@
         </ul>
     </div>
 
+    <nav>
+        <div class="ham-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
     <script type="importmap">
         {
             "imports": {
@@ -155,7 +105,7 @@
         }
     </script>
 
-    <div id="weather-info"></div>
+    <div id="weather-info">Cargando clima...</div>
 
     <script src="menu.js"></script>
 
@@ -210,7 +160,7 @@
             setupEventListeners();
             changeScene(0);
             animate();
-            setupWeatherInfo();
+            fetchWeatherData();
         }
 
         //--------------Cargar las escenas-------------------------------------
@@ -541,18 +491,18 @@
         //------------Quitar video y audio-------------------
 
         function stopAllMedia() {
-        if (videoElement && !videoElement.paused) {
-            videoElement.pause();
-            closeVideo();
-        }
-
-        for (let key in audioElements) {
-            if (audioElements[key] && audioElements[key].isPlaying) {
-                audioElements[key].stop();
+            if (videoElement && !videoElement.paused) {
+                videoElement.pause();
+                closeVideo();
             }
-        }
 
-        updateMuteIcon(false);
+            for (let key in audioElements) {
+                if (audioElements[key] && audioElements[key].isPlaying) {
+                    audioElements[key].stop();
+                }
+            }
+
+            updateMuteIcon(false);
         }
 
         //-----------------Asignar texto a sprites de video y audio---------------------------
@@ -675,6 +625,10 @@
                     changeScene(targetSceneIndex);
                 });
             });
+
+            document.getElementById('menu-toggle').addEventListener('click', () => {
+                document.getElementById('menu-content').classList.toggle('show');
+            });
         }
 
         //---------------Actualizar quitar sonido --------------------------------------------
@@ -697,12 +651,12 @@
         //-----------Actualizar ícono de sonido del menú-------------
 
         function updateMuteIcon(isPlaying) {
-        const muteIcon = document.getElementById('mute-icon');
-        if (isPlaying) {
-            muteIcon.src = muteIcon.getAttribute('data-alt-src');
-        } else {
-            muteIcon.src = muteIcon.getAttribute('data-original-src');
-        }
+            const muteIcon = document.getElementById('mute-icon');
+            if (isPlaying) {
+                muteIcon.src = muteIcon.getAttribute('data-alt-src');
+            } else {
+                muteIcon.src = muteIcon.getAttribute('data-original-src');
+            }
         }
 
         function onMouseMove(event) {
@@ -748,42 +702,56 @@
 
         //----------------eventos del clima--------------------------------
 
-        function setupWeatherInfo() {
-            const weatherInfo = document.getElementById('weather-info');
-            const weatherData = [
-                "08:00 am: 15°C ☁️",
-                "09:00 am: 16°C ☁️",
-                "10:00 am: 17°C 🌥️",
-                "11:00 am: 20°C 🌥️",
-                "12:00 pm: 22°C 🌥️",
-                "13:00 pm: 25°C ☀️",
-                "14:00 pm: 26°C ☀️",
-                "15:00 pm: 24°C ☀️",
-                "16:00 pm: 21°C 🌥️",
-                "17:00 pm: 19°C ☁️"
-            ];
+        async function fetchWeatherData() {
+            const apiKey = '6bae8b38ab56fc803410a26d94082f88'; 
+            const lat = 2.4382; // Latitud de Popayán
+            const lon = -76.6132; // Longitud de Popayán
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}&lang=es`;
 
-            let currentIndex = 0;
+            try {
+                const response = await fetch(url, { cache: "no-cache" }); // Asegúrate de no usar caché
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
 
-            function updateWeatherInfo() {
-                weatherInfo.textContent = weatherData[currentIndex];
-                currentIndex = (currentIndex + 1) % weatherData.length;
+                if (!data.main || !data.weather) {
+                    throw new Error('Invalid data format');
+                }
+
+                const temp = Math.round(data.main.temp); // Redondear temperatura
+                const description = data.weather[0].description;
+
+                // Obtener la hora actual en formato de 12 horas
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // La hora '0' debe ser '12'
+                const time = hours.toString().padStart(2, '0') + ':' + minutes + ' ' + ampm;
+
+                const weatherInfo = document.getElementById('weather-info');
+                weatherInfo.textContent = `${time}: ${temp}°C ${description}`;
+            } catch (error) {
+                console.error('Error al obtener los datos del clima:', error);
+                const weatherInfo = document.getElementById('weather-info');
+                weatherInfo.textContent = 'Error al obtener los datos del clima';
             }
-
-            updateWeatherInfo();
-            setInterval(updateWeatherInfo, 10000);
         }
+
+        setInterval(fetchWeatherData, 60 * 1000);
 
         //---------Zoom en pc------------------------------------
 
         function onDocumentMouseWheel(event) {
-        event.preventDefault();
-        if (event.deltaY < 0) {
-            camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
-        } else {
-            camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
-        }
-        camera.updateProjectionMatrix();
+            event.preventDefault();
+            if (event.deltaY < 0) {
+                camera.zoom = Math.min(MAX_ZOOM, camera.zoom + 0.1);
+            } else {
+                camera.zoom = Math.max(MIN_ZOOM, camera.zoom - 0.1);
+            }
+            camera.updateProjectionMatrix();
         }
 
         //-----------Zoom en dispositivos táctiles----------------
