@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TurismoCauca3.0</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
 
 <body>
@@ -18,7 +19,6 @@
     </script>
 
     <script type="module">
-
         import * as THREE from 'three';
         import { VRButton } from 'three/addons/webxr/VRButton.js';
         import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
@@ -235,7 +235,7 @@
             'sounds/juanvaldez.ogg'
         ];
 
-        let listener, positionalAudio;
+        let listener, positionalAudio, mixer, model, animationActions;
         const textureCache = {};
         const audioCache = {};
         let homeButtonPressed = false;
@@ -302,7 +302,10 @@
                 requiredFeatures: ['hand-tracking']
             };
 
-            document.body.appendChild(VRButton.createButton(renderer, sessionInit));
+            const vrButton = VRButton.createButton(renderer, sessionInit);
+            document.body.appendChild(vrButton);
+
+            renderer.xr.addEventListener('sessionend', pauseModelAnimation);
 
             const controller1 = renderer.xr.getController(0);
             scene.add(controller1);
@@ -423,6 +426,7 @@
             const rbAction = function () {
                 homeButtonPressed = true;
                 pauseCurrentAudio();
+                pauseModelAnimation(); // Pausar animación del modelo 3D
                 currentSceneIndex = 0;
                 loadScene(currentSceneIndex, false);
 
@@ -430,12 +434,14 @@
                     if (audioCache[currentSceneIndex]) {
                         positionalAudio.setBuffer(audioCache[currentSceneIndex]);
                         positionalAudio.play();
+                        startModelAnimation(); // Iniciar animación del modelo 3D
                     } else {
                         const audioLoader = new THREE.AudioLoader();
                         audioLoader.load(sounds[currentSceneIndex], function(buffer) {
                             audioCache[currentSceneIndex] = buffer;
                             positionalAudio.setBuffer(buffer);
                             positionalAudio.play();
+                            startModelAnimation(); // Iniciar animación del modelo 3D
                         });
                     }
                 }, 5000);
@@ -449,6 +455,7 @@
                 exitText.visible = true;
                 setTimeout(function () {
                     pauseCurrentAudio();
+                    pauseModelAnimation(); // Pausar animación del modelo 3D
                     exitText.visible = false; renderer.xr.getSession().end();
                 }, 2000);
             };
@@ -462,8 +469,8 @@
             camera.add(listener);
 
             positionalAudio = new THREE.PositionalAudio(listener);
-            positionalAudio.setRefDistance(10);  
-            positionalAudio.setRolloffFactor(0.5); 
+            positionalAudio.setRefDistance(10);
+            positionalAudio.setRolloffFactor(0.5);
             positionalAudio.setDirectionalCone(180, 230, 0);
             positionalAudio.position.set(-5,-2,-4)
 
@@ -471,20 +478,45 @@
             positionalAudio.add(helper);
 
             const gltfLoader = new GLTFLoader();
-            gltfLoader.load('/models/recepcionista.gltf', function (gltf) {
-                const model = gltf.scene;
+            gltfLoader.load('/models/mod.glb', function (gltf) {
+                model = gltf.scene;
                 model.position.set(-50,-50,-40);
                 model.scale.set(24, 24, 24);
                 model.rotation.set(0, Math.PI / 3, 0);
-                //model.add(positionalAudio); 
                 scene.add(model);
+
+                // Crear AnimationMixer y preparar animaciones
+                mixer = new THREE.AnimationMixer(model);
+                animationActions = {};
+                gltf.animations.forEach((clip) => {
+                    const action = mixer.clipAction(clip);
+                    animationActions[clip.name] = action;
+                    action.paused = true; // Pausar todas las animaciones al inicio
+                });
             });
 
             window.addEventListener('resize', onWindowResize);
         }
 
+        function startModelAnimation() {
+            if (mixer) {
+                mixer.time = 0; // Reiniciar animaciones
+                Object.values(animationActions).forEach(action => {
+                    action.paused = false; // Reanudar animación
+                    action.reset().play(); // Reproducir todas las animaciones
+                });
+            }
+        }
+
+        function pauseModelAnimation() {
+            if (mixer) {
+                Object.values(animationActions).forEach(action => {
+                    action.paused = true; // Pausar todas las animaciones
+                });
+            }
+        }
+
         function loadScene(index, playAudio = false) {
-            // Configuración de rotaciones de cámara para cada escena
             const cameraRotations = [
                 { x: 0, y: Math.PI / 2, z: 0 },
                 { x: 0, y: Math.PI/2, z: 0 },
@@ -494,7 +526,6 @@
                 { x: 0, y: 0, z: 0 }
             ];
 
-            // Asegúrate de que la longitud del array de rotaciones coincida con el número de escenas
             if (index < cameraRotations.length) {
                 camera.rotation.set(
                     cameraRotations[index].x,
@@ -502,7 +533,6 @@
                     cameraRotations[index].z
                 );
             } else {
-                // Valor por defecto si el índice supera la longitud del array
                 camera.rotation.set(0, Math.PI / 2, 0);
             }
 
@@ -514,6 +544,7 @@
                         if (audioCache[index]) {
                             positionalAudio.setBuffer(audioCache[index]);
                             positionalAudio.play();
+                            startModelAnimation(); // Iniciar animación del modelo 3D
                         }
                     }, 5000);
                 }
@@ -533,6 +564,7 @@
                             setTimeout(() => {
                                 positionalAudio.setBuffer(buffer);
                                 positionalAudio.play();
+                                startModelAnimation(); // Iniciar animación del modelo 3D
                             }, 5000);
                         });
                     }
@@ -540,7 +572,6 @@
             }
             preloadNextScene((index + 1) % scenes.length);
         }
-
 
         function preloadNextScene(index) {
             if (!textureCache[index]) {
@@ -566,11 +597,13 @@
         }
 
         function nextScene() {
+            pauseModelAnimation(); // Pausar animación del modelo 3D
             currentSceneIndex = (currentSceneIndex + 1) % scenes.length;
             loadScene(currentSceneIndex, true);
         }
 
         function prevScene() {
+            pauseModelAnimation(); // Pausar animación del modelo 3D
             currentSceneIndex = (currentSceneIndex - 1 + scenes.length) % scenes.length;
             loadScene(currentSceneIndex, true);
         }
@@ -587,6 +620,11 @@
             renderer.xr.updateCamera(camera);
             world.execute(delta, elapsedTime);
             renderer.render(scene, camera);
+
+            // Actualizar el mixer de animación
+            if (mixer) {
+                mixer.update(delta);
+            }
         }
     </script>
 </body>
