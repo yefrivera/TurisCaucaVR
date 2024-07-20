@@ -478,7 +478,7 @@
             positionalAudio.add(helper);
 
             const gltfLoader = new GLTFLoader();
-            gltfLoader.load('/models/mod.glb', function (gltf) {
+            gltfLoader.load('mod.glb', function (gltf) {
                 model = gltf.scene;
                 model.position.set(-50,-50,-40);
                 model.scale.set(24, 24, 24);
