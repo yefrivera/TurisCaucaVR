@@ -121,7 +121,10 @@
         }
     </script>
 
-    <div id="weather-info">Cargando clima...</div>
+    <div id="weather-info">
+        <div id="weather-data"></div>
+        <div id="weather-description"></div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
 
@@ -273,7 +276,7 @@
             loadArrows(scene, sceneIndex);
             loadInteractiveSprite(scene, sceneIndex);
 
-            if (sceneIndex === 0) {
+            /*if (sceneIndex === 0) {
                 addTextToScene(scene, "Arquitectura", new THREE.Vector3(-80, 100, -100));
             }
             if (sceneIndex === 4) {
@@ -281,12 +284,12 @@
             }
             if (sceneIndex === 7) {
                 addTextToScene(scene, "Cultura", new THREE.Vector3(-110, 100, -100));
-            }
+            }*/
         }
 
         //----------Agregar texto grande a la escena----------------
 
-        function addTextToScene(scene, message, position, rotation) {
+        /*function addTextToScene(scene, message, position, rotation) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             const fontSize = 140;
@@ -310,7 +313,7 @@
 
             sprite.scale.set(canvas.width * 0.15, canvas.height * 0.15, 1);
             scene.add(sprite);
-        }
+        }*/
 
         //----------Cambiar escena con animación de zoom----------------
 
@@ -846,10 +849,11 @@
                 });
 
                 window.addEventListener('click', (event) => {
-                    if (!event.target.matches('.dropbtn')) {
+                    if (!event.target.closest('.navbar')) {
                         document.querySelectorAll('.dropdown-content').forEach(content => {
                             content.classList.remove('show');
                         });
+                        document.getElementById('menu-content').classList.remove('show');
                     }
                 });
 
@@ -968,7 +972,8 @@
                 }
 
                 const temp = Math.round(data.main.temp); 
-                const description = data.weather[0].description;
+                let description = data.weather[0].description;
+                description = description.charAt(0).toUpperCase() + description.slice(1);
 
                 const now = new Date();
                 let hours = now.getHours();
@@ -978,12 +983,16 @@
                 hours = hours ? hours : 12; 
                 const time = hours.toString().padStart(2, '0') + ':' + minutes + ' ' + ampm;
 
-                const weatherInfo = document.getElementById('weather-info');
-                weatherInfo.textContent = `${time}: ${temp}°C ${description}`;
+                const weatherData = document.getElementById('weather-data');
+                const weatherDescription = document.getElementById('weather-description');
+                weatherData.textContent = `${time}: ${temp}°C`;
+                weatherDescription.textContent = description;
             } catch (error) {
                 console.error('Error al obtener los datos del clima:', error);
-                const weatherInfo = document.getElementById('weather-info');
-                weatherInfo.textContent = 'Error al obtener los datos del clima';
+                const weatherData = document.getElementById('weather-data');
+                const weatherDescription = document.getElementById('weather-description');
+                weatherData.textContent = 'Error al obtener los datos del clima';
+                weatherDescription.textContent = '';
             }
         }
 
