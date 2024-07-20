@@ -62,9 +62,9 @@ body, html {
     border-bottom: 3px solid #0074d9;
 }
 
-.dropdown-content a:last-child {
+/*.dropdown-content a:last-child {
     border-bottom: none; 
-}
+}*/
 
 .dropdown-content a:hover {
     background-color: #0074d9;
