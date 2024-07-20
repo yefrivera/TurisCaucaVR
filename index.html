@@ -745,6 +745,30 @@
                     showInfoWindow();
                 }
             }
+
+            handleInteraction();
+
+        }
+
+        //----------funcion para eventos del click en gafas de vr
+
+        function handleInteraction() {
+            raycaster.setFromCamera(mouse, camera);
+
+            const clickableObjects = currentScene.children.filter(child => child instanceof THREE.Sprite);
+            const intersects = raycaster.intersectObjects(clickableObjects, true);
+            if (intersects.length > 0) {
+                const intersectedObject = intersects[0].object;
+                if (intersectedObject.userData.targetSceneIndex !== undefined) {
+                    changeScene(intersectedObject.userData.targetSceneIndex);
+                } else if (intersectedObject.userData.type === 'video') {
+                    handleVideoSpriteClick(intersectedObject);
+                } else if (intersectedObject.userData.type === 'audio') {
+                    handleAudioSpriteClick(intersectedObject);
+                } else if (intersectedObject.userData.type === 'info') {
+                    showInfoWindow();
+                }
+            }
         }
 
         //-----------Listeners para eventos de click------------
@@ -791,8 +815,6 @@
                 menuIcon.addEventListener("click", () => {
                     cardsContainer.classList.toggle("hidden");
                 });
-
-                
             });
 
             document.getElementById('mute-btn').addEventListener('click', toggleMute);
@@ -936,7 +958,14 @@
         //-----------Zoom en dispositivos táctiles----------------
 
         function onTouchStart(event) {
-            if (event.touches.length === 2) {
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = - ((touch.clientY - rect.top) / rect.height) * 2 + 1;
+
+                handleInteraction();
+            } else if (event.touches.length === 2) {
                 isPinching = true;
                 initialPinchDistance = getPinchDistance(event);
                 initialZoom = camera.zoom;
