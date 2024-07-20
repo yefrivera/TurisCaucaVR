@@ -217,23 +217,18 @@
                     case 5:
                         texturePath = 'images/catt.jpg';
                         break;
-
                     case 6:
                         texturePath = 'images/catt.jpg';
                         break;
-
                     case 7:
                         texturePath = 'images/centrocaldas.jpg';
                         break;
-
                     case 8:
                         texturePath = 'images/catt.jpg';
                         break;
-                        
                     case 9:
                         texturePath = 'images/centrocaldas.jpg';
                         break;
-
                 }
 
                 const texture = textureLoader.load(
@@ -242,7 +237,6 @@
                         loadedTextures[sceneIndex] = texture;
                         addTextureToScene(scene, texture, sceneIndex);
                         if (callback) callback(scene);
-                        preloadNextScene(sceneIndex + 1);
                     },
                 );
             }
@@ -250,10 +244,16 @@
 
         //------Precargar siguiente escena------
         function preloadNextScene(nextSceneIndex) {
-            if (nextSceneIndex < 9 && !loadedTextures[nextSceneIndex]) {
-                loadScene(nextSceneIndex, () => {
-                    console.log(`Scene ${nextSceneIndex} preloaded.`);
-                });
+            const scenesToPreload = 3; // Number of scenes to preload
+            const startSceneIndex = nextSceneIndex;
+
+            for (let i = 0; i < scenesToPreload; i++) {
+                const sceneIndex = startSceneIndex + i;
+                if (sceneIndex < 9 && !loadedTextures[sceneIndex]) {
+                    loadScene(sceneIndex, () => {
+                        console.log(`Scene ${sceneIndex} preloaded.`);
+                    });
+                }
             }
         }
 
@@ -293,14 +293,12 @@
             context.font = `Bold ${fontSize}px Arial`;
             context.fillStyle = "white";
 
-            // Ajustar el tamaño del canvas al tamaño del texto
             const metrics = context.measureText(message);
             const textWidth = metrics.width;
-            const textHeight = fontSize * 1.2; // Aproximación para la altura del texto
-            canvas.width = textWidth + 100; // Añadir un poco de espacio extra
+            const textHeight = fontSize * 1.2; 
+            canvas.width = textWidth + 100; 
             canvas.height = textHeight + 50;
 
-            // Volver a establecer las propiedades de la fuente después de ajustar el tamaño del canvas
             context.font = `Bold ${fontSize}px Arial`;
             context.fillStyle = "white";
             context.fillText(message, 50, fontSize);
@@ -310,7 +308,6 @@
             const sprite = new THREE.Sprite(material);
             sprite.position.copy(position);
 
-            // Ajustar la escala del sprite
             sprite.scale.set(canvas.width * 0.15, canvas.height * 0.15, 1);
             scene.add(sprite);
         }
@@ -464,7 +461,14 @@
 
         //---------------Creación de video dentro den entorno 360--------------------
 
+//---------------Creación de video dentro del entorno 360--------------------
+
         function openVideo(position) {
+            if (videoElement) {
+                videoElement.pause();
+                closeVideo();
+            }
+
             videoElement = document.createElement('video');
             videoElement.src = 'videos/puente el humilladero.mp4';
             videoElement.loop = false;
@@ -481,12 +485,20 @@
             videoMesh.lookAt(camera.position);
             currentScene.add(videoMesh);
 
-            videoElement.play();
+            videoElement.play().catch((error) => {
+                console.error('Error playing video:', error);
+            });
+
+            videoElement.onended = () => {
+                closeVideo();
+            };
+
             updateMuteIcon(true);
             videoElement.onended = () => {
                 closeVideo();
                 updateMuteIcon(false);
             };
+
         }
 
         //--------------Sprites para audio----------------------------------
@@ -532,6 +544,10 @@
             sprite.add(audio);
             audioElements[`audio_${sprite.id}`] = audio;
             updateMuteIcon(true);
+
+            audio.onEnded = () => {
+                updateMuteIcon(false);
+            };
         }
 
         //-----------Texto para sprites de audio y video---------------------
@@ -580,20 +596,23 @@
             }
             if (videoElement) {
                 videoElement.pause();
+                videoElement.src = '';
                 videoElement = null;
                 updateMuteIcon(false);
             }
         }
 
         function handleVideoSpriteClick(sprite) {
-            if (videoElement && !videoElement.paused) {
-                closeVideo();
+            if (videoElement) {
+                if (videoElement.paused) {
+                    openVideo(sprite.position);
+                } else {
+                    closeVideo();
+                }
             } else {
-                stopAllMedia();
                 openVideo(sprite.position);
             }
         }
-
         //------------cerrar aduio----------------------------------------
 
         function handleAudioSpriteClick(sprite) {
@@ -610,8 +629,7 @@
         //------------Quitar video y audio-------------------
 
         function stopAllMedia() {
-            if (videoElement && !videoElement.paused) {
-                videoElement.pause();
+            if (videoElement) {
                 closeVideo();
             }
 
@@ -724,7 +742,6 @@
         function onMouseClick(event) {
             if (!currentScene) return;
 
-            // Obtener la posición del canvas
             const rect = renderer.domElement.getBoundingClientRect();
             mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
             mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -745,9 +762,6 @@
                     showInfoWindow();
                 }
             }
-
-            handleInteraction();
-
         }
 
         //----------funcion para eventos del click en gafas de vr
@@ -812,6 +826,33 @@
                 const menuToggle = document.getElementById('menu-toggle');
                 const menuContent = document.getElementById('menu-content');
 
+                const dropdowns = document.querySelectorAll('.dropdown');
+
+                dropdowns.forEach(dropdown => {
+                    const dropbtn = dropdown.querySelector('.dropbtn');
+                    const dropdownContent = dropdown.querySelector('.dropdown-content');
+
+                    dropbtn.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        // Cerrar otros dropdowns abiertos
+                        document.querySelectorAll('.dropdown-content').forEach(content => {
+                            if (content !== dropdownContent) {
+                                content.classList.remove('show');
+                            }
+                        });
+                        // Alternar visibilidad del dropdown actual
+                        dropdownContent.classList.toggle('show');
+                    });
+                });
+
+                window.addEventListener('click', (event) => {
+                    if (!event.target.matches('.dropbtn')) {
+                        document.querySelectorAll('.dropdown-content').forEach(content => {
+                            content.classList.remove('show');
+                        });
+                    }
+                });
+
                 menuIcon.addEventListener("click", () => {
                     cardsContainer.classList.toggle("hidden");
                 });
@@ -825,6 +866,11 @@
                     event.preventDefault();
                     const targetSceneIndex = parseInt(event.currentTarget.getAttribute('data-scene-index'));
                     changeScene(targetSceneIndex);
+                    // Cerrar el menú desplegable después de seleccionar una escena
+                    document.querySelectorAll('.dropdown-content').forEach(content => {
+                        content.classList.remove('show');
+                    });
+                    document.getElementById('menu-content').classList.remove('show');
                 });
             });
 
