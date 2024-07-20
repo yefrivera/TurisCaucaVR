@@ -123,6 +123,8 @@
 
     <div id="weather-info">Cargando clima...</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+
     <script src="menu.js"></script>
 
     <script type="module">
@@ -313,23 +315,45 @@
             scene.add(sprite);
         }
 
-        //----------Cambiar escena----------------
+        //----------Cambiar escena con animación de zoom----------------
 
         function changeScene(targetSceneIndex) {
             if (currentScene) {
                 stopAllMedia();
-                while (currentScene.children.length > 0) {
-                    currentScene.remove(currentScene.children[0]);
-                }
-                currentScene = null;
-            }
+                gsap.to(camera, {
+                    zoom: MAX_ZOOM,
+                    duration: 3,
+                    onUpdate: function () {
+                        camera.updateProjectionMatrix();
+                    },
+                    onComplete: function () {
+                        while (currentScene.children.length > 0) {
+                            currentScene.remove(currentScene.children[0]);
+                        }
+                        currentScene = null;
 
-            loadScene(targetSceneIndex, (scene) => {
-                currentSceneIndex = targetSceneIndex;
-                currentScene = scene;
-                renderer.render(currentScene, camera);
-            });
+                        loadScene(targetSceneIndex, (scene) => {
+                            currentSceneIndex = targetSceneIndex;
+                            currentScene = scene;
+                            camera.zoom = 0; // Set the initial zoom level for the next scene
+                            gsap.to(camera, {
+                                zoom: 1, // Animate to the final zoom level
+                                duration: 3,
+                                onUpdate: function () {
+                                    camera.updateProjectionMatrix();
+                                }
+                            });
+                        });
+                    }
+                });
+            } else {
+                loadScene(targetSceneIndex, (scene) => {
+                    currentSceneIndex = targetSceneIndex;
+                    currentScene = scene;
+                });
+            }
         }
+
 
         //----------------Sprites para cambio de escena--------------------
 
@@ -342,16 +366,26 @@
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
+            const tween = gsap.to(sprite.position, {
+                y: sprite.position.y + 2,
+                duration: 1,
+                ease: "power1.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+
             sprite.onPointerOver = function() {
                 sprite.scale.set(11, 11, 11);
                 showTextLabel(sprite);
                 document.body.classList.add('pointer-cursor');
+                tween.pause();
             };
 
             sprite.onPointerOut = function() {
                 sprite.scale.set(8, 8, 8);
                 hideTextLabel(sprite);
                 document.body.classList.remove('pointer-cursor');
+                tween.resume();
             };
 
             sprite.addEventListener('click', () => {
