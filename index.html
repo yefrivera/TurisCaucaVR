@@ -97,19 +97,22 @@
 
     <div id="info-window" class="info-window hidden">
         <div class="info-window-content">
-            <img src="images/h1.jpg" alt="Información" class="info-window-image">
+            <img src="images/catedralb.jpg" alt="Información" class="info-window-image">
             <div class="info-window-text-container">
                 <span class="close-btn" id="info-window-close-btn">&times;</span>
-                <h2 class="info-window-title">Catedral Basílica</h2>
+                <h2 class="info-window-title">Catedral Nuestra Señora de la Asunción</h2>
                 <p class="info-window-text">
-                    The Ponte Santi Apostoli is a historic bridge in Venice, Italy, that dates back to the 16th century.
-                    It was built in 1575, during the Renaissance period, and was designed by architect Andrea Palladio.
-                    The bridge replaced an earlier wooden bridge, and its construction was commissioned by the Venetian
-                    government to help improve transportation in the city.
+                    La arquitectura de la Catedral de Popayán es una mezcla de estilos que reflejan las diferentes épocas de su construcción y renovación. Algunos aspectos arquitectónicos destacados incluyen:<br><br>
+                    
+                    Estilo renacentista: La estructura original de la catedral fue construida en estilo renacentista, con una fachada simétrica y sobria, caracterizada por líneas rectas y equilibrio en el diseño.<br><br>
+                    
+                    Estilo barroco: A lo largo de los años, se agregaron elementos barrocos a la catedral, como torres campanario ornamentadas, arcos decorativos y detalles tallados en piedra que adornan la fachada y el interior del edificio.<br><br>
+
                 </p>
             </div>
         </div>
     </div>
+    
 
     <script type="importmap">
         {
@@ -402,10 +405,10 @@
                 /*scene.add(createArrow(new THREE.Vector3(10, -25, 100), 1));
                 scene.add(createArrow(new THREE.Vector3(100, -30, -5), 2));
                 scene.add(createArrow(new THREE.Vector3(-5, -27, -90), 3));*/
-                scene.add(createArrow(new THREE.Vector3(-120, 42, 12), 1, "Ir al Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(-120, 42, 12), 1, "Puente del Humilladero"));
 
             } else if (sceneIndex === 1) {
-                scene.add(createArrow(new THREE.Vector3(0, 10, 100), 0,"Volver a la Torre del Reloj"));
+                scene.add(createArrow(new THREE.Vector3(0, 10, 100), 0,"Torre del Reloj"));
                 //scene.add(createArrow(new THREE.Vector3(-25, -25, -90), 4));
 
                 scene.add(createArrow(new THREE.Vector3(-100, -10, -56), 2, " "));
@@ -662,7 +665,7 @@
                     scene.add(audioSprite);                    
 
                     position = new THREE.Vector3(-50, 30, -105);
-                    const infoSprite = createInfoSprite(position, "Catedral Basílica Nuestra Señora de la Asunción");
+                    const infoSprite = createInfoSprite(position, "Catedral Nuestra Señora de la Asunción");
                     scene.add(infoSprite);
 
                     break;
