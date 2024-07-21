@@ -407,6 +407,7 @@
             obEntity.addComponent(Object3D, { object: nextButton });
             const obAction = function () {
                 pauseCurrentAudio();
+                pauseModelAnimation();
                 nextScene();
             };
             obEntity.addComponent(Button, { action: obAction, surfaceY: 0.05, fullPressDistance: 0.02 });
@@ -416,6 +417,7 @@
             pbEntity.addComponent(Object3D, { object: backButton });
             const pbAction = function () {
                 pauseCurrentAudio();
+                pauseModelAnimation();
                 prevScene();
             };
             pbEntity.addComponent(Button, { action: pbAction, surfaceY: 0.05, fullPressDistance: 0.02 });
@@ -435,6 +437,10 @@
                         positionalAudio.setBuffer(audioCache[currentSceneIndex]);
                         positionalAudio.play();
                         startModelAnimation(); // Iniciar animación del modelo 3D
+                        // Detener la animación cuando el audio termine
+                        positionalAudio.source.onended = () => {
+                            pauseModelAnimation();
+                        };
                     } else {
                         const audioLoader = new THREE.AudioLoader();
                         audioLoader.load(sounds[currentSceneIndex], function(buffer) {
@@ -442,6 +448,10 @@
                             positionalAudio.setBuffer(buffer);
                             positionalAudio.play();
                             startModelAnimation(); // Iniciar animación del modelo 3D
+                            // Detener la animación cuando el audio termine
+                            positionalAudio.source.onended = () => {
+                                pauseModelAnimation();
+                            };
                         });
                     }
                 }, 5000);
@@ -545,6 +555,11 @@
                             positionalAudio.setBuffer(audioCache[index]);
                             positionalAudio.play();
                             startModelAnimation(); // Iniciar animación del modelo 3D
+
+                            // Detener la animación cuando el audio termine
+                            positionalAudio.source.onended = () => {
+                                pauseModelAnimation();
+                            };
                         }
                     }, 5000);
                 }
@@ -565,6 +580,11 @@
                                 positionalAudio.setBuffer(buffer);
                                 positionalAudio.play();
                                 startModelAnimation(); // Iniciar animación del modelo 3D
+
+                                // Detener la animación cuando el audio termine
+                                positionalAudio.source.onended = () => {
+                                    pauseModelAnimation();
+                                };
                             }, 5000);
                         });
                     }
