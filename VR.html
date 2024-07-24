@@ -223,12 +223,20 @@
         let camera, scene, renderer, sphere, loader, manager;
         let currentSceneIndex = 0;
         const scenes = [
-            './images/c_mod.jpg',
-            './images/cat_mod.jpg',
-            './images/catt.jpg',
-            './images/bancolombia.jpg',
-            './images/bancobogota.jpg',
-            './images/juanvaldez.jpg'
+            //---------Arquitectura--------
+            './images/reloj.jpg',
+            './images/humilladero1.jpg',
+            './images/hermita.jpg',
+
+            //-------Gastronomía------------
+            './images/centrocaldas.jpg',
+            './images/caldas_espcn_x2.jpg',
+            './images/humilladero2.jpg',
+
+            /*----Cultura--------
+            './images/centrocaldas.jpg',
+            './images/caldas_espcn_x2.jpg',
+            './images/humilladero2.jpg'*/
         ];
         const sounds = [
             'sounds/centrocaldas.ogg',
@@ -342,6 +350,7 @@
             const consoleMesh1 = new THREE.Mesh(consoleGeometry1, consoleMaterial1);
             consoleMesh1.position.set(0.1, 0.8, -0.45);
             consoleMesh1.rotation.set(0, 0, 0);
+            consoleMesh1.scale.set(1, 1, 1.5);
             consoleMesh1.castShadow = true; 
             consoleMesh1.receiveShadow = true;
             scene.add(consoleMesh1);
@@ -413,7 +422,7 @@
             consoleMesh2.add(button2_3);
 
             const volumeButton = makeButtonMesh(0.08, 0.1, 0.08, 0x000000);
-            const volumeButtonText = createText('Volume', 0.03);
+            const volumeButtonText = createText('Vol', 0.03);
             volumeButton.add(volumeButtonText);
             volumeButtonText.rotation.x = -Math.PI / 2;
             volumeButtonText.position.set(0, 0.051, 0);
