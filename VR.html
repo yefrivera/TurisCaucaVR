@@ -274,9 +274,9 @@
             const panoSphereGeo = new THREE.SphereGeometry(500, 64, 64);
             const panoSphereMat = new THREE.MeshStandardMaterial({
                 side: THREE.BackSide,
-                displacementScale: 0.0,
+                displacementScale: -1.0,
                 roughness: 1.0,
-                metalness: 0.0,
+                metalness: 0.2,
             });
             sphere = new THREE.Mesh(panoSphereGeo, panoSphereMat);
 
@@ -341,7 +341,7 @@
             const consoleMaterial1 = new THREE.MeshPhongMaterial({ color: 0x455A64 });
             const consoleMesh1 = new THREE.Mesh(consoleGeometry1, consoleMaterial1);
             consoleMesh1.position.set(0, 0.8, -0.35);
-            consoleMesh1.rotation.set(Math.PI / 5, 0, 0);
+            consoleMesh1.rotation.set(0, 0, 0);
             consoleMesh1.castShadow = true; 
             consoleMesh1.receiveShadow = true;
             scene.add(consoleMesh1);
@@ -425,7 +425,7 @@
             const consoleMaterial3 = new THREE.MeshPhongMaterial({ color: 0x355A64 });
             const consoleMesh3 = new THREE.Mesh(consoleGeometry3, consoleMaterial3);
             consoleMesh3.position.set(0, 0.8, 0.35);
-            consoleMesh3.rotation.set(-Math.PI/5, Math.PI/1, 0);
+            consoleMesh3.rotation.set(0, Math.PI/1, 0);
             consoleMesh3.castShadow = true;
             consoleMesh3.receiveShadow = true;
             scene.add(consoleMesh3);
@@ -708,7 +708,7 @@
                     //texture.minFilter = THREE.NearestFilter;
                     texture.minFilter = THREE.LinearFilter;
                     texture.magFilter = THREE.LinearFilter;
-                    texture.generateMipmaps = true;
+                    texture.generateMipmaps = false;
                     textureCache[index] = texture;
                     sphere.material.map = texture;
                     sphere.material.needsUpdate = false;
@@ -724,7 +724,7 @@
                     //texture.minFilter = THREE.NearestFilter;
                     texture.minFilter = THREE.LinearFilter;
                     texture.magFilter = THREE.LinearFilter;
-                    texture.generateMipmaps = false;
+                    texture.generateMipmaps =false;
                     textureCache[index] = texture;
                 });
             }
