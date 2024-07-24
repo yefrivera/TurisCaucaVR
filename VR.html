@@ -653,6 +653,28 @@
             });
 
             window.addEventListener('resize', onWindowResize);
+
+            preloadAllScenes();
+        }
+
+        function preloadAllScenes() {
+            for (let i = 0; i < scenes.length; i++) {
+                if (!textureCache[i]) {
+                    loader.load(scenes[i], function (texture) {
+                        texture.colorSpace = THREE.SRGBColorSpace;
+                        texture.minFilter = THREE.NearestFilter;
+                        texture.magFilter = THREE.NearestFilter;
+                        texture.generateMipmaps = false;
+                        textureCache[i] = texture;
+                    });
+                }
+                if (!audioCache[i]) {
+                    const audioLoader = new THREE.AudioLoader();
+                    audioLoader.load(sounds[i], function (buffer) {
+                        audioCache[i] = buffer;
+                    });
+                }
+            }
         }
 
         function startModelAnimation() {
@@ -731,33 +753,12 @@
             } else {
                 loader.load(scenes[index], function (texture) {
                     texture.colorSpace = THREE.SRGBColorSpace;
-                    //texture.minFilter = THREE.NearestFilter;
-                    texture.minFilter = THREE.LinearFilter;
-                    texture.magFilter = THREE.LinearFilter;
+                    texture.minFilter = THREE.NearestFilter;
+                    texture.magFilter = THREE.NearestFilter;
                     texture.generateMipmaps = false;
                     textureCache[index] = texture;
                     sphere.material.map = texture;
                     sphere.material.needsUpdate = false;
-                });
-            }
-            preloadNextScene((index + 1) % scenes.length);
-        }
-
-        function preloadNextScene(index) {
-            if (!textureCache[index]) {
-                loader.load(scenes[index], function (texture) {
-                    texture.colorSpace = THREE.SRGBColorSpace;
-                    //texture.minFilter = THREE.NearestFilter;
-                    texture.minFilter = THREE.LinearFilter;
-                    texture.magFilter = THREE.LinearFilter;
-                    texture.generateMipmaps =false;
-                    textureCache[index] = texture;
-                });
-            }
-            if (!audioCache[index]) {
-                const audioLoader = new THREE.AudioLoader();
-                audioLoader.load(sounds[index], function (buffer) {
-                    audioCache[index] = buffer;
                 });
             }
         }
