@@ -350,7 +350,7 @@
             const consoleMesh1 = new THREE.Mesh(consoleGeometry1, consoleMaterial1);
             consoleMesh1.position.set(0.1, 0.8, -0.45);
             consoleMesh1.rotation.set(0, 0, 0);
-            consoleMesh1.scale.set(1, 1, 1.5);
+            consoleMesh1.scale.set(1.5, 1, 1.5);
             consoleMesh1.castShadow = true; 
             consoleMesh1.receiveShadow = true;
             scene.add(consoleMesh1);
@@ -393,6 +393,7 @@
             const consoleMesh2 = new THREE.Mesh(consoleGeometry2, consoleMaterial2);
             consoleMesh2.position.set(-0.35, 0.8, 0);
             consoleMesh2.rotation.set(0, Math.PI / 2,0 );
+            consoleMesh1.scale.set(1.5, 1, 1.5);
             consoleMesh2.castShadow = true;
             consoleMesh2.receiveShadow = true;
             scene.add(consoleMesh2);
@@ -435,6 +436,7 @@
             const consoleMesh3 = new THREE.Mesh(consoleGeometry3, consoleMaterial3);
             consoleMesh3.position.set(0.1, 0.8, 0.45);
             consoleMesh3.rotation.set(0, Math.PI/1, 0);
+            consoleMesh1.scale.set(1.5, 1, 1.5);
             consoleMesh3.castShadow = true;
             consoleMesh3.receiveShadow = true;
             scene.add(consoleMesh3);
@@ -477,7 +479,7 @@
             };
 
             const exitButtonAction1 = function () {
-                const exitText = createText('Exiting session...', 0.04);
+                const exitText = createText('Saliendo de realidad virtual...', 0.04);
                 exitText.position.set(0, 1.5, -0.6);
                 exitText.visible = true;
                 scene.add(exitText);
@@ -598,7 +600,7 @@
             buttonEntity3_3.addComponent(Button, { action: buttonAction3_3, surfaceY: 0.05, fullPressDistance: 0.02 });
 
             // Instructions Entity
-            const instructionText = createText('Welcome to Cauca in VR, please explore with hands.', 0.04);
+            const instructionText = createText('Bienvenido a Popayán en VR, por favor utilice sus manos para interactuar.', 0.04);
             instructionText.position.set(0, 1.6, -0.6);
             scene.add(instructionText);
 
