@@ -287,27 +287,28 @@
             if (currentScene) {
                 stopAllMedia();
 
-                // Iniciar la carga de la nueva escena
                 loadScene(targetSceneIndex, (scene) => {
                     currentSceneIndex = targetSceneIndex;
                     currentScene = scene;
                 });
 
-                // Hacer el zoom-in
                 gsap.to(camera, {
                     zoom: MAX_ZOOM,
-                    duration: 1.5,
+                    duration: 3,
                     onUpdate: function () {
                         camera.updateProjectionMatrix();
                     },
                     onComplete: function () {
-                        // Hacer el zoom-out después de cambiar la escena
-                        gsap.to(camera, {
-                            zoom: 1,
-                            duration: 1.5,
-                            onUpdate: function () {
-                                camera.updateProjectionMatrix();
-                            }
+                        loadScene(targetSceneIndex, (scene) => {
+                            currentSceneIndex = targetSceneIndex;
+                            currentScene = scene;
+                            gsap.to(camera, {
+                                zoom: 1,
+                                duration: 3,
+                                onUpdate: function () {
+                                    camera.updateProjectionMatrix();
+                                }
+                            });
                         });
                     }
                 });
