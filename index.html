@@ -183,7 +183,7 @@
             controls.rotateSpeed = -0.3;
 
             setupEventListeners();
-            changeScene(0);
+            changeScene(5);
             animate();
             fetchWeatherData();
         }
@@ -215,13 +215,13 @@
                         texturePath = 'images/humilladero2.jpg';
                         break;
                     case 3:
-                        texturePath = 'images/centrocaldas.jpg';
-                        break;
-                    case 4:
                         texturePath = 'images/hermita.jpg';
                         break;
+                    case 4:
+                        texturePath = 'images/catedral.jpg';
+                        break;
                     case 5:
-                        texturePath = 'images/catt.jpg';
+                        texturePath = 'images/centrocaldas.jpg';
                         break;
                     case 6:
                         texturePath = 'images/catt.jpg';
@@ -419,15 +419,19 @@
                 scene.add(createArrow(new THREE.Vector3(5, 10, 120), 1, " "));
                 //scene.add(createArrow(new THREE.Vector3(-27, -27, -100), 3));
             } else if (sceneIndex === 3) { //Escena morro
-                /*scene.add(createArrow(new THREE.Vector3(-80, -25, 20), 0));
-                scene.add(createArrow(new THREE.Vector3(10, -25, 90), 2));
+                scene.add(createArrow(new THREE.Vector3(90, 0, -30), 4, "Catedral Nuestra Señora de la Asunción"));
+                /*scene.add(createArrow(new THREE.Vector3(10, -25, 90), 2));
                 scene.add(createArrow(new THREE.Vector3(-30, -27, -90), 4));*/
             } else if (sceneIndex === 4) {
-                /*scene.add(createArrow(new THREE.Vector3(-90, -22, -5), 0));
-                scene.add(createArrow(new THREE.Vector3(-5, -27, -80), 1));
-                scene.add(createArrow(new THREE.Vector3(-15, -35, 90), 3));*/
+                //scene.add(createArrow(new THREE.Vector3(-90, -22, -5), 0));
+                scene.add(createArrow(new THREE.Vector3(100, -2, -30), 5, "Parque Caldas"));
+                scene.add(createArrow(new THREE.Vector3(-30, -2, -100), 0, "Torre del Reloj"));
+                scene.add(createArrow(new THREE.Vector3(-83, -3, 30), 6, "Interior Catedral"));
             } else if (sceneIndex === 5) {
-                /*scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));*/
+                scene.add(createArrow(new THREE.Vector3(-5, 3, 110), 4, "Catedral Nuestra Señora de la Asunción"));
+                scene.add(createArrow(new THREE.Vector3(70, 15, -80), 1., "Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(-5, -27, -90), 3));
+                scene.add(createArrow(new THREE.Vector3(-120, 42, 12), 1, "Puente del Humilladero"));
             } else if (sceneIndex === 6) {
                 /*scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));*/
             } else if (sceneIndex === 7) {
