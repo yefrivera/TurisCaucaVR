@@ -20,28 +20,23 @@
                 <div class="dropdown-content">
                     <a href="#" data-scene-index="0">Torre del Reloj</a>
                     <a href="#" data-scene-index="1">Puente del Humilladero</a>
-                    <a href="#" data-scene-index="3">Morro de Tulcán</a>
+                    <a href="#" data-scene-index="3">Iglesia La Hermita</a>
                 </div>
             </div>
             <div class="dropdown">
                 <button class="dropbtn">Gastronomía</button>
                 <div class="dropdown-content">
-                    <a href="#" data-scene-index="4">Op 1</a>
-                    <a href="#" data-scene-index="5">Op 2</a>
-                    <a href="#" data-scene-index="6">Op 3</a>
+
                 </div>
             </div>
             <div class="dropdown">
                 <button class="dropbtn">Cultura</button>
                 <div class="dropdown-content">
-                    <a href="#" data-scene-index="7">Op 1</a>
-                    <a href="#" data-scene-index="8">Op 2</a>
-                    <a href="#" data-scene-index="9">Op 3</a>
+
                 </div>
             </div>
         </div>
     </div>
-
 
     <div class="menu-icon" id="menu-icon">
         <div class="dot"></div>
@@ -65,7 +60,7 @@
         <div class="card" data-scene-index="2" data-name="Puente del Humilladero OV">
             <img src="images/v.jpg" alt="Escena 3">
         </div>
-        <div class="card" data-scene-index="3" data-name="Centro Parque Caldas">
+        <div class="card" data-scene-index="3" data-name="Iglesia La Hermita">
             <img src="images/d.jpg" alt="Escena 4">
         </div>
     </div>
@@ -113,7 +108,6 @@
         </div>
     </div>
     
-
     <script type="importmap">
         {
             "imports": {
@@ -183,7 +177,7 @@
             controls.rotateSpeed = -0.3;
 
             setupEventListeners();
-            changeScene(5);
+            changeScene(0);
             animate();
             fetchWeatherData();
         }
@@ -278,45 +272,7 @@
 
             loadArrows(scene, sceneIndex);
             loadInteractiveSprite(scene, sceneIndex);
-
-            /*if (sceneIndex === 0) {
-                addTextToScene(scene, "Arquitectura", new THREE.Vector3(-80, 100, -100));
-            }
-            if (sceneIndex === 4) {
-                addTextToScene(scene, "Gastronomía", new THREE.Vector3(-80, 100, -100));
-            }
-            if (sceneIndex === 7) {
-                addTextToScene(scene, "Cultura", new THREE.Vector3(-110, 100, -100));
-            }*/
         }
-
-        //----------Agregar texto grande a la escena----------------
-
-        /*function addTextToScene(scene, message, position, rotation) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            const fontSize = 140;
-            context.font = `Bold ${fontSize}px Arial`;
-            context.fillStyle = "white";
-
-            const metrics = context.measureText(message);
-            const textWidth = metrics.width;
-            const textHeight = fontSize * 1.2; 
-            canvas.width = textWidth + 100; 
-            canvas.height = textHeight + 50;
-
-            context.font = `Bold ${fontSize}px Arial`;
-            context.fillStyle = "white";
-            context.fillText(message, 50, fontSize);
-
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.copy(position);
-
-            sprite.scale.set(canvas.width * 0.15, canvas.height * 0.15, 1);
-            scene.add(sprite);
-        }*/
 
         //----------Cambiar escena con animación de zoom----------------
 
@@ -330,17 +286,11 @@
                         camera.updateProjectionMatrix();
                     },
                     onComplete: function () {
-                        while (currentScene.children.length > 0) {
-                            currentScene.remove(currentScene.children[0]);
-                        }
-                        currentScene = null;
-
                         loadScene(targetSceneIndex, (scene) => {
                             currentSceneIndex = targetSceneIndex;
                             currentScene = scene;
-                            camera.zoom = 0; 
                             gsap.to(camera, {
-                                zoom: 1, 
+                                zoom: 1,
                                 duration: 3,
                                 onUpdate: function () {
                                     camera.updateProjectionMatrix();
@@ -356,7 +306,6 @@
                 });
             }
         }
-
 
         //----------------Sprites para cambio de escena--------------------
 
@@ -402,54 +351,37 @@
 
         function loadArrows(scene, sceneIndex) {
             if (sceneIndex === 0) {
-                /*scene.add(createArrow(new THREE.Vector3(10, -25, 100), 1));
-                scene.add(createArrow(new THREE.Vector3(100, -30, -5), 2));
-                scene.add(createArrow(new THREE.Vector3(-5, -27, -90), 3));*/
-                scene.add(createArrow(new THREE.Vector3(-120, 42, 12), 1, "Puente del Humilladero"));
-
+                scene.add(createArrow(new THREE.Vector3(-57, 2, -80), 4, "Catedral Nuestra Señora de la Asunción"));
+                scene.add(createArrow(new THREE.Vector3(-100, 15, 10), 5, "Parque Caldas"));
             } else if (sceneIndex === 1) {
-                scene.add(createArrow(new THREE.Vector3(0, 10, 100), 0,"Torre del Reloj"));
-                //scene.add(createArrow(new THREE.Vector3(-25, -25, -90), 4));
-
+                scene.add(createArrow(new THREE.Vector3(0, 13, 100), 5, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-100, -10, -56), 2, " "));
-                scene.add(createArrow(new THREE.Vector3(100, 10, -60), 3, "Morro de Tulcán"));
-
             } else if (sceneIndex === 2) {
-                //scene.add(createArrow(new THREE.Vector3(-90, -32, 35), 0));
                 scene.add(createArrow(new THREE.Vector3(5, 10, 120), 1, " "));
-                //scene.add(createArrow(new THREE.Vector3(-27, -27, -100), 3));
-            } else if (sceneIndex === 3) { //Escena morro
+            } else if (sceneIndex === 3) {
                 scene.add(createArrow(new THREE.Vector3(90, 0, -30), 4, "Catedral Nuestra Señora de la Asunción"));
-                /*scene.add(createArrow(new THREE.Vector3(10, -25, 90), 2));
-                scene.add(createArrow(new THREE.Vector3(-30, -27, -90), 4));*/
             } else if (sceneIndex === 4) {
-                //scene.add(createArrow(new THREE.Vector3(-90, -22, -5), 0));
+                scene.add(createArrow(new THREE.Vector3(35, 8, 100), 3, "Iglesia La Hermita"));
                 scene.add(createArrow(new THREE.Vector3(100, -2, -30), 5, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-30, -2, -100), 0, "Torre del Reloj"));
                 scene.add(createArrow(new THREE.Vector3(-83, -3, 30), 6, "Interior Catedral"));
             } else if (sceneIndex === 5) {
-                scene.add(createArrow(new THREE.Vector3(-5, 3, 110), 4, "Catedral Nuestra Señora de la Asunción"));
-                scene.add(createArrow(new THREE.Vector3(70, 15, -80), 1., "Puente del Humilladero"));
-                scene.add(createArrow(new THREE.Vector3(-5, -27, -90), 3));
-                scene.add(createArrow(new THREE.Vector3(-120, 42, 12), 1, "Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(-25, 0, 90), 4, "Catedral Nuestra Señora de la Asunción"));
+                scene.add(createArrow(new THREE.Vector3(70, 15, -80), 1, "Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(-80, 10, 60), 0, "Torre del Reloj"));
             } else if (sceneIndex === 6) {
-                /*scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));*/
-            } else if (sceneIndex === 7) {
-                /*scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));*/
-            } else if (sceneIndex === 8) {
-                /*scene.add(createArrow(new THREE.Vector3(100, -35, 12), 1));*/
+                scene.add(createArrow(new THREE.Vector3(100, 3, 12), 4, "Exterior Catedral"));
             }
-            
         }
 
         //------------Sprite para video------------------
 
-        function createVideoSprite(position, label) {
+        function createVideoSprite(position, label, videoPath) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: videoSpriteTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
             sprite.scale.set(8, 8, 8);
-            sprite.userData = { type: 'video', label: label };
+            sprite.userData = { type: 'video', label: label, videoPath: videoPath };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
@@ -465,22 +397,23 @@
                 document.body.classList.remove('pointer-cursor');
             };
 
+            sprite.addEventListener('click', () => {
+                handleVideoSpriteClick(sprite);
+            });
 
             return sprite;
         }
 
-        //---------------Creación de video dentro den entorno 360--------------------
+        //---------------Creación de video dentro del entorno 360--------------------
 
-//---------------Creación de video dentro del entorno 360--------------------
-
-        function openVideo(position) {
+        function openVideo(sprite) {
             if (videoElement) {
                 videoElement.pause();
                 closeVideo();
             }
 
             videoElement = document.createElement('video');
-            videoElement.src = 'videos/puente el humilladero.mp4';
+            videoElement.src = sprite.userData.videoPath;
             videoElement.loop = false;
             videoElement.autoplay = true;
             videoElement.crossOrigin = "anonymous";
@@ -490,7 +423,7 @@
             const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
             const geometry = new THREE.PlaneGeometry(90, 66);
             videoMesh = new THREE.Mesh(geometry, videoMaterial);
-            videoMesh.position.copy(position);
+            videoMesh.position.copy(sprite.position);
             videoMesh.position.y += 40; 
             videoMesh.lookAt(camera.position);
             currentScene.add(videoMesh);
@@ -513,12 +446,12 @@
 
         //--------------Sprites para audio----------------------------------
 
-        function createAudioSprite(position, label) {
+        function createAudioSprite(position, label, audioPath) {
             const spriteMaterial = new THREE.SpriteMaterial({ map: audioSpriteTexture });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.copy(position);
             sprite.scale.set(8, 8, 8);
-            sprite.userData = { type: 'audio', label: label };
+            sprite.userData = { type: 'audio', label: label, audioPath: audioPath };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
 
@@ -534,6 +467,10 @@
                 document.body.classList.remove('pointer-cursor');
             };
 
+            sprite.addEventListener('click', () => {
+                handleAudioSpriteClick(sprite);
+            });
+
             return sprite;
         }
 
@@ -545,6 +482,7 @@
             audioLoader.load(audioPath, function(buffer) {
                 audio.setBuffer(buffer);
                 audio.setRefDistance(20);
+                audio.setVolume(3.0); 
                 audio.play();
                 audio.onEnded = () => {
                     audioElements[`audio_${sprite.id}`] = null;
@@ -615,15 +553,16 @@
         function handleVideoSpriteClick(sprite) {
             if (videoElement) {
                 if (videoElement.paused) {
-                    openVideo(sprite.position);
+                    openVideo(sprite);
                 } else {
                     closeVideo();
                 }
             } else {
-                openVideo(sprite.position);
+                openVideo(sprite);
             }
         }
-        //------------cerrar aduio----------------------------------------
+
+        //------------Cerrar audio----------------------------------------
 
         function handleAudioSpriteClick(sprite) {
             const audioKey = `audio_${sprite.id}`;
@@ -657,50 +596,71 @@
         function loadInteractiveSprite(scene, sceneIndex) {
             let position;
             let audioPath;
+            let videoPath;
             switch (sceneIndex) {
                 case 0:
-                    /*position = new THREE.Vector3(-100, -5, 4);
-                    scene.add(createVideoSprite(position, "Francisco José de Caldas"));*/
-
                     position = new THREE.Vector3(52, 35, -75);
                     audioPath = 'audios/torre_reloj.mp3';
-                    const audioSprite = createAudioSprite(position, "Torre de Reloj");
-                    audioSprite.userData.audioPath = audioPath;
+                    const audioSprite = createAudioSprite(position, "Torre de Reloj", audioPath);
                     scene.add(audioSprite);                    
 
-                    position = new THREE.Vector3(-50, 30, -105);
-                    const infoSprite = createInfoSprite(position, "Catedral Nuestra Señora de la Asunción");
-                    scene.add(infoSprite);
+                    /*position = new THREE.Vector3(50, 25, -70);
+                    videoPath = 'videos/torre_reloj.mp4';
+                    const videoSprite = createVideoSprite(position, "Torre de Reloj", videoPath);
+                    scene.add(videoSprite);*/
 
                     break;
                 case 1:
+                    /*position = new THREE.Vector3(10, 20, 30);
+                    videoPath = 'videos/puente el humilladero.mp4';
+                    scene.add(createVideoSprite(position, "Puente del Humilladero", videoPath));
+
+                    position = new THREE.Vector3(15, 25, 35);
+                    audioPath = 'audios/puente_humilladero.mp3';
+                    scene.add(createAudioSprite(position, "Puente del Humilladero", audioPath));*/
 
                     break;
                 case 2:
 
                     position = new THREE.Vector3(110, -9, 54);
-                    scene.add(createVideoSprite(position, "Puente del Humilladero"));
+                    videoPath = 'videos/puente el humilladero.mp4';
+                    scene.add(createVideoSprite(position, "Puente del Humilladero", videoPath));
+
+                    /*position = new THREE.Vector3(25, 35, 45);
+                    audioPath = 'audios/puente_humilladero_ov.mp3';
+                    scene.add(createAudioSprite(position, "Puente del Humilladero OV", audioPath));*/
 
                     break;
                 case 3:
+
+                    /*position = new THREE.Vector3(40, 10, 50);
+                    videoPath = 'videos/iglesia_hermita.mp4';
+                    scene.add(createVideoSprite(position, "Iglesia La Hermita", videoPath));
+
+                    position = new THREE.Vector3(45, 15, 55);
+                    audioPath = 'audios/iglesia_hermita.mp3';
+                    scene.add(createAudioSprite(position, "Iglesia La Hermita", audioPath));*/
+
                     break;
                 case 4:
-                    /*position = new THREE.Vector3(1, 3, -140);
-                    audioPath = 'audios/torre_reloj.mp3';
-                    const audioSprite3 = createAudioSprite(position, "Torre del Reloj");
-                    audioSprite3.userData.audioPath = audioPath;
-                    scene.add(audioSprite3);*/
+                    position = new THREE.Vector3(-110, 25, 40);
+                    const infoSprite = createInfoSprite(position, "Catedral Nuestra Señora de la Asunción");
+                    scene.add(infoSprite);
+
+                    /*position = new THREE.Vector3(-100, 20, 35);
+                    videoPath = 'videos/catedral.mp4';
+                    scene.add(createVideoSprite(position, "Catedral", videoPath));*/
+
                     break;
                 case 5:
-                    break;
+                    position = new THREE.Vector3(-100, -5, 4);
+                    videoPath = 'videos/caldas1.mp4';
+                    scene.add(createVideoSprite(position, "Francisco José de Caldas", videoPath));
 
-                case 6:
-                    break;
+                    /*position = new THREE.Vector3(-90, 0, 10);
+                    audioPath = 'audios/francisco_jose_caldas.mp3';
+                    scene.add(createAudioSprite(position, "Francisco José de Caldas", audioPath));*/
 
-                case 7:
-                    break;
-
-                case 8:
                     break;
             }
         }
@@ -1057,7 +1017,5 @@
 
         init();
     </script>
-
-
 </body>
 </html>
