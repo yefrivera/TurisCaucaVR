@@ -248,6 +248,7 @@
         ];
 
         let listener, positionalAudio, mixer, model, animationActions;
+        let secondModel, secondMixer, secondAnimationActions;
         const textureCache = {};
         const audioCache = {};
         let homeButtonPressed = false;
@@ -279,7 +280,7 @@
             directionalLight.position.set(5, 10, 7.5);
             scene.add(directionalLight);
 
-            const panoSphereGeo = new THREE.SphereGeometry(1000, 128, 128);
+            const panoSphereGeo = new THREE.SphereGeometry(800, 128, 128);
             const panoSphereMat = new THREE.MeshStandardMaterial({
                 side: THREE.BackSide,
                 displacementScale: -1.0,
@@ -293,13 +294,10 @@
             manager = new THREE.LoadingManager();
             loader = new THREE.TextureLoader(manager);
 
-            // Load the first scene
             loadScene(currentSceneIndex);
 
             manager.onLoad = function () {
                 scene.add(sphere);
-                // Start preloading other scenes after the first one is loaded
-                preloadRemainingScenes();
             };
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -319,7 +317,8 @@
             const vrButton = VRButton.createButton(renderer, sessionInit);
             document.body.appendChild(vrButton);
 
-            renderer.xr.addEventListener('sessionend', pauseModelAnimation);
+            renderer.xr.addEventListener('sessionstart', startSecondModelAnimation);
+            renderer.xr.addEventListener('sessionend', pauseSecondModelAnimation);
 
             const controller1 = renderer.xr.getController(0);
             scene.add(controller1);
@@ -638,11 +637,12 @@
             const helper = new PositionalAudioHelper(positionalAudio, 0.1);
             positionalAudio.add(helper);
 
+            // Load the first model
             const gltfLoader = new GLTFLoader();
             gltfLoader.load('mod.glb', function (gltf) {
                 model = gltf.scene;
-                model.position.set(-60, -70, -50);
-                model.scale.set(30, 30, 30);
+                model.position.set(-80, -100, -80);
+                model.scale.set(40, 40, 40);
                 model.rotation.set(0, Math.PI / 3, 0);
                 scene.add(model);
 
@@ -655,33 +655,46 @@
                 });
             });
 
+            // Load the second model
+            gltfLoader.load('bird.glb', function (gltf) {
+                secondModel = gltf.scene;
+                secondModel.position.set(200, 40, -200);
+                secondModel.scale.set(10, 10, 10);
+                secondModel.rotation.set(0, -Math.PI / 2, 0);
+                scene.add(secondModel);
+
+                secondMixer = new THREE.AnimationMixer(secondModel);
+                secondAnimationActions = {};
+                gltf.animations.forEach((clip) => {
+                    const action = secondMixer.clipAction(clip);
+                    secondAnimationActions[clip.name] = action;
+                    action.paused = true;
+                });
+            });
+
             window.addEventListener('resize', onWindowResize);
+
+            preloadAllScenes();
         }
 
-        function preloadRemainingScenes() {
-            let index = 1;
-            const preloadNext = () => {
-                if (index < scenes.length) {
-                    if (!textureCache[index]) {
-                        loader.load(scenes[index], function (texture) {
-                            texture.colorSpace = THREE.SRGBColorSpace;
-                            texture.minFilter = THREE.NearestFilter;
-                            texture.magFilter = THREE.NearestFilter;
-                            texture.generateMipmaps = false;
-                            textureCache[index] = texture;
-                        });
-                    }
-                    if (!audioCache[index]) {
-                        const audioLoader = new THREE.AudioLoader();
-                        audioLoader.load(sounds[index], function (buffer) {
-                            audioCache[index] = buffer;
-                        });
-                    }
-                    index++;
-                    setTimeout(preloadNext, 1000); // Adjust this delay as needed
+        function preloadAllScenes() {
+            for (let i = 0; i < scenes.length; i++) {
+                if (!textureCache[i]) {
+                    loader.load(scenes[i], function (texture) {
+                        texture.colorSpace = THREE.SRGBColorSpace;
+                        texture.minFilter = THREE.NearestFilter;
+                        texture.magFilter = THREE.NearestFilter;
+                        texture.generateMipmaps = false;
+                        textureCache[i] = texture;
+                    });
                 }
-            };
-            preloadNext();
+                if (!audioCache[i]) {
+                    const audioLoader = new THREE.AudioLoader();
+                    audioLoader.load(sounds[i], function (buffer) {
+                        audioCache[i] = buffer;
+                    });
+                }
+            }
         }
 
         function startModelAnimation() {
@@ -697,6 +710,24 @@
         function pauseModelAnimation() {
             if (mixer) {
                 Object.values(animationActions).forEach(action => {
+                    action.paused = true;
+                });
+            }
+        }
+
+        function startSecondModelAnimation() {
+            if (secondMixer) {
+                secondMixer.time = 0;
+                Object.values(secondAnimationActions).forEach(action => {
+                    action.paused = false;
+                    action.reset().play();
+                });
+            }
+        }
+
+        function pauseSecondModelAnimation() {
+            if (secondMixer) {
+                Object.values(secondAnimationActions).forEach(action => {
                     action.paused = true;
                 });
             }
@@ -791,6 +822,10 @@
 
             if (mixer) {
                 mixer.update(delta);
+            }
+
+            if (secondMixer) {
+                secondMixer.update(delta);
             }
         }
 
