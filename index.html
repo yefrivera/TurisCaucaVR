@@ -27,7 +27,7 @@
                 <div class="dropdown-content">
                     <a href="#" data-scene-index="0">Torre del Reloj</a>
                     <a href="#" data-scene-index="4">Puente del Humilladero</a>
-                    <a href="#" data-scene-index="3">Iglesia La Hermita</a>
+                    <a href="#" data-scene-index="3">Iglesia La Ermita</a>
                 </div>
             </div>
             <div class="dropdown">
@@ -59,16 +59,16 @@
 
     <div id="cards-container" class="hidden">
         <div class="card" data-scene-index="0" data-name="Torre del Reloj">
-            <img src="images/a.jpg" alt="Escena 1">
+            <img src="images/torre.jpg" alt="Escena 1">
         </div>
         <div class="card" data-scene-index="1" data-name="Parque Caldas">
-            <img src="images/h1.jpg" alt="Escena 2">
+            <img src="images/Parque Caldas.jpg" alt="Escena 2">
         </div>
         <div class="card" data-scene-index="4" data-name="Puente del Humilldero">
-            <img src="images/v.jpg" alt="Escena 3">
+            <img src="images/phumilladero1.jpg" alt="Escena 3">
         </div>
-        <div class="card" data-scene-index="3" data-name="Iglesia La Hermita">
-            <img src="images/d.jpg" alt="Escena 4">
+        <div class="card" data-scene-index="3" data-name="Iglesia La Ermita">
+            <img src="images/ermita.jpg" alt="Escena 4">
         </div>
     </div>
 
@@ -284,13 +284,12 @@
         //----------Cambiar escena con animación de zoom----------------
 
         function changeScene(targetSceneIndex) {
+            if (currentSceneIndex === targetSceneIndex) {
+                return;
+            }
+
             if (currentScene) {
                 stopAllMedia();
-
-                loadScene(targetSceneIndex, (scene) => {
-                    currentSceneIndex = targetSceneIndex;
-                    currentScene = scene;
-                });
 
                 gsap.to(camera, {
                     zoom: MAX_ZOOM,
@@ -375,7 +374,7 @@
 
             } else if (sceneIndex === 2) {
 
-                scene.add(createArrow(new THREE.Vector3(35, 8, 100), 3, "Iglesia La Hermita"));
+                scene.add(createArrow(new THREE.Vector3(35, 8, 100), 3, "Iglesia La Ermita"));
                 scene.add(createArrow(new THREE.Vector3(100, -2, -30), 1, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-30, -2, -100), 0, "Torre del Reloj"));
                 scene.add(createArrow(new THREE.Vector3(-83, -3, 30), 6, "Interior Catedral"));

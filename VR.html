@@ -230,8 +230,8 @@
 
             //-------Gastronomía------------
             './images/centrocaldas.jpg',
-            './images/ccaldas.jpg',
-            './images/humilladero2.jpg',
+            './images/catedral.jpg',
+            './images/catt.jpg',
 
             /*----Cultura--------
             './images/centrocaldas.jpg',
@@ -239,15 +239,17 @@
             './images/humilladero2.jpg'*/
         ];
         const sounds = [
+            'sounds/juanvaldez.ogg',
+            'sounds/humilladero.ogg',
+            'sounds/hermita.ogg',
             'sounds/centrocaldas.ogg',
             'sounds/catedral.ogg',
-            'sounds/catt.ogg',
-            'sounds/bancolombia.ogg',
-            'sounds/no-audio.ogg',
-            'sounds/juanvaldez.ogg'
+            'sounds/catt.ogg'
+            
         ];
 
         let listener, positionalAudio, mixer, model, animationActions;
+        let secondModel, secondMixer, secondAnimationActions;
         const textureCache = {};
         const audioCache = {};
         let homeButtonPressed = false;
@@ -279,7 +281,7 @@
             directionalLight.position.set(5, 10, 7.5);
             scene.add(directionalLight);
 
-            const panoSphereGeo = new THREE.SphereGeometry(800, 128, 128);
+            const panoSphereGeo = new THREE.SphereGeometry(500, 64, 64);
             const panoSphereMat = new THREE.MeshStandardMaterial({
                 side: THREE.BackSide,
                 displacementScale: -1.0,
@@ -316,7 +318,8 @@
             const vrButton = VRButton.createButton(renderer, sessionInit);
             document.body.appendChild(vrButton);
 
-            renderer.xr.addEventListener('sessionend', pauseModelAnimation);
+            renderer.xr.addEventListener('sessionstart', startSecondModelAnimation);
+            renderer.xr.addEventListener('sessionend', pauseSecondModelAnimation);
 
             const controller1 = renderer.xr.getController(0);
             scene.add(controller1);
@@ -482,15 +485,15 @@
 
             // First Console Button Actions
             const nextButtonAction1 = function () {
-                changeEnvironmentAndPlayAudio(0, 'sounds/catedral.ogg');
+                changeEnvironmentAndPlayAudio(0, 'sounds/juanvaldez.ogg');
             };
 
             const backButtonAction1 = function () {
-                changeEnvironmentAndPlayAudio(1, 'sounds/catedral.ogg');
+                changeEnvironmentAndPlayAudio(1, 'sounds/humilladero.ogg');
             };
 
             const homeButtonAction1 = function () {
-                changeEnvironmentAndPlayAudio(2, 'sounds/catedral.ogg');
+                changeEnvironmentAndPlayAudio(2, 'sounds/hermita.ogg');
             };
 
             const exitButtonAction1 = function () {
@@ -513,11 +516,11 @@
             };
 
             const buttonAction2_2 = function () {
-                changeEnvironmentAndPlayAudio(4, 'sounds/catt.ogg');
+                changeEnvironmentAndPlayAudio(4, 'sounds/catedral.ogg');
             };
 
             const buttonAction2_3 = function () {
-                changeEnvironmentAndPlayAudio(5, 'sounds/bancolombia.ogg');
+                changeEnvironmentAndPlayAudio(5, 'sounds/catt.ogg');
             };
 
             const volumeButtonAction = function () {
@@ -536,11 +539,11 @@
             };
 
             const buttonAction3_2 = function () {
-                changeEnvironmentAndPlayAudio(1, 'sounds/catedral.ogg');
+                changeEnvironmentAndPlayAudio(1, 'sounds/humilladero.ogg');
             };
 
             const buttonAction3_3 = function () {
-                changeEnvironmentAndPlayAudio(2, 'sounds/catedral.ogg');
+                changeEnvironmentAndPlayAudio(2, 'sounds/hermita.ogg');
             };
 
             // Register components and systems
@@ -635,11 +638,12 @@
             const helper = new PositionalAudioHelper(positionalAudio, 0.1);
             positionalAudio.add(helper);
 
+            // Load the first model
             const gltfLoader = new GLTFLoader();
-            gltfLoader.load('mod.glb', function (gltf) {
+            gltfLoader.load('model.glb', function (gltf) {
                 model = gltf.scene;
-                model.position.set(-80, -100, -80);
-                model.scale.set(40, 40, 40);
+                model.position.set(-300, -250, -150);
+                model.scale.set(100, 100, 100);
                 model.rotation.set(0, Math.PI / 3, 0);
                 scene.add(model);
 
@@ -648,6 +652,23 @@
                 gltf.animations.forEach((clip) => {
                     const action = mixer.clipAction(clip);
                     animationActions[clip.name] = action;
+                    action.paused = true;
+                });
+            });
+
+            // Load the second model
+            gltfLoader.load('bird.glb', function (gltf) {
+                secondModel = gltf.scene;
+                secondModel.position.set(200, 40, -200);
+                secondModel.scale.set(10, 10, 10);
+                secondModel.rotation.set(0, -Math.PI / 2, 0);
+                scene.add(secondModel);
+
+                secondMixer = new THREE.AnimationMixer(secondModel);
+                secondAnimationActions = {};
+                gltf.animations.forEach((clip) => {
+                    const action = secondMixer.clipAction(clip);
+                    secondAnimationActions[clip.name] = action;
                     action.paused = true;
                 });
             });
@@ -690,6 +711,24 @@
         function pauseModelAnimation() {
             if (mixer) {
                 Object.values(animationActions).forEach(action => {
+                    action.paused = true;
+                });
+            }
+        }
+
+        function startSecondModelAnimation() {
+            if (secondMixer) {
+                secondMixer.time = 0;
+                Object.values(secondAnimationActions).forEach(action => {
+                    action.paused = false;
+                    action.reset().play();
+                });
+            }
+        }
+
+        function pauseSecondModelAnimation() {
+            if (secondMixer) {
+                Object.values(secondAnimationActions).forEach(action => {
                     action.paused = true;
                 });
             }
@@ -785,10 +824,11 @@
             if (mixer) {
                 mixer.update(delta);
             }
+
+            if (secondMixer) {
+                secondMixer.update(delta);
+            }
         }
-
-        
-
 
         init();
     </script>
