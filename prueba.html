@@ -22,16 +22,16 @@
     <div class="navbar">
         <div class="menu-toggle" id="menu-toggle">&#9660;</div>
         <div class="menu-content" id="menu-content">
-            <!-- Primer elemento principal -->
+
             <div class="dropdown">
                 <button class="dropbtn">Popayán</button>
                 <div class="dropdown-content">
                     <div class="dropdown-sub">
                         <button class="dropbtn-sub">Arquitectura</button>
                         <div class="dropdown-content-sub">
-                            <a href="#" data-scene-index="0">Entorno 1</a>
-                            <a href="#" data-scene-index="1">Entorno 2</a>
-                            <a href="#" data-scene-index="2">Entorno 3</a>
+                            <a href="#" data-scene-index="0">Torre del Reloj</a>
+                            <a href="#" data-scene-index="1">Puente del Humilladero</a>
+                            <a href="#" data-scene-index="2">Morro de Tulcán</a>
                         </div>
                     </div>
                     <div class="dropdown-sub">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Segundo elemento principal -->
+
             <div class="dropdown">
                 <button class="dropbtn">Silvia</button>
                 <div class="dropdown-content">
@@ -82,7 +82,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Tercer elemento principal -->
+
             <div class="dropdown">
                 <button class="dropbtn">Puracé</button>
                 <div class="dropdown-content">
@@ -112,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Cuarto elemento principal -->
+
             <div class="dropdown">
                 <button class="dropbtn">Tierradentro</button>
                 <div class="dropdown-content">
@@ -327,15 +327,23 @@
                     case 6:
                         texturePath = 'images/catt.jpg';
                         break;
-                    /*case 7:
+                    case 7:
                         texturePath = 'images/centrocaldas.jpg';
                         break;
                     case 8:
                         texturePath = 'images/catt.jpg';
                         break;
                     case 9:
-                        texturePath = 'images/centrocaldas.jpg';
-                        break;*/
+                        texturePath = 'silvia/silvia5.jpg';
+                        break;
+
+                    case 10:
+                    texturePath = 'silvia/silvia6.jpg';
+                    break;
+
+                    case 11:
+                    texturePath = 'silvia/silvia13.jpg';
+                    break;
                 }
 
                 const texture = textureLoader.load(
