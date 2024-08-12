@@ -11,10 +11,11 @@ body, html {
     background-color: #07339F;
     overflow: visible; /* Permite que los submenús se desborden */
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding: 0 500px;
+    padding: 0 20px;
     height: 60px;
+    position: relative;
 }
 
 .navbar a, .dropdown .dropbtn {
@@ -79,7 +80,7 @@ body, html {
     display: none;
     position: absolute;
     left: 100%; /* Alineado con el borde izquierdo del submenú de primer nivel */
-    top: -7%; /* Justo debajo del submenú de primer nivel */
+    top: 0; /* Justo debajo del submenú de primer nivel */
     background-color: #07339F;
     min-width: 160px;
     z-index: 1001;
@@ -121,9 +122,10 @@ body, html {
 /* Ajustes responsivos */
 @media (max-width: 768px) {
     .navbar {
-        padding: 0 10px;
-        justify-content: center;
-        height: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 10px 20px;
     }
 
     .menu-toggle {
@@ -134,15 +136,11 @@ body, html {
         display: none;
         flex-direction: column;
         width: 100%;
-        position: absolute;
-        top: 60px;
-        left: 0;
         background-color: #07339F;
     }
 
     .menu-content.show {
         display: flex;
-        text-align: center;
     }
 
     .dropdown-content {
