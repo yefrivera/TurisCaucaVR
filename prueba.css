@@ -79,8 +79,8 @@ body, html {
 .dropdown-content-sub {
     display: none;
     position: absolute;
-    left: 100%; /* Alineado con el borde izquierdo del submenú de primer nivel */
-    top: 0; /* Justo debajo del submenú de primer nivel */
+    left: 100%; 
+    top: 0; 
     background-color: #07339F;
     min-width: 160px;
     z-index: 1001;
@@ -117,15 +117,16 @@ body, html {
 
 .menu-content {
     display: flex;
+
 }
 
 /* Ajustes responsivos */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
-        align-items: flex-start;
-        height: auto;
-        padding: 10px 20px;
+        align-items: center;
+        height: 60px; 
+        padding: 0px 20px;
     }
 
     .menu-toggle {
@@ -134,9 +135,12 @@ body, html {
 
     .menu-content {
         display: none;
-        flex-direction: column;
+        flex-direction: column; 
+        position: absolute;
+        text-align: center;
+        top: 60px;
         width: 100%;
-        background-color: #07339F;
+        background-color: #07339F; 
     }
 
     .menu-content.show {
