@@ -440,6 +440,12 @@
                                     camera.updateProjectionMatrix();
                                 }
                             });
+
+                            const region = sceneRegions[targetSceneIndex];
+                            if (region) {
+                                const { lat, lon } = regionCoordinates[region];
+                                fetchWeatherData(lat, lon);
+                            }
                         });
                     }
                 });
@@ -447,6 +453,12 @@
                 loadScene(targetSceneIndex, (scene) => {
                     currentSceneIndex = targetSceneIndex;
                     currentScene = scene;
+
+                    const region = sceneRegions[targetSceneIndex];
+                    if (region) {
+                        const { lat, lon } = regionCoordinates[region];
+                        fetchWeatherData(lat, lon);
+                    }
                 });
             }
         }
@@ -1059,7 +1071,7 @@
             } else {
                 for (let key in audioElements) {
                     if (audioElements[key] && audioElements[key].isPlaying) {
-                        audioElements[key].setVolume(audioElements[key].getVolume() === 0 ? 1 : 0);
+                        audioElements[key].setVolume(audioElements[key].getVolume() === 0 ? 3 : 0);
                         muteIcon.src = audioElements[key].getVolume() === 0 ? muteIcon.getAttribute('data-alt-src') : muteIcon.getAttribute('data-original-src');
                     }
                 }
@@ -1119,14 +1131,49 @@
 
         //----------------eventos del clima--------------------------------
 
-        async function fetchWeatherData() {
-            const apiKey = '6bae8b38ab56fc803410a26d94082f88'; 
-            const lat = 2.4382; 
-            const lon = -76.6132; 
+        const regionCoordinates = {
+            'Popayán': { lat: 2.4382, lon: -76.6132 },
+            'Silvia': { lat: 2.6084, lon: -76.3748 },
+            'Puracé': { lat: 2.3365, lon: -76.4977 },
+            'Tierradentro': { lat: 2.5774, lon: -76.0415 }
+        };
+
+        const sceneRegions = {
+            0: 'Popayán',
+            1: 'Popayán',
+            2: 'Popayán',
+            3: 'Popayán',
+            4: 'Popayán',
+            5: 'Popayán',
+            6: 'Silvia',
+            7: 'Silvia',
+            8: 'Silvia',
+            9: 'Silvia',
+            11: 'Silvia',
+            13: 'Silvia',
+            14: 'Silvia',
+            /*15: 'Puracé',
+            16: 'Puracé',
+            17: 'Puracé',
+            18: 'Puracé',
+            19: 'Puracé',
+            20: 'Puracé',
+            21: 'Tierradentro',
+            22: 'Tierradentro',
+            23: 'Tierradentro',
+            24: 'Tierradentro',
+            25: 'Tierradentro',
+            26: 'Tierradentro'*/
+        };
+
+
+
+        async function fetchWeatherData(lat, lon) {
+            const apiKey = '6bae8b38ab56fc803410a26d94082f88';
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}&lang=es`;
 
             try {
-                const response = await fetch(url, { cache: "no-cache" }); 
+                const response = await fetch(url, { cache: "no-cache" });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -1136,7 +1183,7 @@
                     throw new Error('Invalid data format');
                 }
 
-                const temp = Math.round(data.main.temp); 
+                const temp = Math.round(data.main.temp);
                 let description = data.weather[0].description;
                 description = description.charAt(0).toUpperCase() + description.slice(1);
 
@@ -1145,7 +1192,7 @@
                 const minutes = now.getMinutes().toString().padStart(2, '0');
                 const ampm = hours >= 12 ? 'PM' : 'AM';
                 hours = hours % 12;
-                hours = hours ? hours : 12; 
+                hours = hours ? hours : 12;
                 const time = hours.toString().padStart(2, '0') + ':' + minutes + ' ' + ampm;
 
                 const weatherData = document.getElementById('weather-data');
