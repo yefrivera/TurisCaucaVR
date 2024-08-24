@@ -31,6 +31,10 @@
         }
     </script>
 
+    <link rel="manifest" href="/manifest.json">
+    
+    <button id="installButton" style="display:none;">Instalar Aplicación</button>
+
     <script type="module">
         import * as THREE from 'three';
         import { VRButton } from 'three/addons/webxr/VRButton.js';
@@ -251,9 +255,9 @@
         
         const audios = [
             // Audios para Popayán
-            ['sounds/juanvaldez.ogg', 'sounds/humilladero.ogg', 'sounds/hermita.ogg'],
+            ['sounds/juan.ogg', 'sounds/humil.ogg', 'sounds/herm.ogg'],
             // Audios para Silvia
-            ['sounds/centrocaldas.ogg', 'sounds/mercado.ogg', 'sounds/iglesia.ogg', 'sounds/parque.ogg', 'sounds/truchera.ogg', 'sounds/jardin.ogg', 'sounds/in.ogg'],
+            ['sounds/centro.ogg', 'sounds/mercado.ogg', 'sounds/iglesia.ogg', 'sounds/pare.ogg', 'sounds/truchera.ogg', 'sounds/jardin.ogg', 'sounds/in.ogg'],
             // Audios para Puracé
             ['sounds/purace1.ogg', 'sounds/purace2.ogg', 'sounds/purace3.ogg'],
             // Audios para Tierradentro
@@ -275,6 +279,39 @@
             buttonMesh.receiveShadow = true;
             return buttonMesh;
         }
+
+        //----------------------------------------------------------------
+
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+        // Evita que el mini-infobar aparezca en dispositivos móviles
+        e.preventDefault();
+        // Guarda el evento para que podamos desencadenarlo más tarde
+        deferredPrompt = e;
+        // Actualiza la interfaz para que el usuario sepa que puede instalar la PWA
+        // Mostrar un botón personalizado de instalación o algún otro indicador visual
+        const installButton = document.querySelector('#installButton');
+        installButton.style.display = 'block';
+
+        installButton.addEventListener('click', (e) => {
+            // Oculta el botón de instalación
+            installButton.style.display = 'none';
+            // Muestra el prompt de instalación
+            deferredPrompt.prompt();
+            // Espera a que el usuario responda al prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('El usuario aceptó instalar la PWA');
+            } else {
+                console.log('El usuario rechazó instalar la PWA');
+            }
+            deferredPrompt = null;
+            });
+        });
+        });
+
+        //--------------------------------------------------------------------
     
         function init() {
             const container = document.getElementById('container');
