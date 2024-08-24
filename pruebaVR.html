@@ -245,7 +245,7 @@
         // Matrices de escenas y audios organizadas por entorno
         const scenes = [
             // Popayán
-            ['./Popayan/1.jpg', './Popayan/4.jpg', './Popayan/666.jpg'],
+            ['./Popayan/1.jpg', './Popayan/4.jpg', './Popayan/666.jpg', './Popayan/catt.jpg'],
             // Silvia
             ['./silvia/entradasilvia.jpg', './silvia/parque.jpg', './silvia/mercado2.jpg', './silvia/iglesia.jpg', './silvia/truchera.jpg', './silvia/jardin.jpg', './silvia/in.jpg'],
             // Puracé
@@ -256,7 +256,7 @@
         
         const audios = [
             // Audios para Popayán
-            ['sounds/juanvaldez.ogg', 'sounds/humilladero.ogg', 'sounds/morro.ogg'],
+            ['./sounds/juanvaldez.ogg', './sounds/humilladero.ogg', './sounds/morro.ogg', './sounds/catt.ogg'],
             // Audios para Silvia
             ['sounds/paisajes.ogg', 'sounds/parque.ogg', 'sounds/mercado.ogg', 'sounds/pare.ogg', 'sounds/truchera.ogg', 'sounds/jardin.ogg', 'sounds/in.ogg'],
             // Audios para Puracé
@@ -406,7 +406,7 @@
             const consoleMesh1 = new THREE.Mesh(consoleGeometry1, consoleMaterial1);
             consoleMesh1.position.set(0.15, 1, -0.5);
             consoleMesh1.rotation.set(0, 0, 0);
-            consoleMesh1.scale.set(1.5, 1, 1.5);
+            consoleMesh1.scale.set(1.5, 0.9, 1.5);
             consoleMesh1.castShadow = true; 
             consoleMesh1.receiveShadow = true;
             scene.add(consoleMesh1);
@@ -433,7 +433,7 @@
             const consoleMesh2 = new THREE.Mesh(consoleGeometry2, consoleMaterial2);
             consoleMesh2.position.set(-0.35, 1, 0);
             consoleMesh2.rotation.set(0, Math.PI / 2,0 );
-            consoleMesh2.scale.set(1.5, 1, 1.5);
+            consoleMesh2.scale.set(1.5, 0.9, 1.5);
             consoleMesh2.castShadow = true;
             consoleMesh2.receiveShadow = true;
             scene.add(consoleMesh2);
@@ -480,7 +480,7 @@
             const consoleMaterial3 = new THREE.MeshPhongMaterial({ color: 0x355A64 });
             const consoleMesh3 = new THREE.Mesh(consoleGeometry3, consoleMaterial3);
             consoleMesh3.position.set(0.15, 1, 0.5);
-            consoleMesh3.scale.set(1.5, 1, 1.5);
+            consoleMesh3.scale.set(1.5, 0.9, 1.5);
             consoleMesh3.rotation.set(0, Math.PI / 1, 0);
             consoleMesh3.castShadow = true;
             consoleMesh3.receiveShadow = true;
@@ -528,44 +528,62 @@
                 }, 2000);
             };
     
-            // Acciones de los botones de la consola 2
+            // Modificación en los botones para cambiar de entorno
             const popayanButtonAction = function () {
+                // Pausa cualquier audio que esté sonando actualmente
+                pauseCurrentAudio();
+
                 selectedGroup = 0;
                 changeEnvironmentAndPlayAudio(0);
             };
-    
+
             const silviaButtonAction = function () {
+                // Pausa cualquier audio que esté sonando actualmente
+                pauseCurrentAudio();
+
                 selectedGroup = 1;
                 changeEnvironmentAndPlayAudio(0);
             };
-    
+
             const puraceButtonAction = function () {
+                // Pausa cualquier audio que esté sonando actualmente
+                pauseCurrentAudio();
+
                 selectedGroup = 2;
                 changeEnvironmentAndPlayAudio(0);
             };
-    
+
             const tierradentroButtonAction = function () {
+                // Pausa cualquier audio que esté sonando actualmente
+                pauseCurrentAudio();
+
                 selectedGroup = 3;
                 changeEnvironmentAndPlayAudio(0);
             };
     
             // Acciones de los botones de la consola 3
             const nextButtonAction = function () {
+                // Pausa cualquier audio que esté sonando actualmente
+                pauseCurrentAudio();
+
                 if (currentSceneIndex < scenes[selectedGroup].length - 1) {
                     currentSceneIndex++;
                 } else {
                     currentSceneIndex = 0;
                 }
-                loadScene(currentSceneIndex);
+                changeEnvironmentAndPlayAudio(currentSceneIndex);
             };
     
             const backButtonAction = function () {
+                // Pausa cualquier audio que esté sonando actualmente
+                pauseCurrentAudio();
+
                 if (currentSceneIndex > 0) {
                     currentSceneIndex--;
                 } else {
                     currentSceneIndex = scenes[selectedGroup].length - 1;
                 }
-                loadScene(currentSceneIndex);
+                changeEnvironmentAndPlayAudio(currentSceneIndex);
             };
     
             // Registro de componentes y sistemas
@@ -744,23 +762,36 @@
         }
     
         function changeEnvironmentAndPlayAudio(sceneIndex) {
+            // Pausa cualquier audio que esté sonando actualmente
             pauseCurrentAudio();
+
+            // Pausa la animación del modelo actual
             pauseModelAnimation();
-    
+
+            // Cambia al índice de escena seleccionado
             currentSceneIndex = sceneIndex;
+
+            // Carga la escena seleccionada
             loadScene(currentSceneIndex);
-    
+
+            // Configura un tiempo de espera para asegurarse de que la escena se cargue completamente antes de reproducir el audio
             setTimeout(() => {
                 if (audioCache[`${selectedGroup}_${currentSceneIndex}`]) {
+                    // Configura el audio correspondiente al entorno actual
                     positionalAudio.setBuffer(audioCache[`${selectedGroup}_${currentSceneIndex}`]);
+
+                    // Reproduce el audio
                     positionalAudio.play();
+
+                    // Inicia la animación del modelo cuando comience el audio
                     startModelAnimation();
-    
+
+                    // Pausa la animación del modelo cuando termine el audio
                     positionalAudio.source.onended = () => {
                         pauseModelAnimation();
                     };
                 }
-            }, 5000);
+            }, 5000);  // Ajusta el tiempo si es necesario para que coincida con el tiempo de carga de la escena
         }
     
         function loadScene(index) {
