@@ -2,6 +2,10 @@
     "name": "TurismoCauca3.0",
     "short_name": "TurisCauca",
     "description": "Una experiencia VR inmersiva para explorar los destinos turísticos de Cauca.",
+    "start_url": "/TurisCaucaVR/pruebaVR.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
     "icons": [
       {
         "src": "/TurisCaucaVR/images/c.png",
@@ -13,10 +17,7 @@
         "type": "image/png",
         "sizes": "512x512"
       }
-    ],
-    "start_url": "/TurisCaucaVR/pruebaVR.html",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#000000"
+    ]
+
   }
   
