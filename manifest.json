@@ -4,17 +4,17 @@
     "description": "Una experiencia VR inmersiva para explorar los destinos turísticos de Cauca.",
     "icons": [
       {
-        "src": "/images/c.png",
+        "src": "/TurisCaucaVR/images/c.png",
         "type": "image/png",
         "sizes": "192x192"
       },
       {
-        "src": "/images/c.png",
+        "src": "/TurisCaucaVR/images/c.png",
         "type": "image/png",
         "sizes": "512x512"
       }
     ],
-    "start_url": "/pruebaVR.html",
+    "start_url": "/TurisCaucaVR/pruebaVR.html",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#000000"
