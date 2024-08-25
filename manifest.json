@@ -14,7 +14,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/TurisCaucaVR/pruebaVR.html",
+  "start_url": "/TurisCaucaVR/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",

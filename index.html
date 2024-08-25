@@ -5,8 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="prueba.css">
+    <link rel="manifest" href="/TurisCaucaVR/manifest.json">
 </head>
 <body>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/TurisCaucaVR/service-worker.js')
+            .then(function(registration) {
+                console.log('Service Worker registrado con alcance:', registration.scope);
+            })
+            .catch(function(error) {
+                console.log('El registro del Service Worker falló:', error);
+            });
+        }
+    </script>
+
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
         <p class="loading-text">Cargando Tour Virtual...</p>
@@ -272,6 +286,35 @@
         const videoSpriteTexture = textureLoader.load('images/infobb.png');
         const audioSpriteTexture = textureLoader.load('images/infobb.png');
         const infoSpriteTexture = textureLoader.load('images/infobb.png');
+
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+        // Evita que el mini-infobar aparezca en dispositivos móviles
+        e.preventDefault();
+        // Guarda el evento para que podamos desencadenarlo más tarde
+        deferredPrompt = e;
+        // Actualiza la interfaz para que el usuario sepa que puede instalar la PWA
+        // Mostrar un botón personalizado de instalación o algún otro indicador visual
+        const installButton = document.querySelector('#installButton');
+        installButton.style.display = 'block';
+
+        installButton.addEventListener('click', (e) => {
+            // Oculta el botón de instalación
+            installButton.style.display = 'none';
+            // Muestra el prompt de instalación
+            deferredPrompt.prompt();
+            // Espera a que el usuario responda al prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('El usuario aceptó instalar la PWA');
+            } else {
+                console.log('El usuario rechazó instalar la PWA');
+            }
+            deferredPrompt = null;
+            });
+        });
+        });
 
         function init() {
             container = document.getElementById('container');

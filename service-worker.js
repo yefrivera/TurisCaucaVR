@@ -1,7 +1,7 @@
 const CACHE_NAME = 'turismo-cauca-cache-v1';
 const urlsToCache = [
   '/',
-  '/TurisCaucaVR/pruebaVR.html',
+  '/TurisCaucaVR/index.html',
   '/TurisCaucaVR/manifest.json',
 
   'https://unpkg.com/three@0.159.0/build/three.module.js',
