@@ -73,15 +73,20 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
-  );
+  // Redirección de HTTP a HTTPS
+  if (event.request.url.startsWith('http://')) {
+    event.respondWith(Response.redirect(event.request.url.replace('http://', 'https://')));
+  } else {
+    event.respondWith(
+      caches.match(event.request)
+        .then(function(response) {
+          if (response) {
+            return response;
+          }
+          return fetch(event.request);
+        })
+    );
+  }
 });
 
 self.addEventListener('activate', function(event) {
