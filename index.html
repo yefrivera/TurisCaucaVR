@@ -32,9 +32,6 @@
         }
     </script>
 
-    
-    
-    <button id="installButton" style="display:none;">Instalar Aplicación</button>
 
     <script type="module">
         import * as THREE from 'three';
@@ -282,35 +279,6 @@
         }
 
         //----------------------------------------------------------------
-
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-        // Evita que el mini-infobar aparezca en dispositivos móviles
-        e.preventDefault();
-        // Guarda el evento para que podamos desencadenarlo más tarde
-        deferredPrompt = e;
-        // Actualiza la interfaz para que el usuario sepa que puede instalar la PWA
-        // Mostrar un botón personalizado de instalación o algún otro indicador visual
-        const installButton = document.querySelector('#installButton');
-        installButton.style.display = 'block';
-
-        installButton.addEventListener('click', (e) => {
-            // Oculta el botón de instalación
-            installButton.style.display = 'none';
-            // Muestra el prompt de instalación
-            deferredPrompt.prompt();
-            // Espera a que el usuario responda al prompt
-            deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('El usuario aceptó instalar la PWA');
-            } else {
-                console.log('El usuario rechazó instalar la PWA');
-            }
-            deferredPrompt = null;
-            });
-        });
-        });
 
         //--------------------------------------------------------------------
     
