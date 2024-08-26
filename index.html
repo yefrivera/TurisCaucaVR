@@ -19,6 +19,18 @@
         }
     </script>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/TurisCaucaVR/service-worker.js')
+            .then(function(registration) {
+                console.log('Service Worker registrado con alcance:', registration.scope);
+            })
+            .catch(function(error) {
+                console.log('El registro del Service Worker falló:', error);
+            });
+        }
+    </script>
+
 
 
     <script type="module">
