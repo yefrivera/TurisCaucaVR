@@ -239,7 +239,6 @@
         let currentSceneIndex = 0;
         let selectedGroup = 0;
         
-        // Matrices de escenas y audios organizadas por entorno
         const scenes = [
             // Popayán
             ['./Popayan/1.jpg', './Popayan/4.jpg', './Popayan/666.jpg', './Popayan/catt.jpg'],
@@ -252,13 +251,13 @@
         ];
         
         const audios = [
-            // Audios para Popayán
+            // Popayán
             ['./sounds/juanvaldez.ogg', './sounds/humilladero.ogg', './sounds/morro.ogg', './sounds/catt.ogg'],
-            // Audios para Silvia
+            // Silvia
             ['sounds/paisajes.ogg', 'sounds/parque.ogg', 'sounds/mercado.ogg', 'sounds/pare.ogg', 'sounds/truchera.ogg', 'sounds/jardin.ogg', 'sounds/in.ogg'],
-            // Audios para Puracé
+            // Puracé
             ['sounds/purace1.ogg', 'sounds/purace2.ogg', 'sounds/purace3.ogg'],
-            // Audios para Tierradentro
+            // Tierradentro
             ['sounds/tierradentro1.ogg', 'sounds/tierradentro2.ogg', 'sounds/tierradentro3.ogg']
         ];
     
@@ -278,7 +277,37 @@
             return buttonMesh;
         }
 
-        //----------------------------------------------------------------
+        function makeButtonSphere(radius, texturePath) {
+            const geometry = new THREE.SphereGeometry(radius, 32, 32); 
+            const textureLoader = new THREE.TextureLoader();
+            const texture = textureLoader.load(texturePath); 
+            const material = new THREE.MeshBasicMaterial({ map: texture }); 
+            const buttonMesh = new THREE.Mesh(geometry, material);
+            buttonMesh.castShadow = true;
+            buttonMesh.receiveShadow = true;
+            return buttonMesh;
+        }
+
+        function makeArrowButton(isNext, size, color) {
+            const direction = new THREE.Vector3(1, 0, 0); // Dirección de la flecha (eje X positivo)
+            const origin = new THREE.Vector3(0, 0, 0); // Origen de la flecha
+            const length = size * 3; // Longitud de la flecha
+            const headLength = size * 1.5; // Longitud de la cabeza de la flecha
+            const headWidth = size * 1; // Ancho de la cabeza de la flecha
+
+            // Crear la flecha
+            const arrowHelper = new THREE.ArrowHelper(direction, origin, length, color, headLength, headWidth);
+
+            // Rotar la flecha hacia la dirección correcta
+            if (isNext) {
+                arrowHelper.rotation.z = -Math.PI / 2; // Flecha hacia la derecha
+            } else {
+                arrowHelper.rotation.z = Math.PI / 2; // Flecha hacia la izquierda
+            }
+
+            return arrowHelper;
+        }
+
 
         //--------------------------------------------------------------------
     
@@ -363,12 +392,10 @@
             const handModel2 = new OculusHandModel(hand2);
             hand2.add(handModel2);
             scene.add(hand2);
+
+            const buttonSpacing = 0.2; 
+            const centerX = 0; 
     
-            // Ajuste de posición para centrar y equiespaciar
-            const buttonSpacing = 0.2; // Espacio entre los botones
-            const centerX = 0; // Centro de la consola en el eje X
-    
-            // Consola 1 - Botones de Volumen y Salir
             const consoleGeometry1 = new THREE.BoxGeometry(0.5, 0.12, 0.2);
             const consoleMaterial1 = new THREE.MeshPhongMaterial({ color: 0x355A64  });
             const consoleMesh1 = new THREE.Mesh(consoleGeometry1, consoleMaterial1);
@@ -395,7 +422,6 @@
             exitButton1.position.set(centerX + buttonSpacing / 2, 0.04, 0.01);
             consoleMesh1.add(exitButton1);
     
-            // Consola 2 - Botones Popayán, Silvia, Puracé y Tierradentro
             const consoleGeometry2 = new THREE.BoxGeometry(0.5, 0.12, 0.2);
             const consoleMaterial2 = new THREE.MeshPhongMaterial({ color: 0x355A64  });
             const consoleMesh2 = new THREE.Mesh(consoleGeometry2, consoleMaterial2);
@@ -405,45 +431,60 @@
             consoleMesh2.castShadow = true;
             consoleMesh2.receiveShadow = true;
             scene.add(consoleMesh2);
-    
+
+            // DESTINOS
+
             const consoleText2 = createText('Destinos', 0.05);
             consoleText2.rotation.x = -Math.PI / 2;
             consoleText2.position.set(0, 0.07, -0.05);
             consoleMesh2.add(consoleText2);
-    
-            const popayanButton = makeButtonMesh(0.1, 0.1, 0.1, 0x1B5E20);
+
+            const popayanButtonContainer = new THREE.Object3D();
+            const popayanButton = makeButtonSphere(0.05, './Popayan/1.jpg');
+            popayanButtonContainer.add(popayanButton);
             const popayanButtonText = createText('Popayán', 0.02);
-            popayanButton.add(popayanButtonText);
-            popayanButtonText.rotation.x = -Math.PI / 2;
-            popayanButtonText.position.set(0, 0.051, 0);
-            popayanButton.position.set(-0.17, 0.04, 0.04);
-            consoleMesh2.add(popayanButton);
-    
-            const silviaButton = makeButtonMesh(0.1, 0.1, 0.1, 0x2E7D32);
+            popayanButtonText.position.set(0, 0.051, 0); 
+            popayanButtonContainer.add(popayanButtonText);
+            popayanButtonContainer.position.set(-0.17, 0.06, 0.04);
+            popayanButton.rotation.set(Math.PI/7, -Math.PI / 2, Math.PI / 2);
+            consoleMesh2.add(popayanButtonContainer);
+            popayanButtonText.rotation.x = -Math.PI / 2; 
+                
+            const silviaButtonContainer = new THREE.Object3D();
+            const silviaButton = makeButtonSphere(0.05, './silvia/parque.jpg');
+            silviaButtonContainer.add(silviaButton);
             const silviaButtonText = createText('Silvia', 0.02);
-            silviaButton.add(silviaButtonText);
-            silviaButtonText.rotation.x = -Math.PI / 2;
-            silviaButtonText.position.set(0, 0.051, 0);
-            silviaButton.position.set(-0.055, 0.04, 0.04);
-            consoleMesh2.add(silviaButton);
+            silviaButtonText.position.set(0, 0.051, 0);  
+            silviaButtonContainer.add(silviaButtonText);
+            silviaButtonContainer.position.set(-0.055, 0.06, 0.04);
+            silviaButton.rotation.set(Math.PI/9, -Math.PI / 2, Math.PI / 2);
+            consoleMesh2.add(silviaButtonContainer);
+            silviaButtonText.rotation.x = -Math.PI / 2;  
     
-            const puraceButton = makeButtonMesh(0.1, 0.1, 0.1, 0x388E3C);
+            const puraceButtonContainer = new THREE.Object3D(); 
+            const puraceButton = makeButtonSphere(0.05, './silvia/parque.jpg');
+            puraceButtonContainer.add(puraceButton);
             const puraceButtonText = createText('Puracé', 0.02);
-            puraceButton.add(puraceButtonText);
+            puraceButtonText.position.set(0, 0.051, 0); 
+            puraceButtonContainer.add(puraceButtonText);
+            puraceButtonContainer.position.set(0.055, 0.06, 0.04);
+            consoleMesh2.add(puraceButtonContainer);
+            puraceButton.rotation.set(Math.PI/7, -Math.PI / 2, Math.PI / 2);
             puraceButtonText.rotation.x = -Math.PI / 2;
-            puraceButtonText.position.set(0, 0.051, 0);
-            puraceButton.position.set(0.055, 0.04, 0.04);
-            consoleMesh2.add(puraceButton);
     
-            const tierradentroButton = makeButtonMesh(0.1, 0.1, 0.1, 0x4CAF50);
+            const tierradentroButtonContainer = new THREE.Object3D();
+            const tierradentroButton = makeButtonSphere(0.05, './silvia/parque.jpg');
+            tierradentroButtonContainer.add(tierradentroButton);
             const tierradentroButtonText = createText('Tierradentro', 0.02);
-            tierradentroButton.add(tierradentroButtonText);
+            tierradentroButtonText.position.set(0, 0.051, 0);  
+            tierradentroButtonContainer.add(tierradentroButtonText);
+            tierradentroButtonContainer.position.set(0.17, 0.06, 0.04);
+            consoleMesh2.add(tierradentroButtonContainer);
+            tierradentroButton.rotation.set(Math.PI/7, -Math.PI / 2, Math.PI / 2);
             tierradentroButtonText.rotation.x = -Math.PI / 2;
-            tierradentroButtonText.position.set(0, 0.051, 0);
-            tierradentroButton.position.set(0.17, 0.04, 0.04);
-            consoleMesh2.add(tierradentroButton);
-    
-            // Consola 3 - Botones de Siguiente y Atrás
+
+            //Tercera consola (Siguiente - Atrás)
+
             const consoleGeometry3 = new THREE.BoxGeometry(0.5, 0.12, 0.2);
             const consoleMaterial3 = new THREE.MeshPhongMaterial({ color: 0x355A64 });
             const consoleMesh3 = new THREE.Mesh(consoleGeometry3, consoleMaterial3);
@@ -454,23 +495,24 @@
             consoleMesh3.receiveShadow = true;
             scene.add(consoleMesh3);
     
-            const nextButton = makeButtonMesh(0.12, 0.1, 0.12, 0x0288D1);
+            // Botón de Siguiente como flecha
+            const nextButton = makeArrowButton(true, 0.05, 0x0288D1); // true indica que es para "siguiente"
             const nextButtonText = createText('Siguiente', 0.03);
             nextButton.add(nextButtonText);
             nextButtonText.rotation.x = -Math.PI / 2;
             nextButtonText.position.set(0, 0.051, 0);
-            nextButton.position.set(centerX + buttonSpacing / 2, 0.04, 0.01);
+            nextButton.position.set(centerX + buttonSpacing + 0.12, 0.05, 0.0); // Ajusta la posición para que esté alineado
             consoleMesh3.add(nextButton);
-    
-            const backButton = makeButtonMesh(0.12, 0.1, 0.12, 0x01579B);
+
+            // Botón de Atrás como flecha
+            const backButton = makeArrowButton(false, 0.05, 0x01579B); // false indica que es para "atrás"
             const backButtonText = createText('Atrás', 0.03);
             backButton.add(backButtonText);
             backButtonText.rotation.x = -Math.PI / 2;
             backButtonText.position.set(0, 0.051, 0);
-            backButton.position.set(centerX - buttonSpacing / 2, 0.04, 0.01);
+            backButton.position.set(centerX - buttonSpacing - 0.12, 0.05, 0.0); // Ajusta la posición para que esté alineado
             consoleMesh3.add(backButton);
     
-            // Acción para el botón de volumen
             const volumeButtonAction = function () {
                 if (volumeMuted) {
                     positionalAudio.setVolume(1);
@@ -480,8 +522,7 @@
                     volumeMuted = true;
                 }
             };
-    
-            // Acción para el botón de salir
+
             const exitButtonAction1 = function () {
                 const exitText = createText('Saliendo de realidad virtual...', 0.04);
                 exitText.position.set(0, 1.5, -0.6);
@@ -495,45 +536,33 @@
                     renderer.xr.getSession().end();
                 }, 2000);
             };
-    
-            // Modificación en los botones para cambiar de entorno
-            const popayanButtonAction = function () {
-                // Pausa cualquier audio que esté sonando actualmente
-                pauseCurrentAudio();
 
+            const popayanButtonAction = function () {
+                pauseCurrentAudio();
                 selectedGroup = 0;
                 changeEnvironmentAndPlayAudio(0);
             };
 
             const silviaButtonAction = function () {
-                // Pausa cualquier audio que esté sonando actualmente
                 pauseCurrentAudio();
-
                 selectedGroup = 1;
                 changeEnvironmentAndPlayAudio(0);
             };
 
             const puraceButtonAction = function () {
-                // Pausa cualquier audio que esté sonando actualmente
                 pauseCurrentAudio();
-
                 selectedGroup = 2;
                 changeEnvironmentAndPlayAudio(0);
             };
 
             const tierradentroButtonAction = function () {
-                // Pausa cualquier audio que esté sonando actualmente
                 pauseCurrentAudio();
-
                 selectedGroup = 3;
                 changeEnvironmentAndPlayAudio(0);
             };
     
-            // Acciones de los botones de la consola 3
             const nextButtonAction = function () {
-                // Pausa cualquier audio que esté sonando actualmente
                 pauseCurrentAudio();
-
                 if (currentSceneIndex < scenes[selectedGroup].length - 1) {
                     currentSceneIndex++;
                 } else {
@@ -543,9 +572,7 @@
             };
     
             const backButtonAction = function () {
-                // Pausa cualquier audio que esté sonando actualmente
                 pauseCurrentAudio();
-
                 if (currentSceneIndex > 0) {
                     currentSceneIndex--;
                 } else {
@@ -554,7 +581,6 @@
                 changeEnvironmentAndPlayAudio(currentSceneIndex);
             };
     
-            // Registro de componentes y sistemas
             world
                 .registerComponent(Object3D)
                 .registerComponent(Button)
@@ -566,8 +592,7 @@
                 .registerSystem(CalibrationSystem, { renderer: renderer, camera: camera })
                 .registerSystem(ButtonSystem, { renderer: renderer, camera: camera })
                 .registerSystem(FingerInputSystem, { hands: [handModel1, handModel2] });
-    
-            // Entidades de la consola 1
+
             const volumeButtonEntity = world.createEntity();
             volumeButtonEntity.addComponent(Pressable);
             volumeButtonEntity.addComponent(Object3D, { object: volumeButton });
@@ -577,8 +602,7 @@
             exitButtonEntity1.addComponent(Pressable);
             exitButtonEntity1.addComponent(Object3D, { object: exitButton1 });
             exitButtonEntity1.addComponent(Button, { action: exitButtonAction1, surfaceY: 0.05, recoverySpeed: 0.2, fullPressDistance: 0.03 });
-    
-            // Entidades de la consola 2
+
             const popayanButtonEntity = world.createEntity();
             popayanButtonEntity.addComponent(Pressable);
             popayanButtonEntity.addComponent(Object3D, { object: popayanButton });
@@ -598,8 +622,7 @@
             tierradentroButtonEntity.addComponent(Pressable);
             tierradentroButtonEntity.addComponent(Object3D, { object: tierradentroButton });
             tierradentroButtonEntity.addComponent(Button, { action: tierradentroButtonAction, surfaceY: 0.05, fullPressDistance: 0.02 });
-    
-            // Entidades de la consola 3
+
             const nextButtonEntity = world.createEntity();
             nextButtonEntity.addComponent(Pressable);
             nextButtonEntity.addComponent(Object3D, { object: nextButton });
@@ -609,8 +632,7 @@
             backButtonEntity.addComponent(Pressable);
             backButtonEntity.addComponent(Object3D, { object: backButton });
             backButtonEntity.addComponent(Button, { action: backButtonAction, surfaceY: 0.05, fullPressDistance: 0.02 });
-    
-            // Instrucción inicial
+
             const instructionText = createText('Bienvenido al  Cauca en VR, por favor utilice sus manos para interactuar.', 0.04);
             instructionText.position.set(0, 1.6, -0.6);
             scene.add(instructionText);
@@ -630,8 +652,7 @@
     
             const helper = new PositionalAudioHelper(positionalAudio, 0.1);
             positionalAudio.add(helper);
-    
-            // Cargar modelo principal
+
             const gltfLoader = new GLTFLoader();
             gltfLoader.load('model.glb', function (gltf) {
                 model = gltf.scene;
@@ -648,8 +669,7 @@
                     action.paused = true;
                 });
             });
-    
-            // Cargar segundo modelo
+
             gltfLoader.load('bird.glb', function (gltf) {
                 secondModel = gltf.scene;
                 secondModel.position.set(200, 40, -200);
@@ -730,36 +750,25 @@
         }
     
         function changeEnvironmentAndPlayAudio(sceneIndex) {
-            // Pausa cualquier audio que esté sonando actualmente
             pauseCurrentAudio();
-
-            // Pausa la animación del modelo actual
             pauseModelAnimation();
 
-            // Cambia al índice de escena seleccionado
             currentSceneIndex = sceneIndex;
-
-            // Carga la escena seleccionada
             loadScene(currentSceneIndex);
 
-            // Configura un tiempo de espera para asegurarse de que la escena se cargue completamente antes de reproducir el audio
             setTimeout(() => {
                 if (audioCache[`${selectedGroup}_${currentSceneIndex}`]) {
-                    // Configura el audio correspondiente al entorno actual
                     positionalAudio.setBuffer(audioCache[`${selectedGroup}_${currentSceneIndex}`]);
 
-                    // Reproduce el audio
                     positionalAudio.play();
 
-                    // Inicia la animación del modelo cuando comience el audio
                     startModelAnimation();
 
-                    // Pausa la animación del modelo cuando termine el audio
                     positionalAudio.source.onended = () => {
                         pauseModelAnimation();
                     };
                 }
-            }, 5000);  // Ajusta el tiempo si es necesario para que coincida con el tiempo de carga de la escena
+            }, 5000);  
         }
     
         function loadScene(index) {
