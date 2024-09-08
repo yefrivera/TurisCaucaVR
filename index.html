@@ -288,27 +288,18 @@
             return buttonMesh;
         }
 
-        function makeArrowButton(isNext, size, color) {
-
+        function createArrowMesh(width, height, color) {
             const shape = new THREE.Shape();
-            shape.moveTo(0, 0);
-            shape.lineTo(size, size / 2); 
-            shape.lineTo(0, size);   
-            shape.lineTo(0, 0);  
+            shape.moveTo(0, height / 2);
+            shape.lineTo(width / 2, -height / 2);
+            shape.lineTo(-width / 2, -height / 2);
+            shape.lineTo(0, height / 2);
 
-            const extrudeSettings = { depth: size / 2, bevelEnabled: false };
-            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-            const material = new THREE.MeshBasicMaterial({ color: color });
+            const geometry = new THREE.ShapeGeometry(shape);
+            const material = new THREE.MeshPhongMaterial({ color: color });
             const arrowMesh = new THREE.Mesh(geometry, material);
-            if (isNext) {
-                arrowMesh.rotation.set(-Math.PI / 2, 0, 0);
-            } else {
-                arrowMesh.rotation.set(Math.PI / 2, 0, Math.PI); 
-            }
-
             return arrowMesh;
         }
-
 
         //--------------------------------------------------------------------
     
@@ -496,28 +487,34 @@
             consoleMesh3.receiveShadow = true;
             scene.add(consoleMesh3);
     
-            // Botón de "Siguiente"
-            const nextButtonContainer = new THREE.Object3D();
-            const nextButton = makeArrowButton(true, 0.12, 0x01579B); 
-            nextButtonContainer.add(nextButton);
+            const nextButton = makeButtonMesh(0.12, 0.1, 0.12, 0x0288D1);
             const nextButtonText = createText('Siguiente', 0.03);
-            nextButtonText.position.set(centerX + buttonSpacing - 0.15, 0.07, -0.06); 
-            nextButtonContainer.add(nextButtonText);
-            nextButtonContainer.position.set(centerX + buttonSpacing - 0.14, 0.04, 0.06);
-            consoleMesh3.add(nextButtonContainer);
+            nextButton.add(nextButtonText);
             nextButtonText.rotation.x = -Math.PI / 2;
+            nextButtonText.position.set(0, 0.06, 0);
+            nextButton.position.set(centerX + buttonSpacing / 2, 0.04, 0.01);
+            consoleMesh3.add(nextButton);
 
+            const nextArrow = createArrowMesh(0.1, 0.1, 0x206499);
+            nextArrow.rotation.x = -Math.PI / 2; 
+            nextArrow.rotation.z = -Math.PI/2;
+            nextArrow.position.set(0, 0.051, 0); 
+            nextButton.add(nextArrow);
 
-            // Botón de "Atrás"
-            const backButtonContainer = new THREE.Object3D();
-            const backButton = makeArrowButton(false, 0.12, 0x01579B); 
-            backButtonContainer.add(backButton);
-            const backButtonText = createText('Anterior', 0.03);
-            backButtonText.position.set(centerX - buttonSpacing + 0.145, 0.02, -0.06);  
-            backButtonContainer.add(backButtonText);
-            backButtonContainer.position.set(centerX - buttonSpacing + 0.14, 0.1, 0.06);
-            consoleMesh3.add(backButtonContainer);
+    
+            const backButton = makeButtonMesh(0.12, 0.1, 0.12, 0x0288D1);
+            const backButtonText = createText('Atrás', 0.03);
+            backButton.add(backButtonText);
             backButtonText.rotation.x = -Math.PI / 2;
+            backButtonText.position.set(0, 0.06, 0);
+            backButton.position.set(centerX - buttonSpacing / 2, 0.04, 0.01);
+            consoleMesh3.add(backButton);
+
+            const backArrow = createArrowMesh(0.1, 0.1, 0x206499);
+            backArrow.rotation.x = -Math.PI / 2; 
+            backArrow.rotation.z = Math.PI/2;
+            backArrow.position.set(0, 0.051, 0); 
+            backButton.add(backArrow);
                 
             const volumeButtonAction = function () {
                 if (volumeMuted) {
