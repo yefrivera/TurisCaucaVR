@@ -303,7 +303,7 @@
             if (isNext) {
                 arrowMesh.rotation.set(-Math.PI / 2, 0, 0);
             } else {
-                arrowMesh.rotation.set(-Math.PI / 2, 0, Math.PI); 
+                arrowMesh.rotation.set(Math.PI / 2, 0, Math.PI); 
             }
 
             return arrowMesh;
@@ -513,9 +513,9 @@
             const backButton = makeArrowButton(false, 0.12, 0x01579B); 
             backButtonContainer.add(backButton);
             const backButtonText = createText('Anterior', 0.03);
-            backButtonText.position.set(centerX - buttonSpacing + 0.145, 0.07, 0.06);  
+            backButtonText.position.set(centerX - buttonSpacing + 0.145, 0.02, -0.06);  
             backButtonContainer.add(backButtonText);
-            backButtonContainer.position.set(centerX - buttonSpacing + 0.14, 0.04, -0.06);
+            backButtonContainer.position.set(centerX - buttonSpacing + 0.14, 0.1, 0.06);
             consoleMesh3.add(backButtonContainer);
             backButtonText.rotation.x = -Math.PI / 2;
                 
