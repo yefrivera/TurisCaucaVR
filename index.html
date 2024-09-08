@@ -289,18 +289,18 @@
         }
 
         function makeArrowButton(isNext, size, color) {
-            const direction = new THREE.Vector3(1, 0, 0); // Dirección de la flecha (eje X positivo)
-            const origin = new THREE.Vector3(0, 0, 0); // Origen de la flecha
-            const length = 0; // Longitud de la flecha
-            const headLength = size * 1.5; // Longitud de la cabeza de la flecha
-            const headWidth = size * 1.5; // Ancho de la cabeza de la flecha
+            const direction = new THREE.Vector3(1, 0, 0); 
+            const origin = new THREE.Vector3(0, 0, 0); 
+            const length = 0; 
+            const headLength = size * 1.5; 
+            const headWidth = size * 1.5; 
 
             // Crear la flecha
             const arrowHelper = new THREE.ArrowHelper(direction, origin, length, color, headLength, headWidth);
             if (isNext) {
-                arrowHelper.rotation.set(-Math.PI ,0,-Math.PI / 2);
+                arrowHelper.rotation.set(-Math.PI /2,0,-Math.PI / 2);
             } else {
-                arrowHelper.rotation.set(-Math.PI,0,Math.PI / 2);
+                arrowHelper.rotation.set(-Math.PI/2,0,Math.PI / 2);
             }
 
             return arrowHelper;
@@ -497,7 +497,7 @@
             const nextButton = makeArrowButton(true, 0.08, 0x01579B); 
             nextButtonContainer.add(nextButton);
             const nextButtonText = createText('Siguiente', 0.03);
-            nextButtonText.position.set(centerX + buttonSpacing - 0.27, 0.081, 0);  
+            nextButtonText.position.set(centerX + buttonSpacing - 0.27, 0.06, 0);  
             nextButtonContainer.add(nextButtonText);
             nextButtonContainer.position.set(centerX + buttonSpacing - 0.02, 0.08, 0.0);
             consoleMesh3.add(nextButtonContainer);
@@ -508,7 +508,7 @@
             const backButton = makeArrowButton(false, 0.08, 0x01579B); 
             backButtonContainer.add(backButton);
             const backButtonText = createText('Atrás', 0.03);
-            backButtonText.position.set(centerX - buttonSpacing + 0.3, 0.081, 0);  
+            backButtonText.position.set(centerX - buttonSpacing + 0.3, 0.06, 0);  
             backButtonContainer.add(backButtonText);
             backButtonContainer.position.set(centerX - buttonSpacing + 0.02, 0.08, 0.0);
             consoleMesh3.add(backButtonContainer);
