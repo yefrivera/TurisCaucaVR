@@ -583,6 +583,24 @@
                 }
                 changeEnvironmentAndPlayAudio(currentSceneIndex);
             };
+
+            // Circulo en la base
+            // Crear un círculo plano grande en el entorno
+            const circleRadius = 15; // Radio del círculo grande
+            const circleSegments = 64; // Número de segmentos para suavidad
+
+            const circleGeometry = new THREE.CircleGeometry(circleRadius, circleSegments);
+            const circleMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, side: THREE.DoubleSide }); // Azul cielo y visible por ambos lados
+            const circleMesh = new THREE.Mesh(circleGeometry, circleMaterial);
+
+            // Rotar el círculo para que quede plano en el suelo
+            circleMesh.rotation.x = -Math.PI / 2; // Girar 90 grados en el eje X
+
+            // Posicionarlo en el centro de la escena
+            circleMesh.position.set(5, -20, 0); // Ajusta la altura si es necesario
+
+            // Añadir el círculo a la escena
+            scene.add(circleMesh);
     
             world
                 .registerComponent(Object3D)
