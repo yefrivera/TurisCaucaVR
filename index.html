@@ -241,7 +241,7 @@
         
         const scenes = [
             // Popayán
-            ['./Popayan/1.jpg', './Popayan/4.jpg', './Popayan/666.jpg', './Popayan/catt.jpg'],
+            ['./Popayan/1.jpg', './Popayan/catt.jpg', './Popayan/4.jpg', './Popayan/666.jpg', './Popayan/7.jpg' ],
             // Silvia
             ['./silvia/parque.jpg', './silvia/mercado2.jpg', './silvia/iglesia.jpg', './silvia/truchera.jpg', './silvia/jardin.jpg', './silvia/in.jpg'],
             // Puracé
@@ -252,13 +252,46 @@
         
         const audios = [
             // Popayán
-            ['./sounds/juanvaldez.ogg', './sounds/humilladero.ogg', './sounds/morro.ogg', './sounds/catt.ogg'],
+            ['./sounds/juanvaldez.ogg', './sounds/catt.ogg', './sounds/humilladero.ogg', './sounds/morro.ogg', './sounds/7.ogg' ],
             // Silvia
             ['sounds/parque.ogg', 'sounds/mercado.ogg', 'sounds/pare.ogg', 'sounds/truchera.ogg', 'sounds/jardin.ogg', 'sounds/in.ogg'],
             // Puracé
             ['sounds/purace1.ogg', 'sounds/purace2.ogg', 'sounds/purace3.ogg'],
             // Tierradentro
             ['sounds/tierradentro1.ogg', 'sounds/tierradentro2.ogg', 'sounds/tierradentro3.ogg']
+        ];
+
+        const sceneTexts = [
+            // Textos para las escenas de Popayán
+            [
+                "Torre del Reloj",
+                "Catedral Basílica",
+                "Puente del Humilladero",
+                "Morro de Tulcán",
+                "Pueblito patojo"
+                
+            ],
+            // Textos para las escenas de Silvia
+            [
+                "Silvia, Parque central",
+                "Mercado tradicional",
+                "Iglesia de Belén",
+                "Lago",
+                "El jardín botánico Las Delicias (Entrada)",
+                "El jardín botánico Las Delicias (Interior)"
+            ],
+            // Textos para las escenas de Puracé
+            [
+                "Puracé, un volcán imponente.",
+                "Explorando la biodiversidad de Puracé.",
+                "Las termales de Puracé."
+            ],
+            // Textos para las escenas de Tierradentro
+            [
+                "Tierradentro, sitio arqueológico único.",
+                "Tierradentro, tumbas precolombinas.",
+                "Paisajes de Tierradentro, un lugar místico."
+            ]
         ];
     
         let listener, positionalAudio, mixer, model, animationActions;
@@ -585,21 +618,14 @@
             };
 
             // Circulo en la base
-            // Crear un círculo plano grande en el entorno
-            const circleRadius = 15; // Radio del círculo grande
-            const circleSegments = 64; // Número de segmentos para suavidad
+            const circleRadius = 15;
+            const circleSegments = 64; 
 
             const circleGeometry = new THREE.CircleGeometry(circleRadius, circleSegments);
-            const circleMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, side: THREE.DoubleSide }); // Azul cielo y visible por ambos lados
+            const circleMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, side: THREE.DoubleSide }); 
             const circleMesh = new THREE.Mesh(circleGeometry, circleMaterial);
-
-            // Rotar el círculo para que quede plano en el suelo
-            circleMesh.rotation.x = -Math.PI / 2; // Girar 90 grados en el eje X
-
-            // Posicionarlo en el centro de la escena
-            circleMesh.position.set(5, -20, 0); // Ajusta la altura si es necesario
-
-            // Añadir el círculo a la escena
+            circleMesh.rotation.x = -Math.PI / 2; 
+            circleMesh.position.set(0, -20, 0);
             scene.add(circleMesh);
     
             world
@@ -777,6 +803,18 @@
             currentSceneIndex = sceneIndex;
             loadScene(currentSceneIndex);
 
+            // Crear y mostrar el texto específico de la escena
+            const environmentText = createText(sceneTexts[selectedGroup][currentSceneIndex], 0.06);
+            environmentText.position.set(0, 1.8, 0.6);
+            environmentText.rotation.set(0, Math.PI, 0);
+            scene.add(environmentText);
+
+            // Después de 5 segundos, eliminar el texto de la escena
+            setTimeout(() => {
+                environmentText.visible = false;
+                scene.remove(environmentText);
+            }, 5000);
+
             setTimeout(() => {
                 if (audioCache[`${selectedGroup}_${currentSceneIndex}`]) {
                     positionalAudio.setBuffer(audioCache[`${selectedGroup}_${currentSceneIndex}`]);
@@ -789,7 +827,7 @@
                         pauseModelAnimation();
                     };
                 }
-            }, 5000);  
+            }, 5000);
         }
     
         function loadScene(index) {
