@@ -803,13 +803,11 @@
             currentSceneIndex = sceneIndex;
             loadScene(currentSceneIndex);
 
-            // Crear y mostrar el texto específico de la escena
-            const environmentText = createText(sceneTexts[selectedGroup][currentSceneIndex], 0.06);
+            const environmentText = createText(sceneTexts[selectedGroup][currentSceneIndex], 0.05);
             environmentText.position.set(0, 1.5, 0.6);
             environmentText.rotation.set(0, Math.PI, 0);
             scene.add(environmentText);
 
-            // Después de 5 segundos, eliminar el texto de la escena
             setTimeout(() => {
                 environmentText.visible = false;
                 scene.remove(environmentText);
