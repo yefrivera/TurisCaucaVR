@@ -681,7 +681,7 @@
             backButtonEntity.addComponent(Button, { action: backButtonAction, surfaceY: 0.05, fullPressDistance: 0.02 });
 
             const instructionText = createText('Bienvenido al  Cauca en VR, por favor utilice sus manos para interactuar.', 0.04);
-            instructionText.position.set(0, 1.6, -0.6);
+            instructionText.position.set(0, 1.5, -0.6);
             scene.add(instructionText);
     
             const instructionTextEntity = world.createEntity();
@@ -805,7 +805,7 @@
 
             // Crear y mostrar el texto específico de la escena
             const environmentText = createText(sceneTexts[selectedGroup][currentSceneIndex], 0.06);
-            environmentText.position.set(0, 1.8, 0.6);
+            environmentText.position.set(0, 1.5, 0.6);
             environmentText.rotation.set(0, Math.PI, 0);
             scene.add(environmentText);
 
