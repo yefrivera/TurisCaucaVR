@@ -703,9 +703,9 @@
             const gltfLoader = new GLTFLoader();
             gltfLoader.load('model.glb', function (gltf) {
                 model = gltf.scene;
-                model.position.set(-300, -250, -150);
-                model.scale.set(130, 130, 130);
-                model.rotation.set(0, Math.PI / 3, 0);
+                model.position.set(-350, -285, 0);
+                model.scale.set(150, 150, 150);
+                model.rotation.set(0, Math.PI / 2.5, 0);
                 scene.add(model);
     
                 mixer = new THREE.AnimationMixer(model);
