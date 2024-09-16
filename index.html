@@ -5,7 +5,9 @@
     <title>TurismoCauca3.0</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="icon" href="/images/sinlimites.png" type="image/png">
     <link rel="manifest" href="/TurisCaucaVR/manifest.json">
+    
 </head>
 
 <body>
@@ -487,7 +489,7 @@
             silviaButtonText.rotation.x = -Math.PI / 2;  
     
             const puraceButtonContainer = new THREE.Object3D(); 
-            const puraceButton = makeButtonSphere(0.05, './silvia/parque.jpg');
+            const puraceButton = makeButtonSphere(0.05, './Purace/san juan1.jpg');
             puraceButtonContainer.add(puraceButton);
             const puraceButtonText = createText('Puracé', 0.02);
             puraceButtonText.position.set(0, 0.051, 0); 
@@ -701,9 +703,9 @@
             positionalAudio.add(helper);
 
             const gltfLoader = new GLTFLoader();
-            gltfLoader.load('model.glb', function (gltf) {
+            gltfLoader.load('./3Dmodels/model.glb', function (gltf) {
                 model = gltf.scene;
-                model.position.set(-350, -285, 0);
+                model.position.set(-350, -300, 100);
                 model.scale.set(150, 150, 150);
                 model.rotation.set(0, Math.PI / 2.5, 0);
                 scene.add(model);
@@ -717,7 +719,7 @@
                 });
             });
 
-            gltfLoader.load('bird.glb', function (gltf) {
+            gltfLoader.load('./3Dmodels/bird.glb', function (gltf) {
                 secondModel = gltf.scene;
                 secondModel.position.set(200, 40, -200);
                 secondModel.scale.set(8, 8, 8);
@@ -831,10 +833,10 @@
         function loadScene(index) {
             const cameraRotations = [
                 { x: 0, y: 0, z: 0 },
-                { x: 0, y: Math.PI / 2, z: 0 },
-                { x: 0, y: -Math.PI / 2, z: 0 },
-                { x: 0, y: Math.PI / 4, z: 0 },
-                { x: 0, y: -Math.PI / 4, z: 0 },
+                { x: 0, y: 0, z: 0 },
+                { x: 0, y: 0, z: 0 },
+                { x: 0, y: 0, z: 0 },
+                { x: 0, y: 0, z: 0 },
                 { x: 0, y: 0, z: 0 }
             ];
     
