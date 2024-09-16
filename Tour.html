@@ -30,25 +30,26 @@
                         <button class="dropbtn-sub">Arquitectura</button>
                         <div class="dropdown-content-sub">
                             <a href="#" data-scene-index="0">Torre del Reloj</a>
+                            <a href="#" data-scene-index="6">Parque Caldas</a>
                             <a href="#" data-scene-index="1">Puente del Humilladero</a>
                             <a href="#" data-scene-index="3">Morro de Tulcán</a>
+                            <a href="#" data-scene-index="4">Rincón Payanés</a>
                         </div>
                     </div>
                     <div class="dropdown-sub">
                         <button class="dropbtn-sub">Gastronomía</button>
                         <div class="dropdown-content-sub">
                             
-                            <a href="#" data-scene-index="5">Congreso Gastronómico</a>
-                            <a href="#" data-scene-index="6">Congreso Gastronómico</a>
+                            <a href="#" data-scene-index="5">Gatronomía de Popayán</a>
                             
                         </div>
                     </div>
                     <div class="dropdown-sub">
                         <button class="dropbtn-sub">Cultura</button>
                         <div class="dropdown-content-sub">
-                            <a href="#" data-scene-index="7">Catedral Basílica</a>
-                            <a href="#" data-scene-index="8">Museo 1</a>
-                            <a href="#" data-scene-index="9">Museo 2</a> 
+                            <a href="#" data-scene-index="7">Iglesia La Encarnación (Interior)</a>
+                            <a href="#" data-scene-index="8">Museo Mosquera</a>
+
                         </div>
                     </div>
                 </div>
@@ -60,10 +61,9 @@
                     <div class="dropdown-sub">
                         <button class="dropbtn-sub">Paisajes</button>
                         <div class="dropdown-content-sub">
-                            <a href="#" data-scene-index="10">Mrador de Silvia</a>
-                            <a href="#" data-scene-index="11">Iglesia de Belén</a>
-                            <a href="#" data-scene-index="12">Jardín Botánico Las Delicias</a>
-                            <a href="#" data-scene-index="13">Lago Chiman</a>
+                            <a href="#" data-scene-index="10">Parque de Silvia</a>
+                            <a href="#" data-scene-index="11">Colina de Belén</a>
+                            <a href="#" data-scene-index="12">Jardín Botánico (Exterior)</a>
                             
                         </div>
                     </div>
@@ -71,8 +71,8 @@
                         <button class="dropbtn-sub">Cultura y tradición</button>
                         <div class="dropdown-content-sub">
                             <a href="#" data-scene-index="14">Parque Principal</a>
-                            <a href="#" data-scene-index="15">Mercado</a>
-                            <a href="#" data-scene-index="16">Jadín Botánico Las Delicias</a>
+                            <a href="#" data-scene-index="15">Mercado tradicional</a>
+                            <a href="#" data-scene-index="16">Jadín Botánico (Lugar de reunión)</a>
                         </div>
                     </div>
                 </div>
@@ -83,11 +83,10 @@
                 
                 <div class="dropdown-content">
                     <div class="dropdown-sub">
-                        <button class="dropbtn-sub">Lugares, Naturaleza y Paisajes</button>
+                        <button class="dropbtn-sub">Naturaleza y Paisajes</button>
                         <div class="dropdown-content-sub">
                             
-                            <a href="#" data-scene-index="17">Termales</a>
-                            <a href="#" data-scene-index="18">Condor de los Andes</a>
+                            <a href="#" data-scene-index="18">Piedra del cóndor</a>
                             <a href="#" data-scene-index="19">Termales de San Juan</a>
                             <a href="#" data-scene-index="20">Valle de los Frailejones</a>
                             
@@ -150,10 +149,10 @@
         <div class="card" data-scene-index="0" data-name="Popayán">
             <img src="images/pop.jpg" alt="Escena 1">
         </div>
-        <div class="card" data-scene-index="10" data-name="Silvia">
+        <div class="card" data-scene-index="14" data-name="Silvia">
             <img src="images/silviaa.jpg" alt="Escena 2">
         </div>
-        <div class="card" data-scene-index="19" data-name="Puracé">
+        <div class="card" data-scene-index="18" data-name="Puracé">
             <img src="images/purace.jpg" alt="Escena 3">
         </div>
         <div class="card" data-scene-index="23" data-name="Tierradentro">
@@ -321,8 +320,9 @@
                     case 5:
                         texturePath = 'Popayan/gastro3.jpg';
                         break;
+                        //parque caldas
                     case 6:
-                        texturePath = 'Popayan/gastro22.jpg';
+                        texturePath = 'Popayan/caldas.jpg';
                         break;
 
                         //cultura
@@ -335,17 +335,17 @@
                         texturePath = 'Popayan/museo1.jpg';
                         break;
 
-                    case 9: 
+                    /*case 9: 
                         texturePath = 'Popayan/museo2.jpg';
-                        break;
+                        break;*/
 
                     //---------------------silvia-----------------------------
 
                         //Paisajes
 
-                    case 10:
+                    /*case 10:
                         texturePath = 'silvia/entradasilvia.jpg';
-                        break;
+                        break;*/
                     case 11:
                         texturePath = 'silvia/iglesia.jpg';
                         break;
@@ -353,7 +353,7 @@
                         texturePath = 'silvia/jardin.jpg';
                         break;
                     case 13:
-                        texturePath = 'silvia/truchera.jpg'; //lago chiman
+                        texturePath = 'silvia/silvia21.jpg'; //lago chiman
                         break;
 
                         //Cultura y tradición
@@ -372,9 +372,9 @@
 
                         //Lugares, naturaleza y paisajes
 
-                    case 17:
+                    /*case 17:
                         texturePath = 'Purace/piscinas termales.jpg';
-                        break;
+                        break;*/
                     case 18:
                         texturePath = 'Purace/piedra condor1.jpg';
                         break;
@@ -382,8 +382,10 @@
                         texturePath = 'Purace/san juan33.jpg';
                         break;
                     case 20:
-                        texturePath = 'Purace/frailejones2.jpg';
+                        texturePath = 'Purace/valle frailejones.jpg';
                         break;
+                    case 21:
+                        texturePath = 'Purace/san juan1.jpg'
 
                 }
 
@@ -529,7 +531,7 @@
             if (sceneIndex === 0) {
                 //torre del reloj
                 scene.add(createArrow(new THREE.Vector3(63, 25, 65), 1, "Puente del Humilladero"));
-                scene.add(createArrow(new THREE.Vector3(-60, 10, 115), 7, "Catedral Basílica"));
+                scene.add(createArrow(new THREE.Vector3(-60, 10, 115), 7, "Iglesia la Encarnación (Interior)"));
             } 
             else if (sceneIndex === 1) {
                 //puente del humlladero
@@ -546,7 +548,7 @@
                 //morro
                 scene.add(createArrow(new THREE.Vector3(-100, 2, -23), 0, "Torre del Reloj"));
                 scene.add(createArrow(new THREE.Vector3(-90, -5, -50), 1, "Puente del Humilladero"));
-                scene.add(createArrow(new THREE.Vector3(-5, -20, 100), 4, "Pueblito Patojo"));  
+                scene.add(createArrow(new THREE.Vector3(-5, -20, 100), 4, "Rincón Payanés"));  
 
             } 
             else if (sceneIndex === 4) {
@@ -561,30 +563,30 @@
 
             //------------silvia----------------
 
-            else if (sceneIndex === 10) {
+            /*else if (sceneIndex === 10) {
                 //mirador
                 scene.add(createArrow(new THREE.Vector3(15, -3, 110), 14, "Parque Principal"));
-            } 
+            }*/ 
             else if (sceneIndex === 11) {
                 //iglesia de belen
-                scene.add(createArrow(new THREE.Vector3(-110, 5, -90), 10, "Mirador de Silvia"));
+                //scene.add(createArrow(new THREE.Vector3(-110, 5, -90), 10, "Mirador de Silvia"));
                 scene.add(createArrow(new THREE.Vector3(-101.5, 0, -60), 14, "Parque Principal"));
-                scene.add(createArrow(new THREE.Vector3(60, 9, 110), 13, "Lago de Truchas"));
+                scene.add(createArrow(new THREE.Vector3(60, 9, 110), 12, "Jardín Botánico Las Delicias"));
             }
             else if (sceneIndex === 12) {
                 //jardin botanico por fuera
-                scene.add(createArrow(new THREE.Vector3(50, -15, -69), 16, " "));
-                scene.add(createArrow(new THREE.Vector3(-19, 9, 100), 13, "Lago de Truchas"));
+                scene.add(createArrow(new THREE.Vector3(50, -15, -69), 16, "Lugar de reunión"));
+                scene.add(createArrow(new THREE.Vector3(-19, 9, 100), 13, "Colina de Belén"));
             }
-            else if (sceneIndex === 13) {
+            /*else if (sceneIndex === 13) {
                 //lago de truchas
                 scene.add(createArrow(new THREE.Vector3(-100, 22, 20), 11, "Iglesia de Belén"));
                 scene.add(createArrow(new THREE.Vector3(90, 20, -40), 12, "Jardín Botánico Las Delicias"));
-            }
+            }*/
             else if (sceneIndex === 14) {
                 //parque
-                scene.add(createArrow(new THREE.Vector3(-80, 35, -60), 11, "Iglesia de Belén"));
-                scene.add(createArrow(new THREE.Vector3(90, 5, 50), 15, "Mercado"));
+                scene.add(createArrow(new THREE.Vector3(-80, 35, -60), 11, "Colina de Belén"));
+                scene.add(createArrow(new THREE.Vector3(90, 5, 50), 15, "Mercado tradicional"));
             }
             else if (sceneIndex === 15) {
                 //mercado
@@ -595,6 +597,25 @@
                 //jardin botanico por dentro
                 scene.add(createArrow(new THREE.Vector3(33, 15, 80), 12, " "));
                
+            }
+            else if (sceneIndex === 18) {
+                //piedra del cóndor
+                scene.add(createArrow(new THREE.Vector3(-80, 2, -60), 20, "Valle de los Frailejones"));
+               
+            }
+            else if (sceneIndex === 19) {
+                //san juan
+                scene.add(createArrow(new THREE.Vector3(-90, 15, -30), 18, "Valle de los Frailejones"));
+                scene.add(createArrow(new THREE.Vector3(60, 30, 65), 21, " "));
+            }
+            else if (sceneIndex === 20) {
+                //valle de los frailejones
+                scene.add(createArrow(new THREE.Vector3(95, 10, -36), 18, "Piedra del cóndor"));
+                scene.add(createArrow(new THREE.Vector3(-100, 10, -10), 19, "Termales de San Juan"));
+            }
+            else if (sceneIndex === 21) {
+                //san juan2
+                scene.add(createArrow(new THREE.Vector3(-100, -25, -15), 19, " "));
             }
         }
 
@@ -828,9 +849,9 @@
                     const audioSprite = createAudioSprite(position, "Torre de Reloj", audioPath);
                     scene.add(audioSprite);    
                     
-                    position = new THREE.Vector3(-60, 25, 115);
+                    /*position = new THREE.Vector3(-60, 25, 115);
                     const infoSprite = createInfoSprite(position, "Catedral Nuestra Señora de la Asunción");
-                    scene.add(infoSprite);
+                    scene.add(infoSprite);*/
 
                     /*position = new THREE.Vector3(50, 25, -70);
                     videoPath = 'videos/torre_reloj.mp4';
@@ -848,8 +869,13 @@
                 case 2:
 
                     position = new THREE.Vector3(-100, -5, -70);
+                    audioPath = 'audios/puente el humilladero.mp3';
+                    const audioSprite2 = createAudioSprite(position, "Puente el humilladero", audioPath);
+                    scene.add(audioSprite2);    
+
+                    /*position = new THREE.Vector3(-100, -5, -70);
                     videoPath = 'videos/puente el humilladero.mp4';
-                    scene.add(createVideoSprite(position, "Puente del Humilladero", videoPath));
+                    scene.add(createVideoSprite(position, "Puente del Humilladero", videoPath));*/
 
 
                     /*position = new THREE.Vector3(25, 35, 45);
@@ -883,6 +909,12 @@
                     scene.add(createAudioSprite(position, "Francisco José de Caldas", audioPath));*/
 
                     break;
+                case 18:
+                    position = new THREE.Vector3(-100, -9, -5);
+                    videoPath = 'videos/condor.mp4';
+                    scene.add(createVideoSprite(position, " ", videoPath));
+
+
             }
         }
 
