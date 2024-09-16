@@ -629,6 +629,7 @@
             sprite.userData = { type: 'video', label: label, videoPath: videoPath };
             sprite.material.depthTest = false;
             sprite.material.depthWrite = false;
+            
 
             sprite.onPointerOver = function(event) {
                 sprite.scale.set(11, 11, 11);
@@ -667,6 +668,9 @@
             videoTexture = new THREE.VideoTexture(videoElement);
             const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
             const geometry = new THREE.PlaneGeometry(90, 66);
+            videoTexture.minFilter = THREE.LinearFilter;
+            videoTexture.magFilter = THREE.LinearFilter;
+            videoTexture.encoding = THREE.sRGBEncoding; 
             videoMesh = new THREE.Mesh(geometry, videoMaterial);
             videoMesh.position.copy(sprite.position);
             videoMesh.position.y += 40; 
@@ -911,7 +915,7 @@
                     break;
                 case 18:
                     position = new THREE.Vector3(-100, -9, -5);
-                    videoPath = 'videos/condor.mp4';
+                    videoPath = 'videos/condor1.mp4';
                     scene.add(createVideoSprite(position, " ", videoPath));
 
 
