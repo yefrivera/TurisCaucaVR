@@ -323,13 +323,13 @@
                         break;
                         //parque caldas
                     case 6:
-                        texturePath = 'Popayan/caldas.jpg';
+                        texturePath = 'Popayan/caldas1.jpg';
                         break;
 
                         //cultura
 
                     case 7: 
-                        texturePath = 'Popayan/catt.jpg';
+                        texturePath = 'Popayan/catedral.jpg';
                         break;
 
                     case 8: 
@@ -531,13 +531,13 @@
 
             if (sceneIndex === 0) {
                 //torre del reloj
-                scene.add(createArrow(new THREE.Vector3(63, 25, 65), 1, "Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(63, 25, 65), 6, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-60, 10, 115), 7, "Iglesia la Encarnación (Interior)"));
             } 
             else if (sceneIndex === 1) {
                 //puente del humlladero
                 scene.add(createArrow(new THREE.Vector3(-12, 14, -100), 3, "Morro de Tulcán"));
-                scene.add(createArrow(new THREE.Vector3(90, 15, 35), 0, "Torre del Reloj"));
+                scene.add(createArrow(new THREE.Vector3(90, 15, 35), 6, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-72, -2, 80), 2, " "));
 
             } 
@@ -547,7 +547,7 @@
             } 
             else if (sceneIndex === 3) {
                 //morro
-                scene.add(createArrow(new THREE.Vector3(-100, 2, -23), 0, "Torre del Reloj"));
+                scene.add(createArrow(new THREE.Vector3(-100, 2, -23), 6, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-90, -5, -50), 1, "Puente del Humilladero"));
                 scene.add(createArrow(new THREE.Vector3(-5, -20, 100), 4, "Rincón Payanés"));  
 
@@ -556,9 +556,19 @@
                 //pueblito patojo
                 scene.add(createArrow(new THREE.Vector3(-70, 42, -75), 3, "Morro de Tulcán"));
             } 
+            else if (sceneIndex === 5) {
+                //gastronomia
+                scene.add(createArrow(new THREE.Vector3(90, 12, 35), 6, "Parque Caldas"));
+            } 
+            else if (sceneIndex == 6){
+                //parque caldas
+                scene.add(createArrow(new THREE.Vector3(-80, 15, 45),0, "Torre del reloj"));
+                scene.add(createArrow(new THREE.Vector3(62, 15, -70),1, "Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(100, 8, 8),5, "Gastronomía de Popayán"));
+            }
             else if (sceneIndex === 7) {
                 //catedral
-                scene.add(createArrow(new THREE.Vector3(100, 5, 12), 0, " "));
+                scene.add(createArrow(new THREE.Vector3(100, 7, -0.3), 0, " "));
 
             } 
 
