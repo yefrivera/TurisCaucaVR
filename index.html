@@ -256,9 +256,9 @@
             // Popayán
             ['./SoundsPopVR/1.-La-torre-del-reloj.ogg', './SoundsPopVR/2.-Parque-Caldas.ogg', './SoundsPopVR/3.-Iglesia-la-encarnación.ogg', './SoundsPopVR/5.-Puente-del-humilladero.ogg', './SoundsPopVR/7.-Morro-de-Tulcán.ogg', './SoundsPopVR/6.-Rincón-payanes.ogg', './SoundsPopVR/8.-Gastronomía-de-Popayán.ogg'],
             // Silvia
-            ['sounds/parque.ogg', 'sounds/mercado.ogg', 'sounds/pare.ogg', 'sounds/truchera.ogg', 'sounds/jardin.ogg', 'sounds/in.ogg'],
+            ['./SoundsSilVR/1.-Parque-de-Silvia.ogg', './SoundsSilVR/2.-Mercado.ogg', './SoundsSilVR/3.-Colina-de-Belen.ogg', './SoundsSilVR/4.-Jardín-botánico-exterior.ogg', './SoundsSilVR/5.Jardín-botánico-dentro-del-lugar-de-reunión.ogg'],
             // Puracé
-            ['sounds/purace1.ogg', 'sounds/purace2.ogg', 'sounds/purace3.ogg'],
+            ['SoundsPurVR/1.-Piedra-del-condor.ogg', 'SoundsPurVR/2.-Valle-de-los-frailejones.ogg', 'SoundsPurVR/3.-Termales-de-san-juan.ogg'],
             // Tierradentro
             ['sounds/tierradentro1.ogg', 'sounds/tierradentro2.ogg', 'sounds/tierradentro3.ogg']
         ];
@@ -704,7 +704,7 @@
             positionalAudio.add(helper);
 
             const gltfLoader = new GLTFLoader();
-            gltfLoader.load('./3Dmodels/model.glb', function (gltf) {
+            gltfLoader.load('./3Dmodels/model1.glb', function (gltf) {
                 model = gltf.scene;
                 model.position.set(-350, -300, 100);
                 model.scale.set(150, 150, 150);
