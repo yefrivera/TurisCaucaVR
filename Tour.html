@@ -267,7 +267,7 @@
             controls.rotateSpeed = -0.3;
 
             setupEventListeners();
-            changeScene(0);
+            changeScene(22);
             animate();
             fetchWeatherData();
         }
@@ -636,32 +636,32 @@
 
             else if (sceneIndex === 18) {
                 //panorama segovia
-                scene.add(createArrow(new THREE.Vector3(-80, 2, -60), 19, "Hipogeo 1"));
-                scene.add(createArrow(new THREE.Vector3(-90, 15, -30), 20, "Hipogeo 2"));
-                scene.add(createArrow(new THREE.Vector3(95, 10, -36), 21, "Hipogeo 3"));
-                scene.add(createArrow(new THREE.Vector3(60, 30, 65), 23, "Museo Arqueológico"));
-                scene.add(createArrow(new THREE.Vector3(95, 10, -36), 22, "Estatuas Monolíticas"));
+                scene.add(createArrow(new THREE.Vector3(-100, -5, -17), 19, "Hipogeo 1"));
+                scene.add(createArrow(new THREE.Vector3(-80, -15, -30), 20, "Hipogeo 2"));
+                scene.add(createArrow(new THREE.Vector3(85, 20, -20), 21, "Hipogeo 3"));
+                scene.add(createArrow(new THREE.Vector3(-75, -10, -85), 23, "Museo Arqueológico"));
+                scene.add(createArrow(new THREE.Vector3(95, 20, 55), 22, "Estatuas Monolíticas (El Tablón)"));
             }
             else if (sceneIndex === 19) {
                 //hipogeo 1
-                scene.add(createArrow(new THREE.Vector3(-90, 15, -30), 20, "Hipogeo 2"));
+                scene.add(createArrow(new THREE.Vector3(80, 15, -3), 18, " "));
             }
             else if (sceneIndex === 20) {
                 //hipogeo 2
-                scene.add(createArrow(new THREE.Vector3(95, 10, -36), 21, "Hipogeo 3"));
+                scene.add(createArrow(new THREE.Vector3(80, 15, 17), 18, " "));
             }
             else if (sceneIndex === 21) {
                 //hipogeo 3
-                scene.add(createArrow(new THREE.Vector3(-100, -25, -15), 18, "Vista Alto de Segovia "));
+                scene.add(createArrow(new THREE.Vector3(80, 7, 5), 18, " "));
             }
             else if (sceneIndex === 22) {
                 //el tablón
-                scene.add(createArrow(new THREE.Vector3(-80, 2, -60), 18, "Vista Alto de Segovia"));
+                scene.add(createArrow(new THREE.Vector3(-42, 5, -80), 18, "Alto de Segovia"));
                
             }
             else if (sceneIndex === 23) {
                 //museo
-                scene.add(createArrow(new THREE.Vector3(-90, 15, -30), 18, "Vista Alto de Segovia"));
+                scene.add(createArrow(new THREE.Vector3(70, 8, 55), 18, "Alto de Segovia"));
             }
 
         }
