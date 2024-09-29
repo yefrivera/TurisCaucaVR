@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="icon" href="/images/sinlimites.png" type="image/png">
-    <link rel="manifest" href="/TurisCaucaVR/manifest.json">
     
 </head>
 
@@ -20,20 +19,6 @@
             }
         }
     </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/TurisCaucaVR/service-worker.js')
-            .then(function(registration) {
-                console.log('Service Worker registrado con alcance:', registration.scope);
-            })
-            .catch(function(error) {
-                console.log('El registro del Service Worker falló:', error);
-            });
-        }
-    </script>
-
-
 
     <script type="module">
         import * as THREE from 'three';
@@ -291,12 +276,12 @@
             ],
             // Textos para las escenas de Tierradentro
             [
-                "Tierradentro, Alto de Segovia.",
-                "Hipogeo 1.",
-                "Hipogeo 2.",
-                "Hipogeo 3.",
-                "Estatuas Monolóticas.",
-                "Museo Arqueológico."
+                "Tierradentro, Alto de Segovia",
+                "Hipogeo 1",
+                "Hipogeo 2",
+                "Hipogeo 3",
+                "El Tablón, Estatuas Monolóticas",
+                "Museo Arqueológico"
             ]
         ];
     
@@ -504,7 +489,7 @@
             puraceButtonText.rotation.x = -Math.PI / 2;
     
             const tierradentroButtonContainer = new THREE.Object3D();
-            const tierradentroButton = makeButtonSphere(0.05, './silvia/parque.jpg');
+            const tierradentroButton = makeButtonSphere(0.05, './Tierradentro/segovia1.jpg');
             tierradentroButtonContainer.add(tierradentroButton);
             const tierradentroButtonText = createText('Tierradentro', 0.02);
             tierradentroButtonText.position.set(0, 0.051, 0);  
@@ -624,13 +609,23 @@
             };
 
             // Circulo en la base
-            const circleRadius = 15;
-            const circleSegments = 64; 
+            const circleRadius = 18;
+            const circleSegments = 64;
 
             const circleGeometry = new THREE.CircleGeometry(circleRadius, circleSegments);
-            const circleMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, side: THREE.DoubleSide }); 
+            const textureLoader = new THREE.TextureLoader();
+            const circleTexture = textureLoader.load('./images/base.png'); 
+
+            const circleMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffffff, 
+                map: circleTexture, 
+                transparent: true, 
+                side: THREE.DoubleSide 
+            });
+
             const circleMesh = new THREE.Mesh(circleGeometry, circleMaterial);
-            circleMesh.rotation.x = -Math.PI / 2; 
+            circleMesh.rotation.x = -Math.PI / 2;
+            circleMesh.rotation.z = Math.PI / 2;
             circleMesh.position.set(0, -20, 0);
             scene.add(circleMesh);
     
@@ -802,6 +797,8 @@
             }
         }
     
+        let currentEnvironmentText = null;
+
         function changeEnvironmentAndPlayAudio(sceneIndex) {
             pauseCurrentAudio();
             pauseModelAnimation();
@@ -809,20 +806,26 @@
             currentSceneIndex = sceneIndex;
             loadScene(currentSceneIndex);
 
-            const environmentText = createText(sceneTexts[selectedGroup][currentSceneIndex], 0.05);
-            environmentText.position.set(0, 1.5, 0.6);
-            environmentText.rotation.set(0, Math.PI, 0);
-            scene.add(environmentText);
+            if (currentEnvironmentText) {
+                scene.remove(currentEnvironmentText);
+            }
+
+            currentEnvironmentText = createText(sceneTexts[selectedGroup][currentSceneIndex], 0.05);
+            currentEnvironmentText.position.set(0, 1.5, 0.6);
+            currentEnvironmentText.rotation.set(0, Math.PI, 0);
+            scene.add(currentEnvironmentText);
 
             setTimeout(() => {
-                environmentText.visible = false;
-                scene.remove(environmentText);
+                if (currentEnvironmentText) {
+                    currentEnvironmentText.visible = false;
+                    scene.remove(currentEnvironmentText); 
+                    currentEnvironmentText = null; 
+                }
             }, 5000);
 
             setTimeout(() => {
                 if (audioCache[`${selectedGroup}_${currentSceneIndex}`]) {
                     positionalAudio.setBuffer(audioCache[`${selectedGroup}_${currentSceneIndex}`]);
-
                     positionalAudio.play();
 
                     startModelAnimation();
