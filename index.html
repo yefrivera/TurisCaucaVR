@@ -423,7 +423,7 @@
             scene.add(consoleMesh1);
     
             const volumeButton = makeButtonMesh(0.12, 0.1, 0.12, 0x000000);
-            const volumeButtonText = createText('Vol', 0.03);
+            const volumeButtonText = createText('🔊🔁', 0.03);
             volumeButton.add(volumeButtonText);
             volumeButtonText.rotation.x = -Math.PI / 2;
             volumeButtonText.position.set(0, 0.051, 0);
@@ -459,9 +459,9 @@
             const popayanButton = makeButtonSphere(0.05, './Popayan/1.jpg');
             popayanButtonContainer.add(popayanButton);
             const popayanButtonText = createText('Popayán', 0.02);
-            popayanButtonText.position.set(0, 0.051, 0); 
+            popayanButtonText.position.set(0, 0.06, 0); 
             popayanButtonContainer.add(popayanButtonText);
-            popayanButtonContainer.position.set(-0.17, 0.06, 0.04);
+            popayanButtonContainer.position.set(-0.17, 0.069, 0.04);
             popayanButton.rotation.set(Math.PI/7, -Math.PI / 2, Math.PI / 2);
             consoleMesh2.add(popayanButtonContainer);
             popayanButtonText.rotation.x = -Math.PI / 2; 
@@ -470,9 +470,9 @@
             const silviaButton = makeButtonSphere(0.05, './silvia/parque.jpg');
             silviaButtonContainer.add(silviaButton);
             const silviaButtonText = createText('Silvia', 0.02);
-            silviaButtonText.position.set(0, 0.051, 0);  
+            silviaButtonText.position.set(0, 0.06, 0);  
             silviaButtonContainer.add(silviaButtonText);
-            silviaButtonContainer.position.set(-0.055, 0.06, 0.04);
+            silviaButtonContainer.position.set(-0.055, 0.069, 0.04);
             silviaButton.rotation.set(Math.PI/9, -Math.PI / 2, Math.PI / 2);
             consoleMesh2.add(silviaButtonContainer);
             silviaButtonText.rotation.x = -Math.PI / 2;  
@@ -481,9 +481,9 @@
             const puraceButton = makeButtonSphere(0.05, './Purace/san juan1.jpg');
             puraceButtonContainer.add(puraceButton);
             const puraceButtonText = createText('Puracé', 0.02);
-            puraceButtonText.position.set(0, 0.051, 0); 
+            puraceButtonText.position.set(0, 0.06, 0); 
             puraceButtonContainer.add(puraceButtonText);
-            puraceButtonContainer.position.set(0.055, 0.06, 0.04);
+            puraceButtonContainer.position.set(0.055, 0.069, 0.04);
             consoleMesh2.add(puraceButtonContainer);
             puraceButton.rotation.set(Math.PI/7, -Math.PI / 2, Math.PI / 2);
             puraceButtonText.rotation.x = -Math.PI / 2;
@@ -492,9 +492,9 @@
             const tierradentroButton = makeButtonSphere(0.05, './Tierradentro/segovia1.jpg');
             tierradentroButtonContainer.add(tierradentroButton);
             const tierradentroButtonText = createText('Tierradentro', 0.02);
-            tierradentroButtonText.position.set(0, 0.051, 0);  
+            tierradentroButtonText.position.set(0, 0.06, 0);  
             tierradentroButtonContainer.add(tierradentroButtonText);
-            tierradentroButtonContainer.position.set(0.17, 0.06, 0.04);
+            tierradentroButtonContainer.position.set(0.17, 0.069, 0.04);
             consoleMesh2.add(tierradentroButtonContainer);
             tierradentroButton.rotation.set(Math.PI/7, -Math.PI / 2, Math.PI / 2);
             tierradentroButtonText.rotation.x = -Math.PI / 2;
@@ -540,15 +540,35 @@
             backArrow.position.set(0, 0.051, 0); 
             backButton.add(backArrow);
                 
+
             const volumeButtonAction = function () {
-                if (volumeMuted) {
-                    positionalAudio.setVolume(1);
-                    volumeMuted = false;
-                } else {
-                    positionalAudio.setVolume(0);
-                    volumeMuted = true;
+            // Detenemos el audio si está reproduciéndose
+            if (positionalAudio.isPlaying) {
+                positionalAudio.stop(); // Detenemos el audio para evitar conflictos
+            }
+
+            // Verificamos si hay un buffer cargado del audio actual
+            const audioBuffer = audioCache[`${selectedGroup}_${currentSceneIndex}`];
+            
+            if (audioBuffer) {
+                positionalAudio.setBuffer(audioBuffer); // Asignamos el buffer correcto del entorno actual
+                
+                try {
+                    positionalAudio.play(); // Reproducimos el audio
+                    startModelAnimation(); // Reiniciamos la animación del modelo si existe
+                    
+                    // Detenemos la animación cuando el audio termina
+                    positionalAudio.source.onended = () => {
+                        pauseModelAnimation();
+                    };
+                } catch (error) {
+                    console.error("Error al reproducir el audio:", error);
                 }
-            };
+            } else {
+                console.error("No se encontró el buffer de audio para esta escena.");
+            }
+        };
+
 
             const exitButtonAction1 = function () {
                 const exitText = createText('Saliendo de realidad virtual...', 0.04);
@@ -798,6 +818,7 @@
         }
     
         let currentEnvironmentText = null;
+        
 
         function changeEnvironmentAndPlayAudio(sceneIndex) {
             pauseCurrentAudio();
@@ -821,20 +842,24 @@
                     scene.remove(currentEnvironmentText); 
                     currentEnvironmentText = null; 
                 }
-            }, 5000);
+            }, 10000);
 
             setTimeout(() => {
                 if (audioCache[`${selectedGroup}_${currentSceneIndex}`]) {
+
                     positionalAudio.setBuffer(audioCache[`${selectedGroup}_${currentSceneIndex}`]);
                     positionalAudio.play();
-
                     startModelAnimation();
-
+                    
                     positionalAudio.source.onended = () => {
                         pauseModelAnimation();
                     };
                 }
             }, 5000);
+
+            
+            
+
         }
     
         function loadScene(index) {
