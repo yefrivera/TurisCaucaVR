@@ -239,9 +239,9 @@
         
         const audios = [
             // Popayán
-            ['./SoundsPopVR/1.-La-torre-del-reloj.ogg', './SoundsPopVR/2.-Parque-Caldas.ogg', './SoundsPopVR/3.-Iglesia-la-encarnación.ogg', './SoundsPopVR/5.-Puente-del-humilladero.ogg', './SoundsPopVR/7.-Morro-de-Tulcán.ogg', './SoundsPopVR/6.-Rincón-payanes.ogg', './SoundsPopVR/8.-Gastronomía-de-Popayán.ogg'],
+            ['./SoundsPopVR/1.-La-torre-del-reloj.ogg', /*'./SoundsPopVR/2.-Parque-Caldas.ogg', */'./SoundsPopVR/3.-Iglesia-la-encarnación.ogg', './SoundsPopVR/5.-Puente-del-humilladero.ogg', './SoundsPopVR/7.-Morro-de-Tulcán.ogg'/*, './SoundsPopVR/6.-Rincón-payanes.ogg', './SoundsPopVR/8.-Gastronomía-de-Popayán.ogg'*/],
             // Silvia
-            ['./SoundsSilVR/1.-Parque-de-Silvia.ogg', './SoundsSilVR/2.-Mercado.ogg', './SoundsSilVR/3.-Colina-de-Belen.ogg', './SoundsSilVR/4.-Jardín-botánico-exterior.ogg', './SoundsSilVR/5.Jardín-botánico-dentro-del-lugar-de-reunión.ogg'],
+            ['./SoundsSilVR/1.-Parque-de-Silvia.ogg', /*'./SoundsSilVR/2.-Mercado.ogg',*/ './SoundsSilVR/3.-Colina-de-Belen.ogg', /*'./SoundsSilVR/4.-Jardín-botánico-exterior.ogg',*/ './SoundsSilVR/5.Jardín-botánico-dentro-del-lugar-de-reunión.ogg'],
             // Puracé
             ['SoundsPurVR/1.-Piedra-del-condor.ogg', 'SoundsPurVR/2.-Valle-de-los-frailejones.ogg', 'SoundsPurVR/3.-Termales-de-san-juan.ogg'],
             // Tierradentro
@@ -903,7 +903,7 @@
                         pauseModelAnimation();
                     };
                 }
-            }, 5000);
+            }, 0);
 
             removeVideoFromScene();
 
@@ -911,7 +911,7 @@
             if (selectedGroup === 2 && currentSceneIndex === 0) {
                 setTimeout(() => {
                     add2DVideoToScene();  // Agregar el video 5 segundos después
-                }, 5000);
+                }, 0);
             }
             
 
