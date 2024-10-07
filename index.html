@@ -228,13 +228,13 @@
         
         const scenes = [
             // Popayán
-            ['./Popayan/1.jpg', './Popayan/caldas1.jpg', './Popayan/catedral.jpg', './Popayan/4.jpg', './Popayan/666.jpg', './Popayan/7.jpg', './Popayan/gastro3.jpg' ],
+            ['./Popayan/1.jpg', /*'./Popayan/caldas1.jpg', */'./Popayan/catedral.jpg', './Popayan/4.jpg', './Popayan/666.jpg'/*, './Popayan/7.jpg', './Popayan/gastro3.jpg'*/ ],
             // Silvia
-            ['./silvia/parque.jpg', './silvia/mercado2.jpg', './silvia/iglesia.jpg', './silvia/jardin.jpg', './silvia/in.jpg'],
+            ['./silvia/parque.jpg', /*'./silvia/mercado2.jpg',*/ './silvia/iglesia.jpg', /*'./silvia/jardin.jpg', */'./silvia/in.jpg'],
             // Puracé
-            ['./Purace/piedra condor1.jpg', './Purace/valle frailejones.jpg', './Purace/san juan1.jpg'],
+            ['./Purace/piedra condor1.jpg', './Purace/valle frailejones.jpg', './Purace/san juan33.jpg'],
             // Tierradentro
-            ['./Tierradentro/segovia.jpg', './Tierradentro/segovia1.jpg', './Tierradentro/segovia3.jpg','./Tierradentro/segovia4.jpg', './Tierradentro/tablon1.jpg', './Tierradentro/museo2.jpg']
+            ['./Tierradentro/segovia.jpg', /*'./Tierradentro/segovia1.jpg',*/ './Tierradentro/segovia4.jpg', './Tierradentro/tablon1.jpg', './Tierradentro/museo2.jpg']
         ];
         
         const audios = [
@@ -252,21 +252,21 @@
             // Textos para las escenas de Popayán
             [
                 "Torre del Reloj",
-                "Parque Caldas",
+                //"Parque Caldas",
                 "Iglesia La Encarnación",
                 "Puente del Humilladero",
-                "Morro de Tulcán",
-                "Rincón Payanés",
-                "Gastronomía de Popayán"
+                "Morro de Tulcán"
+                //"Rincón Payanés",
+                //"Gastronomía de Popayán"
                 
             ],
             // Textos para las escenas de Silvia
             [
                 "Silvia, Parque Principal",
-                "Mercado tradicional",
+                //"Mercado tradicional",
                 "Colina de Belén",
-                "El jardín botánico Las Delicias (Exterior)",
-                "El jardín botánico Las Delicias (Lugar de reunión)"
+                //"El jardín botánico ",
+                "El jardín botánico, Casa del Pensamiento "
             ],
             // Textos para las escenas de Puracé
             [
@@ -277,9 +277,8 @@
             // Textos para las escenas de Tierradentro
             [
                 "Tierradentro, Alto de Segovia",
+                //"Hipogeo 1",
                 "Hipogeo 1",
-                "Hipogeo 2",
-                "Hipogeo 3",
                 "El Tablón, Estatuas Monolóticas",
                 "Museo Arqueológico"
             ]
@@ -542,22 +541,20 @@
                 
 
             const volumeButtonAction = function () {
-            // Detenemos el audio si está reproduciéndose
+
             if (positionalAudio.isPlaying) {
-                positionalAudio.stop(); // Detenemos el audio para evitar conflictos
+                positionalAudio.stop(); 
             }
 
-            // Verificamos si hay un buffer cargado del audio actual
             const audioBuffer = audioCache[`${selectedGroup}_${currentSceneIndex}`];
             
             if (audioBuffer) {
-                positionalAudio.setBuffer(audioBuffer); // Asignamos el buffer correcto del entorno actual
+                positionalAudio.setBuffer(audioBuffer); 
                 
                 try {
-                    positionalAudio.play(); // Reproducimos el audio
-                    startModelAnimation(); // Reiniciamos la animación del modelo si existe
-                    
-                    // Detenemos la animación cuando el audio termina
+                    positionalAudio.play(); 
+                    startModelAnimation(); 
+
                     positionalAudio.source.onended = () => {
                         pauseModelAnimation();
                     };
@@ -566,6 +563,17 @@
                 }
             } else {
                 console.error("No se encontró el buffer de audio para esta escena.");
+            }
+
+            if (!videoMesh || !scene.children.includes(videoMesh)) {
+                console.log("Agregando video nuevamente a la escena...");
+                add2DVideoToScene(); 
+            } else {
+                console.log("Reproduciendo video nuevamente...");
+                videoElement.currentTime = 0; 
+                videoElement.play().catch(error => {
+                    console.error("Error al intentar reproducir el video nuevamente:", error);
+                });
             }
         };
 
@@ -648,6 +656,8 @@
             circleMesh.rotation.z = Math.PI / 2;
             circleMesh.position.set(0, -20, 0);
             scene.add(circleMesh);
+
+
     
             world
                 .registerComponent(Object3D)
@@ -738,7 +748,7 @@
                 });
             });
 
-            gltfLoader.load('./3Dmodels/bird.glb', function (gltf) {
+            gltfLoader.load('./3Dmodels/bird1.glb', function (gltf) {
                 secondModel = gltf.scene;
                 secondModel.position.set(200, 40, -200);
                 secondModel.scale.set(8, 8, 8);
@@ -816,9 +826,47 @@
                 });
             }
         }
+
+        let videoElement, videoTexture, videoMesh;
+
+        function add2DVideoToScene() {
+
+            videoElement = document.createElement('video');
+            videoElement.src = './videos/condor1.mp4';  
+            videoElement.loop = false;  
+            videoElement.autoplay = true;
+            videoElement.crossOrigin = "anonymous";  
+            videoTexture = new THREE.VideoTexture(videoElement);
+            const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+            const planeGeometry = new THREE.PlaneGeometry(90,66); 
+            videoMesh = new THREE.Mesh(planeGeometry, videoMaterial);
+            videoTexture.minFilter = THREE.LinearFilter;
+            videoTexture.magFilter = THREE.LinearFilter;
+            videoTexture.encoding = THREE.sRGBEncoding; 
+            videoMesh.position.set(-90, 7, -4); 
+            videoMesh.lookAt(camera.position); 
+            scene.add(videoMesh);
+            videoElement.play().catch(error => {
+                console.error('Error al reproducir el video:', error);
+            });
+
+            videoElement.onended = () => {
+                removeVideoFromScene(); 
+            };
+        }
+        function removeVideoFromScene() {
+            if (videoMesh) {
+                scene.remove(videoMesh);
+                videoMesh = null;
+            }
+            if (videoElement) {
+                videoElement.pause();
+                videoElement.src = '';  
+                videoElement = null;
+            }
+        }
     
         let currentEnvironmentText = null;
-        
 
         function changeEnvironmentAndPlayAudio(sceneIndex) {
             pauseCurrentAudio();
@@ -857,7 +905,14 @@
                 }
             }, 5000);
 
-            
+            removeVideoFromScene();
+
+                // Verifica si es la escena de "Piedra del Cóndor" (Puracé)
+            if (selectedGroup === 2 && currentSceneIndex === 0) {
+                setTimeout(() => {
+                    add2DVideoToScene();  // Agregar el video 5 segundos después
+                }, 5000);
+            }
             
 
         }

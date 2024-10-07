@@ -63,7 +63,7 @@
                         <button class="dropbtn-sub">Paisajes</button>
                         <div class="dropdown-content-sub">
                             <a href="#" data-scene-index="9">Colina de Belén</a>
-                            <a href="#" data-scene-index="10">Jardín Botánico (Exterior)</a>
+                            <a href="#" data-scene-index="10">Jardín Botánico</a>
                             
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                         <div class="dropdown-content-sub">
                             <a href="#" data-scene-index="11">Parque Principal</a>
                             <a href="#" data-scene-index="12">Mercado tradicional</a>
-                            <a href="#" data-scene-index="13">Jadín Botánico (Lugar de reunión)</a>
+                            <a href="#" data-scene-index="13">Jadín Botánico, Casa del Pensamiento</a>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                     <div class="dropdown-sub">
                         <button class="dropbtn-sub">Alto de Segovia</button>
                         <div class="dropdown-content-sub">
-                            <a href="#" data-scene-index="18">Vista Alto de Segovia</a>
+                            <a href="#" data-scene-index="18">Alto de Segovia (Vista)</a>
                             <a href="#" data-scene-index="19">Hipogeo 1</a>
                             <a href="#" data-scene-index="20">Hipogeo 2</a>
                             <a href="#" data-scene-index="21">Hipogeo 3</a>
@@ -157,6 +157,7 @@
     <div id="tooltip"></div>
     <div id="container"></div>
     <div id="content"></div>
+    <div id="scene-text" class="scene-text"></div>
 
     <div class="off-screen-menu">
         <ul>
@@ -179,24 +180,6 @@
         </div>
     </nav>
 
-    <div id="info-window" class="info-window hidden">
-        <div class="info-window-content">
-            <img src="images/catedralb.jpg" alt="Información" class="info-window-image">
-            <div class="info-window-text-container">
-                <span class="close-btn" id="info-window-close-btn">&times;</span>
-                <h2 class="info-window-title">Catedral Nuestra Señora de la Asunción</h2>
-                <p class="info-window-text">
-                    La arquitectura de la Catedral de Popayán es una mezcla de estilos que reflejan las diferentes épocas de su construcción y renovación. Algunos aspectos arquitectónicos destacados incluyen:<br><br>
-                    
-                    Estilo renacentista: La estructura original de la catedral fue construida en estilo renacentista, con una fachada simétrica y sobria, caracterizada por líneas rectas y equilibrio en el diseño.<br><br>
-                    
-                    Estilo barroco: A lo largo de los años, se agregaron elementos barrocos a la catedral, como torres campanario ornamentadas, arcos decorativos y detalles tallados en piedra que adornan la fachada y el interior del edificio.<br><br>
-
-                </p>
-            </div>
-        </div>
-    </div>
-    
     <script type="importmap">
         {
             "imports": {
@@ -241,8 +224,8 @@
         let initialZoom = 1;
 
         const arrowTexture = textureLoader.load('images/location.png');
-        const videoSpriteTexture = textureLoader.load('images/infobb.png');
-        const audioSpriteTexture = textureLoader.load('images/infobb.png');
+        const videoSpriteTexture = textureLoader.load('images/video1.png');
+        const audioSpriteTexture = textureLoader.load('images/music.png');
         const infoSpriteTexture = textureLoader.load('images/infobb.png');
 
         function init() {
@@ -385,19 +368,14 @@
                     case 21:
                         texturePath = 'Tierradentro/segovia4.jpg'
                         break;
-
                     //----------EL Tablón------------
-
                     case 22:
                         texturePath = 'Tierradentro/tablon1.jpg'
                         break;
-
                     //-----------Museo------------
-
                     case 23:
                         texturePath = 'Tierradentro/museo2.jpg'
                         break;
-
                 }
 
                 const texture = textureLoader.load(
@@ -409,6 +387,92 @@
                     },
                 );
             }
+        }
+
+        //------Texto para cada escena----------
+
+        function updateSceneText(sceneIndex) {
+            const sceneTextElement = document.getElementById('scene-text');
+            let text;
+
+            switch (sceneIndex) {
+                case 0:
+                    text = 'Popayán, Torre del Reloj';
+                    break;
+                case 1:
+                    text = 'Popayán, Puente del Humilladero';
+                    break;
+                case 2:
+                    text = 'Popayán, Arcada de la Herrería';
+                    break;
+                case 3:
+                    text = 'Popayán, Morro de Tulcán';
+                    break;
+                case 4:
+                    text = 'Popayán, Rincón Payanés';
+                    break;
+                case 5:
+                    text = 'Popayán, Gastronomía';
+                    break;
+                case 6:
+                    text = 'Popayán, Parque Caldas';
+                    break;
+                case 7:
+                    text = 'Popayán, Iglesia La Encarnación';
+                    break;
+                case 8:
+                    text = 'Popayán, Museo Mosquera';
+                    break;
+                case 9:
+                    text = 'Silvia, Colina de Belén';
+                    break;
+                case 10:
+                    text = 'Silvia, Jardín Botánico';
+                    break;
+                case 11:
+                    text = 'Silvia, Parque Principal';
+                    break;
+                case 12:
+                    text = 'Silvia, Mercado Tradicional';
+                    break;
+                case 13:
+                    text = 'Silvia, Jardín Botánico Casa del Pensamiento';
+                    break;
+                case 14:
+                    text = 'Puracé, Piedra del Cóndor';
+                    break;
+                case 15:
+                    text = 'Puracé, Termales de San Juan';
+                    break;
+                case 16:
+                    text = 'Puracé , Valle de los Frailejones';
+                    break;
+                case 17:
+                    text = 'Puracé, Termales de San Juan';
+                    break;
+                case 18:
+                    text = 'Parque Arqueológico Tierradentro, Alto de Segovia';
+                    break;
+                case 19:
+                    text = 'Parque Arqueológico Tierradentro, Hipogeo 1';
+                    break;
+                case 20:
+                    text = 'Parque Arqueológico Tierradentro, Hipogeo 2';
+                    break;
+                case 21:
+                    text = 'Parque Arqueológico Tierradentro, Hipogeo 3';
+                    break;
+                case 22:
+                    text = 'Parque Arqueológico Tierradentro, Estatuas Monolíticas';
+                    break;
+                case 23:
+                    text = 'Parque Arqueológico Tierradentro, Museo Arqueológico';
+                    break;
+                default:
+                    text = '';
+            }
+
+            sceneTextElement.textContent = text;
         }
 
         //------Precargar siguiente escena------
@@ -476,6 +540,7 @@
                                 const { lat, lon } = regionCoordinates[region];
                                 fetchWeatherData(lat, lon);
                             }
+                            updateSceneText(targetSceneIndex);
                         });
                     }
                 });
@@ -489,6 +554,7 @@
                         const { lat, lon } = regionCoordinates[region];
                         fetchWeatherData(lat, lon);
                     }
+                    updateSceneText(targetSceneIndex);
                 });
             }
         }
@@ -529,7 +595,6 @@
             sprite.addEventListener('click', () => {
                 changeScene(targetSceneIndex);
             });
-
             return sprite;
         }
 
@@ -548,19 +613,17 @@
                 //puente del humlladero
                 scene.add(createArrow(new THREE.Vector3(-12, 14, -100), 3, "Morro de Tulcán"));
                 scene.add(createArrow(new THREE.Vector3(90, 15, 35), 6, "Parque Caldas"));
-                scene.add(createArrow(new THREE.Vector3(-72, -2, 80), 2, " "));
-
+                scene.add(createArrow(new THREE.Vector3(-72, -2, 80), 2, "Arcada de la Herrería"));
             } 
             else if (sceneIndex === 2) {
-                //puente del humlladero2
-                scene.add(createArrow(new THREE.Vector3(-36, 9, -100), 1, " "));
+                //arcada de la herrería
+                scene.add(createArrow(new THREE.Vector3(-36, 9, -90), 1, "Puente del Humilladero"));
             } 
             else if (sceneIndex === 3) {
                 //morro
                 scene.add(createArrow(new THREE.Vector3(-100, 2, -23), 6, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-90, -5, -50), 1, "Puente del Humilladero"));
                 scene.add(createArrow(new THREE.Vector3(-5, -20, 100), 4, "Rincón Payanés"));  
-
             } 
             else if (sceneIndex === 4) {
                 //pueblito patojo
@@ -568,7 +631,7 @@
             } 
             else if (sceneIndex === 5) {
                 //gastronomia
-                scene.add(createArrow(new THREE.Vector3(90, 12, 35), 6, "Parque Caldas"));
+                scene.add(createArrow(new THREE.Vector3(90, 12, 25), 6, "Parque Caldas"));
             } 
             else if (sceneIndex == 6){
                 //parque caldas
@@ -579,7 +642,6 @@
             else if (sceneIndex === 7) {
                 //catedral
                 scene.add(createArrow(new THREE.Vector3(100, 7, -0.3), 0, " "));
-
             } 
 
             //------------silvia----------------
@@ -587,7 +649,7 @@
             else if (sceneIndex === 9) {
                 //iglesia de belen
                 scene.add(createArrow(new THREE.Vector3(-101.5, 0, -60), 11, "Parque Principal"));
-                scene.add(createArrow(new THREE.Vector3(60, 9, 110), 10, "Jardín Botánico Las Delicias"));
+                scene.add(createArrow(new THREE.Vector3(60, 9, 110), 10, "Jardín Botánico"));
             }
             else if (sceneIndex === 10) {
                 //jardin botanico por fuera
@@ -602,12 +664,10 @@
             else if (sceneIndex === 12) {
                 //mercado
                 scene.add(createArrow(new THREE.Vector3(-55, 20, -80), 11, "Parque Principal"));
-               
             }
             else if (sceneIndex === 13) {
                 //jardin botanico por dentro
                 scene.add(createArrow(new THREE.Vector3(33, 15, 80), 10, " "));
-               
             }
 
             //--------Puracé-----------------
@@ -640,7 +700,7 @@
                 scene.add(createArrow(new THREE.Vector3(-80, -15, -30), 20, "Hipogeo 2"));
                 scene.add(createArrow(new THREE.Vector3(85, 20, -20), 21, "Hipogeo 3"));
                 scene.add(createArrow(new THREE.Vector3(-75, -10, -85), 23, "Museo Arqueológico"));
-                scene.add(createArrow(new THREE.Vector3(95, 20, 55), 22, "Estatuas Monolíticas (El Tablón)"));
+                scene.add(createArrow(new THREE.Vector3(95, 20, 55), 22, "El Tablón, Estatuas Monolíticas"));
             }
             else if (sceneIndex === 19) {
                 //hipogeo 1
@@ -657,13 +717,11 @@
             else if (sceneIndex === 22) {
                 //el tablón
                 scene.add(createArrow(new THREE.Vector3(-42, 5, -80), 18, "Alto de Segovia"));
-               
             }
             else if (sceneIndex === 23) {
                 //museo
                 scene.add(createArrow(new THREE.Vector3(70, 8, 55), 18, "Alto de Segovia"));
             }
-
         }
 
         //------------Sprite para video------------------
@@ -737,7 +795,6 @@
                 closeVideo();
                 updateMuteIcon(false);
             };
-
         }
 
         //--------------Sprites para audio----------------------------------
@@ -883,7 +940,6 @@
                     audioElements[key].stop();
                 }
             }
-
             updateMuteIcon(false);
         }
 
@@ -895,7 +951,7 @@
             let videoPath;
             switch (sceneIndex) {
                 case 0:
-                    position = new THREE.Vector3(-100, 42, 5.5);
+                    position = new THREE.Vector3(-90, 37, 4.5);
                     audioPath = './SoundsPopVR/1.-La-torre-del-reloj.ogg';
                     const audioSprite = createAudioSprite(position, "Torre de Reloj", audioPath);
                     scene.add(audioSprite);    
@@ -910,62 +966,21 @@
                     scene.add(videoSprite);*/
 
                     break;
-                case 1:
 
-                    /*position = new THREE.Vector3(-100, -5, 4);
-                    videoPath = 'videos/caldas1.mp4';
-                    scene.add(createVideoSprite(position, "Francisco José de Caldas", videoPath));*/
-
-                    break;
                 case 2:
 
-                    position = new THREE.Vector3(-100, -5, -70);
+                    position = new THREE.Vector3(-80, -5, -55);
                     audioPath = './SoundsPopVR/5.-Puente-del-humilladero.ogg';
                     const audioSprite2 = createAudioSprite(position, "Puente el humilladero", audioPath);
                     scene.add(audioSprite2);    
 
-                    /*position = new THREE.Vector3(-100, -5, -70);
-                    videoPath = 'videos/puente el humilladero.mp4';
-                    scene.add(createVideoSprite(position, "Puente del Humilladero", videoPath));*/
-
-
-                    /*position = new THREE.Vector3(25, 35, 45);
-                    audioPath = 'audios/puente_humilladero_ov.mp3';
-                    scene.add(createAudioSprite(position, "Puente del Humilladero OV", audioPath));*/
-
-                    break;
-                case 3:
-
-                    /*position = new THREE.Vector3(40, 10, 50);
-                    videoPath = 'videos/iglesia_hermita.mp4';
-                    scene.add(createVideoSprite(position, "Iglesia La Hermita", videoPath));
-
-                    position = new THREE.Vector3(45, 15, 55);
-                    audioPath = 'audios/iglesia_hermita.mp3';
-                    scene.add(createAudioSprite(position, "Iglesia La Hermita", audioPath));*/
-
-                    break;
-                case 4:
-
-
-                    /*position = new THREE.Vector3(-100, 20, 35);
-                    videoPath = 'videos/catedral.mp4';
-                    scene.add(createVideoSprite(position, "Catedral", videoPath));*/
-
-                    break;
-                case 5:
-
-                    /*position = new THREE.Vector3(-90, 0, 10);
-                    audioPath = 'audios/francisco_jose_caldas.mp3';
-                    scene.add(createAudioSprite(position, "Francisco José de Caldas", audioPath));*/
-
                     break;
                 case 14:
-                    position = new THREE.Vector3(-100, -9, -5);
+                    position = new THREE.Vector3(-90, -9, -4);
                     videoPath = 'videos/condor1.mp4';
-                    scene.add(createVideoSprite(position, " ", videoPath));
+                    scene.add(createVideoSprite(position, "Piedra del Cóndor", videoPath));
 
-
+                    break;
             }
         }
 
@@ -998,18 +1013,6 @@
 
             return sprite;
         }
-
-        function showInfoWindow() {
-            const infoWindow = document.getElementById('info-window');
-            infoWindow.classList.remove('hidden');
-        }
-
-        function hideInfoWindow() {
-            const infoWindow = document.getElementById('info-window');
-            infoWindow.classList.add('hidden');
-        }
-
-        document.getElementById('info-window-close-btn').addEventListener('click', hideInfoWindow);
 
         //-------------Eventos de click para objetos----------------------------------
 
@@ -1093,10 +1096,22 @@
             renderer.domElement.addEventListener('touchmove', onTouchMove, false);
             renderer.domElement.addEventListener('touchend', onTouchEnd, false);
 
-            // Integración del menú desplegable
             document.addEventListener("DOMContentLoaded", () => {
                 const menuIcon = document.getElementById("menu-icon");
                 const cardsContainer = document.getElementById("cards-container");
+                const cards = document.querySelectorAll('.card');
+
+                cards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        cardsContainer.classList.add('hidden');
+                    });
+                });
+
+                document.addEventListener('click', (event) => {
+                    if (!cardsContainer.contains(event.target) && !menuIcon.contains(event.target)) {
+                        cardsContainer.classList.add('hidden');
+                    }
+                });
 
                 const menuToggle = document.getElementById('menu-toggle');
                 const menuContent = document.getElementById('menu-content');
@@ -1302,10 +1317,9 @@
                 weatherData.textContent = `${time}: ${temp}°C`;
                 weatherDescription.textContent = description;
             } catch (error) {
-                console.error('Error al obtener los datos del clima:', error);
                 const weatherData = document.getElementById('weather-data');
                 const weatherDescription = document.getElementById('weather-description');
-                weatherData.textContent = 'Error al obtener los datos del clima';
+                weatherData.textContent = 'Actualizando datos del clima...';
                 weatherDescription.textContent = '';
             }
         }

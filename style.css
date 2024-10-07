@@ -127,6 +127,7 @@ body, html {
         align-items: center;
         height: 60px; 
         padding: 0px 20px;
+        z-index: 10000;
     }
 
     .menu-toggle {
@@ -470,76 +471,26 @@ nav {
     }
 }
 
-/* Ventana ventana emergente */
-.info-window {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    width: 80%;
-    max-width: 800px;
-    height: 70%;
-    max-height: 450px;
-    overflow: hidden;
-    padding: 0;
-    color: #fff;
-    font-family: Arial, sans-serif;
-}
+/*texto de escenas**/
 
-.info-window-content {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.info-window-image {
-    width: 60%;
-    object-fit: cover;
-}
-
-.info-window-text-container {
-    width: 50%;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow-y: auto; /* Habilitar desplazamiento vertical */
-}
-
-.info-window-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.info-window-text {
-    font-size: 16px;
-    line-height: 1.5;
-    flex-grow: 1;
+.scene-text {
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    color: white;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    z-index: 0;
+    /*background-color: rgba(0, 0, 0, 0.5);*/
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 300px; 
+    white-space: normal;
+    word-wrap: break-word; 
+    text-align: right; 
 }
 
 /* Estilos para dispositivos móviles */
-@media (max-width: 576px) {
-    .info-window {
-        width: 90%;
-        max-width: none;
-        height: 40%;
-        max-height: none;
-    }
-
-    .info-window-title {
-        font-size: 1.2em;
-    }
-
-    .info-window-text {
-        font-size: 0.8em;
-    }
-}
 
 .close-btn {
     position: absolute;
@@ -558,8 +509,6 @@ nav {
 .close-btn:hover {
     background: rgba(0, 0, 0, 0.7);
 }
-
-
 
 .loading-screen {
     position: fixed;
