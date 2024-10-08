@@ -541,7 +541,6 @@
                 
 
             const volumeButtonAction = function () {
-
             if (positionalAudio.isPlaying) {
                 positionalAudio.stop(); 
             }
@@ -550,10 +549,9 @@
             
             if (audioBuffer) {
                 positionalAudio.setBuffer(audioBuffer); 
-                
                 try {
                     positionalAudio.play(); 
-                    startModelAnimation(); 
+                    startModelAnimation();
 
                     positionalAudio.source.onended = () => {
                         pauseModelAnimation();
@@ -565,15 +563,18 @@
                 console.error("No se encontró el buffer de audio para esta escena.");
             }
 
-            if (!videoMesh || !scene.children.includes(videoMesh)) {
-                console.log("Agregando video nuevamente a la escena...");
-                add2DVideoToScene(); 
+
+            if (selectedGroup === 2) { 
+                if (!videoMesh || !scene.children.includes(videoMesh)) {
+                    add2DVideoToScene(); 
+                } else {
+                    videoElement.currentTime = 0; 
+                    videoElement.play().catch(error => {
+                        console.error("Error al intentar reproducir el video nuevamente:", error);
+                    });
+                }
             } else {
-                console.log("Reproduciendo video nuevamente...");
-                videoElement.currentTime = 0; 
-                videoElement.play().catch(error => {
-                    console.error("Error al intentar reproducir el video nuevamente:", error);
-                });
+                console.log("No se agrega video en este entorno.");
             }
         };
 
@@ -903,7 +904,7 @@
                         pauseModelAnimation();
                     };
                 }
-            }, 0);
+            }, 5000);
 
             removeVideoFromScene();
 
