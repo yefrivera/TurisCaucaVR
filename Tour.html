@@ -226,7 +226,7 @@
         const arrowTexture = textureLoader.load('images/location.png');
         const videoSpriteTexture = textureLoader.load('images/video1.png');
         const audioSpriteTexture = textureLoader.load('images/music.png');
-        const infoSpriteTexture = textureLoader.load('images/infobb.png');
+        const infoSpriteTexture = textureLoader.load('textures/homew.png');
 
         function init() {
             container = document.getElementById('container');
@@ -250,7 +250,7 @@
             controls.rotateSpeed = -0.3;
 
             setupEventListeners();
-            changeScene(0);
+            changeScene(9);
             animate();
             fetchWeatherData();
         }
@@ -268,6 +268,7 @@
 
             if (loadedTextures[sceneIndex]) {
                 addTextureToScene(scene, loadedTextures[sceneIndex], sceneIndex);
+                addSceneSpecificText(scene, sceneIndex);
                 if (callback) callback(scene);
             } else {
                 let texturePath;
@@ -383,6 +384,7 @@
                     (texture) => {
                         loadedTextures[sceneIndex] = texture;
                         addTextureToScene(scene, texture, sceneIndex);
+                        addSceneSpecificText(scene, sceneIndex);
                         if (callback) callback(scene);
                     },
                 );
@@ -724,6 +726,39 @@
             }
         }
 
+        //---------------------textos para indicar distancia con respecto a popayán--------------
+
+        function addSceneSpecificText(scene, sceneIndex) {
+    let text, position;
+
+        switch (sceneIndex) {
+
+            case 9:
+                text = "📍Popayán, 31 km";
+                position = new THREE.Vector3(-70, 5, -65); 
+                break;
+            case 14:
+                text = "📍Popayán, 24 km";
+                position = new THREE.Vector3(90, 3, -10); 
+            case 18:
+                text = "📍Popayán, 110 km";
+                position = new THREE.Vector3(-90, 8, -50);
+                break;
+        }
+
+        if (text && position) {
+            addTextToScene(scene, text, position); 
+        }
+    }
+
+    //--------------------agregar texto a la escena
+
+    function addTextToScene(scene, text, position) {
+        const textSprite = createTextLabel(text);
+        textSprite.position.copy(position); 
+        scene.add(textSprite); 
+    }
+
         //------------Sprite para video------------------
 
         function createVideoSprite(position, label, videoPath) {
@@ -956,9 +991,7 @@
                     const audioSprite = createAudioSprite(position, "Torre de Reloj", audioPath);
                     scene.add(audioSprite);    
                     
-                    /*position = new THREE.Vector3(-60, 25, 115);
-                    const infoSprite = createInfoSprite(position, "Catedral Nuestra Señora de la Asunción");
-                    scene.add(infoSprite);*/
+
 
                     /*position = new THREE.Vector3(50, 25, -70);
                     videoPath = 'videos/torre_reloj.mp4';
@@ -981,6 +1014,7 @@
                     scene.add(createVideoSprite(position, "Piedra del Cóndor", videoPath));
 
                     break;
+                
             }
         }
 
@@ -1380,6 +1414,8 @@
             const loadingScreen = document.getElementById('loading-screen');
             loadingScreen.style.display = 'none';
         });
+
+        
 
         init();
     </script>
