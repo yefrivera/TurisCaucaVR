@@ -183,9 +183,9 @@
     <script type="importmap">
         {
             "imports": {
-                "three": "https://unpkg.com/three@0.159.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.159.0/examples/jsm/",
-                "three/examples/jsm/": "https://unpkg.com/three@0.159.0/examples/jsm/"
+                "three": "./libs/three.module.js",
+                "three/addons/": "./libs/jsm/",
+                "three/examples/jsm/": "./libs/jsm/"
             }
         }
     </script>
@@ -250,7 +250,7 @@
             controls.rotateSpeed = -0.3;
 
             setupEventListeners();
-            changeScene(9);
+            changeScene(0);
             animate();
             fetchWeatherData();
         }
@@ -734,14 +734,15 @@
         switch (sceneIndex) {
 
             case 9:
-                text = "📍Popayán, 31 km";
+                text = "📍Popayán, 56 km";
                 position = new THREE.Vector3(-70, 5, -65); 
                 break;
             case 14:
-                text = "📍Popayán, 24 km";
+                text = "📍Popayán, 34 km";
                 position = new THREE.Vector3(90, 3, -10); 
+                break;
             case 18:
-                text = "📍Popayán, 110 km";
+                text = "📍Popayán, 114 km";
                 position = new THREE.Vector3(-90, 8, -50);
                 break;
         }
