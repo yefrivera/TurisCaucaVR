@@ -48,7 +48,7 @@
                     <div class="dropdown-sub">
                         <button class="dropbtn-sub">Cultura</button>
                         <div class="dropdown-content-sub">
-                            <a href="#" data-scene-index="7">Iglesia La Encarnación (Interior)</a>
+                            <a href="#" data-scene-index="7">Iglesia de Santo Domingo</a>
                             <a href="#" data-scene-index="8">Museo Negret</a>
 
                         </div>
@@ -103,8 +103,8 @@
                         <div class="dropdown-content-sub">
                             <a href="#" data-scene-index="18">Alto de Segovia (Vista)</a>
                             <a href="#" data-scene-index="19">Hipogeo 1</a>
-                            <a href="#" data-scene-index="20">Hipogeo 2</a>
-                            <a href="#" data-scene-index="21">Hipogeo 3</a>
+                            <!--<a href="#" data-scene-index="20">Hipogeo 2</a> -->
+                            <a href="#" data-scene-index="21">Hipogeo 2</a>
                         </div>
                     </div>
                     <div class="dropdown-sub">
@@ -250,7 +250,7 @@
             controls.rotateSpeed = -0.3;
 
             setupEventListeners();
-            changeScene(0);
+            changeScene(8);
             animate();
             fetchWeatherData();
         }
@@ -278,7 +278,7 @@
 
                         //Arquitectura
                     case 0:
-                        texturePath = 'Popayan/1.jpg';
+                        texturePath = 'Popayan/TorreLimpia.jpg';
                         break;
                     case 1:
                         texturePath = 'Popayan/2.jpg';
@@ -287,10 +287,10 @@
                         texturePath = 'Popayan/4.jpg';
                         break;
                     case 3:
-                        texturePath = 'Popayan/666.jpg';
+                        texturePath = 'Popayan/MorroLimpia.jpg';
                         break;
                     case 4:
-                        texturePath = 'Popayan/7.jpg';
+                        texturePath = 'Popayan/PueblitoLimpia.jpg';
                         break;
 
                         //gastronomia
@@ -300,13 +300,13 @@
                         break;
                         //parque caldas
                     case 6:
-                        texturePath = 'Popayan/caldas1.jpg';
+                        texturePath = 'Popayan/caldas2.jpg';
                         break;
 
                         //cultura
 
                     case 7: 
-                        texturePath = 'Popayan/catedral.jpg';
+                        texturePath = 'Popayan/SantoDomingo.jpg';
                         break;
 
                     case 8: 
@@ -458,11 +458,11 @@
                 case 19:
                     text = 'Parque Arqueológico Tierradentro, Hipogeo 1';
                     break;
-                case 20:
+                /*case 20:
                     text = 'Parque Arqueológico Tierradentro, Hipogeo 2';
-                    break;
+                    break;*/
                 case 21:
-                    text = 'Parque Arqueológico Tierradentro, Hipogeo 3';
+                    text = 'Parque Arqueológico Tierradentro, Hipogeo 2';
                     break;
                 case 22:
                     text = 'Parque Arqueológico Tierradentro, Estatuas Monolíticas';
@@ -608,13 +608,14 @@
 
             if (sceneIndex === 0) {
                 //torre del reloj
-                scene.add(createArrow(new THREE.Vector3(63, 25, 65), 6, "Parque Caldas"));
-                scene.add(createArrow(new THREE.Vector3(-40, 10, 80), 7, "Iglesia la Encarnación"));
+                scene.add(createArrow(new THREE.Vector3(59, 22, 65), 6, "Parque Caldas"));
+                scene.add(createArrow(new THREE.Vector3(-43, 1, -80), 5, "Gastronomía"));
+                scene.add(createArrow(new THREE.Vector3(-39, 20, -75), 8, "Museo Negret"));
             } 
             else if (sceneIndex === 1) {
                 //puente del humlladero
                 scene.add(createArrow(new THREE.Vector3(-12, 14, -100), 3, "Morro de Tulcán"));
-                scene.add(createArrow(new THREE.Vector3(90, 15, 35), 6, "Parque Caldas"));
+                scene.add(createArrow(new THREE.Vector3(90, 12, 35), 6, "Parque Caldas"));
                 scene.add(createArrow(new THREE.Vector3(-72, -2, 80), 2, "Arcada de la Herrería"));
             } 
             else if (sceneIndex === 2) {
@@ -623,27 +624,32 @@
             } 
             else if (sceneIndex === 3) {
                 //morro
-                scene.add(createArrow(new THREE.Vector3(-100, 2, -23), 6, "Parque Caldas"));
-                scene.add(createArrow(new THREE.Vector3(-90, -5, -50), 1, "Puente del Humilladero"));
-                scene.add(createArrow(new THREE.Vector3(-5, -20, 100), 4, "Rincón Payanés"));  
+                scene.add(createArrow(new THREE.Vector3(-100, 2, 17), 6, "Parque Caldas"));
+                scene.add(createArrow(new THREE.Vector3(-100, -5, -15), 1, "Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(20, -20, 90), 4, "Rincón Payanés"));  
             } 
             else if (sceneIndex === 4) {
                 //pueblito patojo
-                scene.add(createArrow(new THREE.Vector3(-70, 42, -75), 3, "Morro de Tulcán"));
+                scene.add(createArrow(new THREE.Vector3(-80, 18, -25), 3, "Morro de Tulcán"));
+                scene.add(createArrow(new THREE.Vector3(-100, 3, -8), 6, "Parque Caldas"));
             } 
             else if (sceneIndex === 5) {
                 //gastronomia
-                scene.add(createArrow(new THREE.Vector3(90, 12, 25), 6, "Parque Caldas"));
+                scene.add(createArrow(new THREE.Vector3(4.5, 8, -95), 0, "Torre del Reloj"));
             } 
             else if (sceneIndex == 6){
                 //parque caldas
                 scene.add(createArrow(new THREE.Vector3(-80, 15, 45),0, "Torre del reloj"));
-                scene.add(createArrow(new THREE.Vector3(62, 15, -70),1, "Puente del Humilladero"));
-                scene.add(createArrow(new THREE.Vector3(100, 8, 8),5, "Gastronomía de Popayán"));
+                scene.add(createArrow(new THREE.Vector3(70, 1, -80),1, "Puente del Humilladero"));
+                scene.add(createArrow(new THREE.Vector3(80, 1, -65),7, "Iglesia de Santo Domingo"));
             }
             else if (sceneIndex === 7) {
-                //catedral
-                scene.add(createArrow(new THREE.Vector3(100, 7, -0.3), 0, " "));
+                //santo domingo
+                scene.add(createArrow(new THREE.Vector3(100, 7, -0.3), 6, "Parque Caldas"));
+            } 
+            else if (sceneIndex === 8) {
+                //negret
+                scene.add(createArrow(new THREE.Vector3(65, 15, -41), 0, "Torre del Reloj"));
             } 
 
             //------------silvia----------------
@@ -699,8 +705,8 @@
             else if (sceneIndex === 18) {
                 //panorama segovia
                 scene.add(createArrow(new THREE.Vector3(-100, -5, -17), 19, "Hipogeo 1"));
-                scene.add(createArrow(new THREE.Vector3(-80, -15, -30), 20, "Hipogeo 2"));
-                scene.add(createArrow(new THREE.Vector3(85, 20, -20), 21, "Hipogeo 3"));
+                //scene.add(createArrow(new THREE.Vector3(-80, -15, -30), 20, "Hipogeo 2"));
+                scene.add(createArrow(new THREE.Vector3(85, 20, -20), 21, "Hipogeo 2"));
                 scene.add(createArrow(new THREE.Vector3(-75, -10, -85), 23, "Museo Arqueológico"));
                 scene.add(createArrow(new THREE.Vector3(95, 20, 55), 22, "El Tablón, Estatuas Monolíticas"));
             }
@@ -708,10 +714,10 @@
                 //hipogeo 1
                 scene.add(createArrow(new THREE.Vector3(80, 15, -3), 18, " "));
             }
-            else if (sceneIndex === 20) {
+            /*else if (sceneIndex === 20) {
                 //hipogeo 2
                 scene.add(createArrow(new THREE.Vector3(80, 15, 17), 18, " "));
-            }
+            }*/
             else if (sceneIndex === 21) {
                 //hipogeo 3
                 scene.add(createArrow(new THREE.Vector3(80, 7, 5), 18, " "));
@@ -987,7 +993,7 @@
             let videoPath;
             switch (sceneIndex) {
                 case 0:
-                    position = new THREE.Vector3(-90, 37, 4.5);
+                    position = new THREE.Vector3(-90, 36, 1.7);
                     audioPath = './SoundsPopVR/1.-La-torre-del-reloj.ogg';
                     const audioSprite = createAudioSprite(position, "Torre de Reloj", audioPath);
                     scene.add(audioSprite);    
