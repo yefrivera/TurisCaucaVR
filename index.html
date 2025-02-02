@@ -228,9 +228,9 @@
         
         const scenes = [
             // Popayán
-            ['./Popayan/1.jpg', /*'./Popayan/caldas1.jpg', */'./Popayan/catedral.jpg', './Popayan/4.jpg', './Popayan/666.jpg'/*, './Popayan/7.jpg', './Popayan/gastro3.jpg'*/ ],
+            ['./Popayan/TorreLimpia.jpg', /*'./Popayan/caldas1.jpg', */'./Popayan/MorroLimpia.jpg', './Popayan/gastro3.jpg', './Popayan/Negret.jpg'/*, './Popayan/7.jpg', './Popayan/gastro3.jpg'*/ ],
             // Silvia
-            ['./silvia/parque.jpg', /*'./silvia/mercado2.jpg',*/ './silvia/iglesia.jpg', /*'./silvia/jardin.jpg', */'./silvia/in.jpg'],
+            ['./silvia/iglesia.jpg', /*'./silvia/mercado2.jpg',*/ './silvia/parque.jpg', /*'./silvia/jardin.jpg', */'./silvia/in.jpg'],
             // Puracé
             ['./Purace/piedra condor1.jpg', './Purace/valle frailejones.jpg', './Purace/sanjuan33.jpg'],
             // Tierradentro
@@ -239,9 +239,9 @@
         
         const audios = [
             // Popayán
-            ['./SoundsPopVR/1.-La-torre-del-reloj.ogg', /*'./SoundsPopVR/2.-Parque-Caldas.ogg', */'./SoundsPopVR/3.-Iglesia-la-encarnación.ogg', './SoundsPopVR/5.-Puente-del-humilladero.ogg', './SoundsPopVR/7.-Morro-de-Tulcán.ogg'/*, './SoundsPopVR/6.-Rincón-payanes.ogg', './SoundsPopVR/8.-Gastronomía-de-Popayán.ogg'*/],
+            ['./SoundsPopVR/1.-La-torre-del-reloj.ogg', /*'./SoundsPopVR/2.-Parque-Caldas.ogg', './SoundsPopVR/3.-Iglesia-la-encarnación.ogg', './SoundsPopVR/5.-Puente-del-humilladero.ogg', */'./SoundsPopVR/7.-Morro-de-Tulcán.ogg'/*, './SoundsPopVR/6.-Rincón-payanes.ogg', './SoundsPopVR/8.-Gastronomía-de-Popayán.ogg'*/],
             // Silvia
-            ['./SoundsSilVR/1.-Parque-de-Silvia.ogg', /*'./SoundsSilVR/2.-Mercado.ogg',*/ './SoundsSilVR/3.-Colina-de-Belen.ogg', /*'./SoundsSilVR/4.-Jardín-botánico-exterior.ogg',*/ './SoundsSilVR/5.Jardín-botánico-dentro-del-lugar-de-reunión.ogg'],
+            ['./SoundsSilVR/3.-Colina-de-Belen.ogg','./SoundsSilVR/1.-Parque-de-Silvia.ogg', /*'./SoundsSilVR/2.-Mercado.ogg','./SoundsSilVR/3.-Colina-de-Belen.ogg', /*'./SoundsSilVR/4.-Jardín-botánico-exterior.ogg',*/ './SoundsSilVR/5.Jardín-botánico-dentro-del-lugar-de-reunión.ogg'],
             // Puracé
             ['SoundsPurVR/1.-Piedra-del-condor.ogg', 'SoundsPurVR/2.-Valle-de-los-frailejones.ogg', 'SoundsPurVR/3.-Termales-de-san-juan.ogg'],
             // Tierradentro
@@ -253,18 +253,19 @@
             [
                 "Torre del Reloj",
                 //"Parque Caldas",
-                "Iglesia La Encarnación",
-                "Puente del Humilladero",
-                "Morro de Tulcán"
+                //"Iglesia La Encarnación",
+                //"Puente del Humilladero",
+                "Morro de Tulcán",
                 //"Rincón Payanés",
-                //"Gastronomía de Popayán"
+                "Gastronomía de Popayán",
+                "Museo Negret"
                 
             ],
             // Textos para las escenas de Silvia
             [
+                "Colina de Belén",
                 "Silvia, Parque Principal",
                 //"Mercado tradicional",
-                "Colina de Belén",
                 //"El jardín botánico ",
                 "El jardín botánico, Casa del Pensamiento "
             ],
@@ -455,7 +456,7 @@
             consoleMesh2.add(consoleText2);
 
             const popayanButtonContainer = new THREE.Object3D();
-            const popayanButton = makeButtonSphere(0.05, './Popayan/1.jpg');
+            const popayanButton = makeButtonSphere(0.05, './Popayan/TorreLimpia.jpg');
             popayanButtonContainer.add(popayanButton);
             const popayanButtonText = createText('Popayán', 0.02);
             popayanButtonText.position.set(0, 0.06, 0); 
