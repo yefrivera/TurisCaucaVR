@@ -390,8 +390,14 @@
             };
 
             const vrButton = VRButton.createButton(renderer, sessionInit);
-            document.body.appendChild(vrButton);           // 1. Insertar en el DOM
+            document.body.appendChild(vrButton);      
+
+            const observer = new MutationObserver(() => {
+                const btn = document.getElementById('VRButton');
+                if (btn) btn.remove();
+            });
             
+            observer.observe(document.body, { childList: true, subtree: true });
             //const autoButton = document.getElementById('VRButton');
             //autoButton.style.display = 'none';
     
