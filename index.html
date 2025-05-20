@@ -2,14 +2,25 @@
 <html lang="en">
 
 <head>
-    <title>TurismoCauca3.0</title>
+    <title>TurisCaucaVR</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="icon" href="/images/sinlimites.png" type="image/png">
+    <link rel="stylesheet" href="stylevr.css">
     
 </head>
 
 <body>
+
+        <div id="start-screen">
+        <div id="intro-content">
+            <h1 id="title">TurisCaucaVR</h1>
+            <p id="description">Explora los maravillosos paisajes y la riqueza cultural del departamento del Cauca</p>
+            <p id="description">¿Cuentas con un visor de realiad virtual?</p>
+            <button id="enter-vr-btn">ENTRAR EN REALIDAD VIRTUAL</button>
+        </div>
+        </div>
+
     <div id="container"></div>
     <script type="importmap">
         {
@@ -375,12 +386,44 @@
             container.appendChild(renderer.domElement);
     
             const sessionInit = {
-                requiredFeatures: ['hand-tracking']
+                optionalFeatures: ['hand-tracking', 'local-floor', 'bounded-floor']
             };
-    
+
             const vrButton = VRButton.createButton(renderer, sessionInit);
-            document.body.appendChild(vrButton);
+            document.body.appendChild(vrButton);           // 1. Insertar en el DOM
+            
+            //const autoButton = document.getElementById('VRButton');
+            //autoButton.style.display = 'none';
     
+            /*vrButton = VRButton.createButton(renderer, sessionInit);
+            vrButton.style.display = 'none'; 
+            document.body.appendChild(vrButton);*/
+
+            const enterVRBtn = document.getElementById('enter-vr-btn');
+            const startScreen = document.getElementById('start-screen');
+            let xrSupported = false;
+
+            if (navigator.xr) {
+                navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+                    xrSupported = supported;
+                });
+            }
+            enterVRBtn.addEventListener('click', () => {
+                if (!xrSupported) {
+                    alert("Tu dispositivo no soporta realidad virtual.");
+                    return;
+                }
+                startScreen.style.display = 'none';
+
+                // Iniciar sesión VR
+                navigator.xr.requestSession('immersive-vr', sessionInit).then((session) => {
+                    renderer.xr.setSession(session);
+                }).catch((err) => {
+                    console.error("Error al iniciar sesión VR:", err);
+                    alert("No se pudo iniciar la experiencia VR.");
+                });
+            });
+
             renderer.xr.addEventListener('sessionstart', startSecondModelAnimation);
             renderer.xr.addEventListener('sessionend', pauseSecondModelAnimation);
     

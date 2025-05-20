@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+}
+
+#container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    
+}
+
+#start-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center; /* centra horizontalmente */
+    align-items: center;     /* centra verticalmente */
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+#intro-content > * {
+    margin-bottom: 1.5rem; /* espaciado uniforme entre hijos */
+}
+
+#intro-content > *:last-child {
+    margin-bottom: 0; /* elimina el margen del último hijo */
+}
+
+#title {
+    font-size: 4rem;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+#description {
+    font-size: 1.5rem;
+    max-width: 600px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+#enter-vr-btn {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    background-color: #0a119a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#enter-vr-btn:hover {
+    background-color: #2165dc;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#VRButton {
+  display: none !important;
+}
