@@ -69,3 +69,34 @@ body {
 #VRButton {
   display: none !important;
 }
+
+/* 📱 MEDIA QUERIES PARA MÓVILES */
+@media (max-width: 768px) {
+    #title {
+        font-size: 2rem;
+    }
+
+    #description {
+        font-size: 1rem;
+    }
+
+    #enter-vr-btn {
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* 📱 Responsive móvil */
+@media (max-width: 480px) {
+    #title {
+        font-size: 2rem;
+    }
+
+    #description {
+        font-size: 1rem;
+    }
+
+    #enter-vr-btn {
+        font-size: 1rem;
+    }
+}
